@@ -242,7 +242,7 @@ body h2::after {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: var(--primary-color);
 }
 
 .tpcnt-card .card-back {
@@ -256,7 +256,8 @@ body h2::after {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: var(--primary-color);
+  border: 1px solid var(--border);
 }
 
 .tpcnt-card .card-front img {
@@ -268,13 +269,12 @@ body h2::after {
 
 .tpcnt-title {
   margin-top: 10px;
-  color: #0c4f43;
-  font-size: 20px;
+  color: var(--fundoclaro);
+  font-size: 30px;
   font-weight: 700;
   width: 100%;
   text-align: center;
   padding: 10px 0;
-  background: rgba(255, 255, 255, 0.9);
 }
 
 .tpcnt-card .card-back {
