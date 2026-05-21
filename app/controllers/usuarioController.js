@@ -157,13 +157,16 @@ const usuarioController = {
           retorno: null,
         });
       }
+
       await usuarioModel.criarCliente({
         nome: req.body.nome,
         nomeusuario: req.body.nomeusuario,
         email: req.body.email,
         senha: req.body.senha,
       });
+
       res.redirect("/login");
+
     } catch (err) {
       console.error("Erro ao cadastrar cliente:", err);
       res.render("pages/cadastroCliente", {
@@ -202,6 +205,7 @@ const usuarioController = {
           retorno: null,
         });
       }
+
       const novo = await usuarioModel.criarProfissional({
         nome: req.body.nome,
         nomeusuario: req.body.nomeusuario || null,
@@ -212,6 +216,7 @@ const usuarioController = {
         tempoExperiencia: req.body.tempoExperiencia,
         especialidades: req.body.especialidades,
       });
+
       req.session.usuario = novo;
       req.session.nome = novo.nome;
       req.session.nivel = "profissional";
@@ -271,6 +276,7 @@ const usuarioController = {
           sucesso: false,
         });
       }
+      delete usuario.senha;
       req.session.usuario = usuario;
       req.session.nome = usuario.nome;
       req.session.nivel = usuario.nivel || "iniciante";
