@@ -408,7 +408,6 @@ body {
 }
 .pt-nav-item.ativo {
   border-color: var(--c-verde-400);
-  background: var(--c-verde-50);
 }
 .pt-nav-item img {
   width: 42px;

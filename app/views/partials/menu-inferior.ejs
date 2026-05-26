@@ -16,11 +16,15 @@
   <% } else if (usuario && usuario.tipo === "profissional") { %>
 
   <!-- PROFISSIONAL -->
-  <a href="/profissional/painel-financeiro"><i class="bi bi-bar-chart"></i></a>
-  <a href="/profissional/planos"><i class="bi bi-bag-heart"></i></a>
-  <a href="/profissional/pacientes"><i class="bi bi-person-heart"></i></a>
-  <a href="/profissional/agenda"><i class="bi bi-calendar-week"></i></a>
-  <a href="/perfil"><i class="bi bi-person"></i></a>
+  <a href="/profissional/painel-financeiro"><i data-lucide="chart-column"></i></a>
+  <a href="/profissional/planos"><i data-lucide="layout-grid"></i></a>
+  <a href="/profissional/pacientes"><i data-lucide="users"></i></a>
+  <a href="/profissional/agenda"><i data-lucide="clock-3"></i></a>
+  <figure class="foto-perfil">
+    <a href="/perfil" aria-label="Ir para perfil">
+      <img src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>" alt="Foto de perfil"/>
+    </a>
+  </figure>
 
 
   <% }  else { %>

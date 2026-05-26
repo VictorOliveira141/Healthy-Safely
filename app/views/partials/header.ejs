@@ -69,8 +69,14 @@
             </a>
           </figure>
           <% } else if (usuario && usuario.tipo === "profissional") { %>
-            <a href="/profissional/perfil-profissional" aria-label="Ir para perfil" class="mobile">
-            <i class="bi bi-person-circle logado" aria-hidden="true"></i>
+           <figure class="foto-perfil">
+            <a href="/profissional/perfil-profissional" aria-label="Ir para perfil">
+            <img
+            src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
+            alt="Foto de perfil"
+             />
+            </a>
+          </figure>
           </a>
            <% } %>
           
