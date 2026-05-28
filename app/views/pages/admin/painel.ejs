@@ -5,159 +5,22 @@
   <title>Painel Admin — Healthy Safely</title>
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap");
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:"Outfit",sans-serif;background:#f0f7f4;color:#0d2b22;min-height:100vh;}
-    .topbar{background:#0c4f43;color:#fff;padding:0 28px;height:58px;display:flex;
-      align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;
-      box-shadow:0 2px 12px rgba(0,0,0,.15);}
-    .topbar-l{display:flex;align-items:center;gap:10px;}
-    .topbar-l img{height:30px;filter:brightness(0) invert(1);}
-    .topbar-l span{font-size:15px;font-weight:700;}
-    .badge-a{background:rgba(255,255,255,.18);font-size:10px;padding:3px 9px;border-radius:100px;font-weight:700;}
-    .topbar-r{display:flex;align-items:center;gap:14px;}
-    .topbar-r a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;transition:color .2s;}
-    .topbar-r a:hover{color:#fff;}
-    .btn-sair{background:rgba(255,255,255,.15);color:#fff!important;padding:5px 14px;border-radius:8px;font-weight:700!important;}
-
-    .adm{max-width:1280px;margin:0 auto;padding:28px 20px;}
-    .adm-h1{font-size:20px;font-weight:800;color:#0c4f43;margin-bottom:3px;}
-    .adm-sub{font-size:13px;color:#5a7a70;margin-bottom:22px;}
-
-    /* KPIs */
-    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin-bottom:22px;}
-    .kpi{background:#fff;border-radius:12px;padding:16px 18px;
-      box-shadow:0 2px 8px rgba(12,79,67,.07);border:1px solid rgba(12,79,67,.08);
-      display:flex;align-items:center;gap:12px;transition:transform .2s,box-shadow .2s;}
-    .kpi:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(12,79,67,.12);}
-    .kpi-ic{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
-    .g{background:#d1fae5;color:#065f46;} .b{background:#dbeafe;color:#1e40af;}
-    .a{background:#fef3c7;color:#92400e;} .r{background:#fee2e2;color:#dc2626;}
-    .kpi-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#5a7a70;margin-bottom:.1rem;}
-    .kpi-val{font-size:1.5rem;font-weight:900;color:#0d2b22;line-height:1;}
-
-    /* Grid 2 cols */
-    .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
-
-    /* Cards */
-    .card{background:#fff;border-radius:12px;overflow:hidden;
-      box-shadow:0 2px 8px rgba(12,79,67,.07);border:1px solid rgba(12,79,67,.08);}
-    .card-h{display:flex;align-items:center;justify-content:space-between;
-      padding:13px 16px;border-bottom:1px solid rgba(12,79,67,.07);}
-    .card-h h2{font-size:.9rem;font-weight:800;color:#0d2b22;display:flex;align-items:center;gap:.4rem;}
-    .card-h h2 i{color:#1a8a75;}
-
-    /* Charts */
-    .chart{padding:14px 16px;display:flex;flex-direction:column;gap:9px;}
-    .cr{display:flex;align-items:center;gap:9px;font-size:.78rem;}
-    .cr-dia{width:32px;color:#5a7a70;font-weight:600;text-align:right;flex-shrink:0;}
-    .cr-track{flex:1;height:9px;background:#e5e7eb;border-radius:9px;overflow:hidden;}
-    .cr-fill{height:100%;border-radius:9px;transition:width .5s;}
-    .cr-fill.g{background:linear-gradient(90deg,#0c4f43,#34d399);}
-    .cr-fill.b{background:linear-gradient(90deg,#3b82f6,#60a5fa);}
-    .cr-val{width:24px;font-size:.78rem;font-weight:800;text-align:right;}
-    .no-data{text-align:center;padding:1.5rem;color:#5a7a70;font-size:.85rem;}
-
-    /* Ranking */
-    .rank-list{list-style:none;padding:0;}
-    .rank-item{display:flex;align-items:center;gap:11px;padding:9px 16px;
-      border-bottom:1px solid rgba(12,79,67,.06);transition:background .15s;}
-    .rank-item:last-child{border-bottom:none;}
-    .rank-item:hover{background:#f0fdf4;}
-    .rank-pos{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-size:.72rem;font-weight:900;flex-shrink:0;}
-    .pos-1{background:#fef3c7;color:#92400e;} .pos-2{background:#e5e7eb;color:#374151;}
-    .pos-3{background:#fed7aa;color:#92400e;} .pos-n{background:#d1fae5;color:#065f46;}
-    .rank-av{width:34px;height:34px;border-radius:50%;background:#d1fae5;color:#065f46;
-      font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .rank-info{flex:1;} .rank-info strong{display:block;font-size:.85rem;font-weight:700;}
-    .rank-info small{font-size:.72rem;color:#5a7a70;text-transform:capitalize;}
-    .rank-pts{font-size:.88rem;font-weight:800;color:#0c4f43;}
-
-    /* Solicitações */
-    .solic-lista{padding:0;list-style:none;}
-    .solic-item{display:flex;align-items:flex-start;gap:1rem;
-      padding:.9rem 1rem;border-bottom:1px solid rgba(12,79,67,.06);}
-    .solic-item:last-child{border-bottom:none;}
-    .solic-info{flex:1;}
-    .solic-info strong{display:block;font-size:.85rem;font-weight:700;color:#0d2b22;}
-    .solic-info small{font-size:.75rem;color:#5a7a70;}
-    .solic-acoes{display:flex;gap:.4rem;}
-    .btn-apr{padding:.35rem .8rem;background:#d1fae5;color:#065f46;border:none;
-      border-radius:7px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;}
-    .btn-rej{padding:.35rem .8rem;background:#fee2e2;color:#dc2626;border:none;
-      border-radius:7px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;}
-    .s-badge{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px;}
-    .s-pendente{background:#fef3c7;color:#92400e;}
-    .s-aprovada{background:#d1fae5;color:#065f46;}
-    .s-rejeitada{background:#fee2e2;color:#dc2626;}
-
-    /* Tabela */
-    .tbl-wrap{overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;font-size:.82rem;}
-    thead th{padding:10px 13px;font-size:.68rem;font-weight:800;text-transform:uppercase;
-      letter-spacing:.4px;color:#5a7a70;text-align:left;background:#f5fbf8;
-      border-bottom:1px solid rgba(12,79,67,.08);}
-    tbody td{padding:10px 13px;border-bottom:1px solid rgba(12,79,67,.06);vertical-align:middle;}
-    tbody tr:last-child td{border-bottom:none;}
-    tbody tr:hover td{background:#f5fbf8;}
-    .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0c4f43,#1a8a75);
-      color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
-    .u-info{display:flex;align-items:center;gap:9px;}
-    .u-nome{font-weight:700;color:#0d2b22;font-size:.85rem;}
-    .u-user{font-size:.7rem;color:#94a3b8;}
-    .badge-tipo{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;}
-    .badge-tipo.cliente{background:#d1fae5;color:#065f46;}
-    .badge-tipo.profissional{background:#dbeafe;color:#1e40af;}
-    .badge-nivel{background:#fef3c7;color:#92400e;font-size:.68rem;font-weight:700;
-      padding:2px 7px;border-radius:20px;text-transform:capitalize;}
-    .pts-v{font-weight:800;color:#0c4f43;}
-    .pct-wrap{display:flex;align-items:center;gap:7px;min-width:90px;}
-    .pct-bar{flex:1;height:5px;background:#e5e7eb;border-radius:5px;overflow:hidden;}
-    .pct-fill{height:100%;background:linear-gradient(90deg,#0c4f43,#34d399);border-radius:5px;}
-    .pct-txt{font-size:.72rem;font-weight:700;color:#5a7a70;}
-    .del-btn{padding:.35rem .7rem;background:none;border:1px solid rgba(200,0,0,.2);
-      border-radius:7px;font-size:.72rem;color:#dc2626;cursor:pointer;}
-    .del-btn:hover{background:#fee2e2;}
-    .busca-input{padding:7px 13px;border:1.5px solid rgba(12,79,67,.12);border-radius:8px;
-      font-size:.82rem;outline:none;width:220px;background:#f0f7f4;color:#0d2b22;}
-    .busca-input:focus{border-color:#1a8a75;}
-    .filtro-btn{padding:5px 12px;border:1.5px solid rgba(12,79,67,.12);border-radius:8px;
-      background:#fff;font-size:.75rem;font-weight:600;cursor:pointer;color:#475569;}
-    .filtro-btn.ativo,.filtro-btn:hover{background:#0c4f43;border-color:#0c4f43;color:#fff;}
-    .tbl-footer{padding:10px 16px;border-top:1px solid rgba(12,79,67,.07);
-      font-size:.75rem;color:#94a3b8;text-align:right;}
-
-    @media(max-width:900px){.g2{grid-template-columns:1fr;}.kpis{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:600px){.adm{padding:16px 12px;}.topbar{padding:0 14px;}}
-  </style>
+  <link rel="stylesheet" href="/css/admin/painel.css" />
 </head>
 <body>
-<header class="topbar">
-  <section class="topbar-l">
-    <img src="/imagem/Logo repaginado 2.webp" alt="Logo" />
-    <span>Healthy Safely</span>
-    <span class="badge-a">ADMIN</span>
-  </section>
-  <nav class="topbar-r">
-    <a href="/">← Ver site</a>
-    <a href="/admin/sair" class="btn-sair">Sair</a>
-  </nav>
-</header>
+<%- include('../../partials/adm/admin-header.ejs') %>
 
 <main class="adm">
   <h1 class="adm-h1">Painel Administrativo</h1>
-  <p class="adm-sub">Visão geral em tempo real · dados do MySQL</p>
+  <p class="adm-sub">
+  Controle administrativo geral da plataforma Healthy Safely
+</p>
 
   <!-- KPIs -->
   <section class="kpis">
     <article class="kpi"><figure class="kpi-ic g"><i class="bi bi-people-fill"></i></figure><section><p class="kpi-lbl">Usuários</p><p class="kpi-val"><%= stats.total_usuarios||0 %></p></section></article>
     <article class="kpi"><figure class="kpi-ic b"><i class="bi bi-person-fill"></i></figure><section><p class="kpi-lbl">Clientes</p><p class="kpi-val"><%= stats.total_clientes||0 %></p></section></article>
     <article class="kpi"><figure class="kpi-ic a"><i class="bi bi-briefcase-fill"></i></figure><section><p class="kpi-lbl">Profissionais</p><p class="kpi-val"><%= stats.total_profissionais||0 %></p></section></article>
-    <article class="kpi"><figure class="kpi-ic g"><i class="bi bi-check-circle-fill"></i></figure><section><p class="kpi-lbl">Tarefas feitas</p><p class="kpi-val"><%= stats.tarefas_concluidas||0 %></p></section></article>
-    <article class="kpi"><figure class="kpi-ic r"><i class="bi bi-list-task"></i></figure><section><p class="kpi-lbl">Total tarefas</p><p class="kpi-val"><%= stats.total_tarefas||0 %></p></section></article>
-    <article class="kpi"><figure class="kpi-ic a"><i class="bi bi-star-fill"></i></figure><section><p class="kpi-lbl">Pontos totais</p><p class="kpi-val"><%= stats.pontos_totais||0 %></p></section></article>
     <% if(stats.total_solicitacoes>0){ %>
     <article class="kpi"><figure class="kpi-ic r"><i class="bi bi-bell-fill"></i></figure><section><p class="kpi-lbl">Solicitações pend.</p><p class="kpi-val" style="color:#dc2626"><%= stats.total_solicitacoes %></p></section></article>
     <% } %>
@@ -180,79 +43,40 @@
         <% }) } %>
       </section>
     </article>
+  </section>
 
-    <!-- Tarefas concluídas por dia -->
-    <article class="card">
-      <header class="card-h"><h2><i class="bi bi-check2-all"></i> Tarefas concluídas (7 dias)</h2></header>
-      <% const mt = tarefasPorDia.length ? Math.max(...tarefasPorDia.map(d=>d.quantidade)) : 1; %>
-      <section class="chart">
-        <% if(!tarefasPorDia.length){ %><p class="no-data">Sem conclusões recentes.</p>
-        <% } else { tarefasPorDia.forEach(d => { %>
-        <section class="cr">
-          <span class="cr-dia"><%= new Date(d.dia).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) %></span>
-          <section class="cr-track"><section class="cr-fill g" style="width:<%= Math.round((d.quantidade/mt)*100) %>%"></section></section>
-          <span class="cr-val"><%= d.quantidade %></span>
-        </section>
-        <% }) } %>
+  <section class="card" style="margin-bottom:18px;">
+  <header class="card-h">
+    <h2>
+      <i class="bi bi-clock-history"></i>
+      Usuários recentes
+    </h2>
+  </header>
+
+  <ul class="rank-list">
+    <% usuarios.slice(0,5).forEach(u => { 
+      const ini = u.nome ? u.nome.charAt(0).toUpperCase() : '?';
+      const dt = u.criado_em
+        ? new Date(u.criado_em).toLocaleString('pt-BR')
+        : '—';
+    %>
+
+    <li class="rank-item">
+      <figure class="rank-av"><%= ini %></figure>
+
+      <section class="rank-info">
+        <strong><%= u.nome %></strong>
+        <small>
+          <%= u.tipo %> · <%= dt %>
+        </small>
       </section>
-    </article>
-  </section>
+    </li>
 
-  <!-- Ranking + Solicitações -->
-  <section class="g2">
-    <!-- Top 5 -->
-    <article class="card">
-      <header class="card-h"><h2><i class="bi bi-trophy-fill"></i> Top 5 por pontos</h2></header>
-      <ul class="rank-list">
-        <% if(!ranking||!ranking.length){ %>
-          <li style="padding:1.5rem;text-align:center;color:#5a7a70;font-size:.85rem">Sem dados ainda.</li>
-        <% } else { ranking.forEach((u,i) => {
-             const pc=['pos-1','pos-2','pos-3','pos-n'][Math.min(i,3)];
-             const ini=u.nome.slice(0,2).toUpperCase(); %>
-        <li class="rank-item">
-          <span class="rank-pos <%= pc %>"><%= i+1 %></span>
-          <figure class="rank-av"><%= ini %></figure>
-          <section class="rank-info">
-            <strong><%= u.nome %></strong>
-            <small><%= u.nivel %> · <%= u.tarefas_concluidas %> tarefas</small>
-          </section>
-          <span class="rank-pts">⭐ <%= u.pontos %></span>
-        </li>
-        <% }) } %>
-      </ul>
-    </article>
+    <% }) %>
+  </ul>
+</section>
 
-    <!-- Solicitações -->
-    <article class="card">
-      <header class="card-h">
-        <h2><i class="bi bi-bell-fill"></i> Solicitações</h2>
-        <span style="font-size:.75rem;color:#5a7a70"><%= solicitacoes.length %> total</span>
-      </header>
-      <ul class="solic-lista">
-        <% if(!solicitacoes||!solicitacoes.length){ %>
-          <li style="padding:1.5rem;text-align:center;color:#5a7a70;font-size:.85rem">Nenhuma solicitação.</li>
-        <% } else { solicitacoes.forEach(s => { %>
-        <li class="solic-item">
-          <section class="solic-info">
-            <strong><%= s.paciente_nome %> → <%= s.profissional_nome %></strong>
-            <small><%= s.area_atuacao %> · <%= new Date(s.criado_em).toLocaleDateString('pt-BR') %></small>
-          </section>
-          <span class="s-badge s-<%= s.status %>"><%= s.status %></span>
-          <% if(s.status === 'pendente'){ %>
-          <section class="solic-acoes">
-            <form action="/admin/solicitacao/aprovar/<%= s.id %>" method="POST">
-              <button type="submit" class="btn-apr"><i class="bi bi-check"></i> Aprovar</button>
-            </form>
-            <form action="/admin/solicitacao/rejeitar/<%= s.id %>" method="POST">
-              <button type="submit" class="btn-rej"><i class="bi bi-x"></i> Rejeitar</button>
-            </form>
-          </section>
-          <% } %>
-        </li>
-        <% }) } %>
-      </ul>
-    </article>
-  </section>
+  
 
   <!-- Tabela usuários -->
   <article class="card" style="margin-bottom:2rem">
@@ -271,8 +95,8 @@
       <table id="tblU">
         <thead>
           <tr>
-            <th>#</th><th>Usuário</th><th>E-mail</th><th>Tipo</th>
-            <th>Nível</th><th>Pontos</th><th>Tarefas</th><th>Cadastro</th><th></th>
+            <th>º</th><th>ID</th><th>Usuário</th><th>E-mail</th><th>Tipo</th>
+            <th>Entrou em</th><th></th>
           </tr>
         </thead>
         <tbody id="tblBody">
@@ -283,14 +107,19 @@
                const c = parseInt(u.tarefas_concluidas)||0;
                const t = parseInt(u.total_tarefas)||0;
                const pct = t>0 ? Math.round((c/t)*100) : 0;
-               const dt = u.criado_em ? new Date(u.criado_em).toLocaleDateString('pt-BR') : '—';
+               const dt = u.criado_em
+  ? new Date(u.criado_em).toLocaleString('pt-BR')
+  : '—';
              %>
           <tr data-tipo="<%= u.tipo %>"
               data-busca="<%= u.nome.toLowerCase() %> <%= (u.nomeusuario||'').toLowerCase() %> <%= u.email.toLowerCase() %>">
             <td style="color:#94a3b8;font-size:.75rem"><%= i+1 %></td>
+            <td>#<%= u.id %></td>
             <td>
               <section class="u-info">
+                
                 <figure class="av"><%= ini %></figure>
+              
                 <section>
                   <p class="u-nome"><%= u.nome %></p>
                   <p class="u-user">@<%= u.nomeusuario||'—' %></p>
@@ -299,15 +128,9 @@
             </td>
             <td style="font-size:.78rem;color:#5a7a70"><%= u.email %></td>
             <td><span class="badge-tipo <%= u.tipo %>"><%= u.tipo==='profissional'?'🩺 Prof':'🧑 Cliente' %></span></td>
-            <td><span class="badge-nivel"><%= u.nivel||'iniciante' %></span></td>
-            <td class="pts-v">⭐ <%= u.pontos||0 %></td>
-            <td>
-              <section class="pct-wrap">
-                <section class="pct-bar"><section class="pct-fill" style="width:<%= pct %>%"></section></section>
-                <span class="pct-txt"><%= pct %>%</span>
-              </section>
-              <span style="font-size:.68rem;color:#5a7a70"><%= c %>/<%= t %></span>
-            </td>
+            
+           
+            
             <td style="font-size:.72rem;color:#94a3b8"><%= dt %></td>
             <td>
               <form action="/admin/usuario/deletar/<%= u.id %>" method="POST"

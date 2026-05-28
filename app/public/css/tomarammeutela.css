@@ -281,20 +281,18 @@ body h2::after {
   transform: rotateY(180deg);
   padding: 20px;
   text-align: center;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fff4 100%);
-  color: #0c4f43;
 }
 
 .tpcnt-card .card-back p {
   margin: 0 0 16px 0;
-  color: #20413b;
+  color: var(--fundoclaro);
   font-size: 15px;
   line-height: 1.4;
 }
 
 .tpcnt-card .btn-criar {
-  background: #0c4f43;
-  color: #fff;
+  background: var(--botao);
+  color: var(--fundoescuro);
   border: none;
   padding: 10px 18px;
   border-radius: 8px;

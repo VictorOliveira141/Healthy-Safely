@@ -11,6 +11,7 @@ function verificarAdmin(req, res, next) {
 router.get("/",       adminController.exibirLogin);
 router.post("/",      adminController.processarLogin);
 router.get("/painel", verificarAdmin, adminController.exibirPainel);
+router.get("/suporte", verificarAdmin,adminController.exibirSuporte);
 router.get("/sair",   verificarAdmin, adminController.sair);
 
 /*Gerenciamento de usuários*/

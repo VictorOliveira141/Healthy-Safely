@@ -241,12 +241,14 @@ $(document).ready(function () {
   // LOGIN
 
   function validarEmailLogin(valor) {
-    if (!valor)
-      return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor))
-      return { valido: false, mensagem: "⚠️E-mail inválido." };
-    return { valido: true, mensagem: "" };
-  }
+  if (!valor)
+    return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
+
+  if (valor.length < 3)
+    return { valido: false, mensagem: "⚠️Login inválido." };
+
+  return { valido: true, mensagem: "" };
+}
 
   function validarSenhaLogin(valor) {
     if (!valor)

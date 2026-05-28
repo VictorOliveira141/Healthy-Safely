@@ -57,6 +57,15 @@ const usuarioController = {
       .withMessage("*3 a 50 caracteres!")
       .matches(/^[A-Za-zÀ-ú\s]+$/)
       .withMessage("*Somente letras!"),
+      body("nomeusuario")
+  .trim()
+  .notEmpty()
+  .withMessage("*Obrigatório!")
+  .bail()
+  .isLength({ min: 3, max: 30 })
+  .withMessage("*3 a 30 caracteres!")
+  .matches(/^[a-zA-Z0-9_-]+$/)
+  .withMessage("*Letras, números, hífen e underscore!"),
     body("cref")
       .trim()
       .notEmpty()

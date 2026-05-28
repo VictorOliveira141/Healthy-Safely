@@ -241,3 +241,9 @@ p.small, .small {
   .form-duplo, article.form-duplo { grid-template-columns: 1fr; }
   .form-title      { font-size: 1.25rem; }
 }
+
+/* Remove o botão nativo de mostrar senha do Edge */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}

@@ -61,6 +61,36 @@ const adminController = {
     });
   },
 
+  exibirSuporte: async (req, res) => {
+
+  // TEMPORÁRIO (sem banco)
+  const suporte = [
+    {
+      id: 1,
+      nome: "Victor Hugo",
+      email: "victor@email.com",
+      tipo: "Problema com login",
+      mensagem: "Não consigo acessar minha conta.",
+      status: "pendente",
+      criado_em: new Date(),
+    },
+
+    {
+      id: 2,
+      nome: "Maria Clara",
+      email: "maria@email.com",
+      tipo: "Erro no sistema",
+      mensagem: "As tarefas não estão aparecendo.",
+      status: "respondido",
+      criado_em: new Date(),
+    }
+  ];
+
+  res.render("pages/admin/suporte", {
+    suporte
+  });
+},
+
   // ── Deletar usuário ─────────────────────────────────────────
   deletarUsuario: async (req, res) => {
     try {

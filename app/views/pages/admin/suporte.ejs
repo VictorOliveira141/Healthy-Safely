@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Central de Atendimento — Healthy Safely</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="/css/admin/suporte.css" />
+  </head>
+  <body>
+    <%- include('../../partials/adm/admin-header.ejs') %>
+
+    <main class="adm">
+      <h1 class="adm-h1">Central de Atendimento</h1>
+
+      <p class="adm-sub">
+        Gerencie dúvidas, problemas e solicitações enviadas pelos usuários.
+      </p>
+
+      <!-- KPIS -->
+
+      <section class="kpis">
+        <article class="kpi">
+          <figure class="kpi-ic g">
+            <i class="bi bi-chat-dots-fill"></i>
+          </figure>
+
+          <section>
+            <p class="kpi-lbl">Total</p>
+            <p class="kpi-val">1</p>
+          </section>
+        </article>
+
+        <article class="kpi">
+          <figure class="kpi-ic a">
+            <i class="bi bi-hourglass-split"></i>
+          </figure>
+
+          <section>
+            <p class="kpi-lbl">Pendentes</p>
+            <p class="kpi-val">1</p>
+          </section>
+        </article>
+
+        <article class="kpi">
+          <figure class="kpi-ic b">
+            <i class="bi bi-reply-fill"></i>
+          </figure>
+
+          <section>
+            <p class="kpi-lbl">Respondidos</p>
+            <p class="kpi-val">0</p>
+          </section>
+        </article>
+
+        <article class="kpi">
+          <figure class="kpi-ic r">
+            <i class="bi bi-check-circle-fill"></i>
+          </figure>
+
+          <section>
+            <p class="kpi-lbl">Resolvidos</p>
+            <p class="kpi-val">0</p>
+          </section>
+        </article>
+      </section>
+
+      <!-- TABELA -->
+
+      <article class="card">
+        <header class="card-h">
+          <h2>
+            <i class="bi bi-headset"></i>
+            Solicitações de suporte
+          </h2>
+
+          <section class="filtros">
+            <button class="filtro-btn ativo">Todos</button>
+            <button class="filtro-btn">Pendentes</button>
+            <button class="filtro-btn">Resolvidos</button>
+          </section>
+        </header>
+
+        <section class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Problema</th>
+                <th>Mensagem</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>#1</td>
+
+                <td>
+                  <section class="usuario">
+                    <figure class="avatar">V</figure>
+
+                    <section class="u-info">
+                      <strong>Victor Hugo</strong>
+                      <small>victor123@gmail.com</small>
+                    </section>
+                  </section>
+                </td>
+
+                <td>Problema com login</td>
+
+                <td class="msg">
+                  "Não estou conseguindo acessar minha conta após redefinir a
+                  senha."
+                </td>
+
+                <td>
+                  <span class="badge pendente"> pendente </span>
+                </td>
+
+                <td>
+                  <section class="acoes">
+                    <button class="btn btn-r" onclick="abrirModal()">
+                      Responder
+                    </button>
+
+                    <select
+                      class="status-select"
+                      onchange="alterarStatus(this)"
+                    >
+                      <option value="pendente">Pendente</option>
+                      <option value="respondido">Respondido</option>
+                      <option value="resolvido">Resolvido</option>
+                    </select>
+                  </section>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </article>
+    </main>
+
+    <!-- MODAL -->
+
+    <section class="modal" id="modal">
+      <section class="modal-box">
+        <section class="modal-top">
+          <h3>Atendimento #1</h3>
+
+          <button class="close" onclick="fecharModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </section>
+
+        <section class="chat">
+          <section class="msg-chat usuario-msg">
+            "Não consigo acessar minha conta após redefinir a senha."
+          </section>
+        </section>
+
+        <textarea rows="5" placeholder="Digite sua resposta..."></textarea>
+
+        <section class="modal-actions">
+          <button class="btn btn-c" onclick="fecharModal()">Cancelar</button>
+
+          <button class="btn btn-r">Enviar resposta</button>
+        </section>
+      </section>
+    </section>
+
+    <script>
+      const modal = document.getElementById("modal");
+
+      function abrirModal() {
+        modal.style.display = "flex";
+      }
+
+      function fecharModal() {
+        modal.style.display = "none";
+      }
+
+      function resolver(btn) {
+        const row = btn.closest("tr");
+
+        const badge = row.querySelector(".badge");
+
+        badge.classList.remove("pendente");
+
+        badge.classList.add("resolvido");
+
+        badge.innerText = "resolvido";
+
+        btn.innerText = "Resolvido";
+
+        btn.disabled = true;
+
+        btn.style.opacity = ".6";
+      }
+
+      window.onclick = (e) => {
+        if (e.target === modal) {
+          fecharModal();
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -25,7 +25,7 @@ const adminModel = {
          FROM usuarios u
          LEFT JOIN tarefas t ON t.usuario_id = u.id
          GROUP BY u.id
-         ORDER BY u.pontos DESC, u.criado_em DESC`
+         ORDER BY u.criado_em DESC`
       );
       return linhas;
     } catch (err) {
