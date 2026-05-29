@@ -4,7 +4,6 @@ footer {
   color: var(--fundoescuro);
   padding: 40px 20px 50px;
   font-family: Arial, sans-serif;
-  margin-top: 5%;
   align-items: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
