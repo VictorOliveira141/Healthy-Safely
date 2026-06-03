@@ -1,42 +1,92 @@
-<nav class="menu-inferior" aria-label="Menu inferior">
+<nav role="navigation" class="menu-inferior" aria-label="Menu inferior">
   <section class="menu-container">
-    <% if (usuario && usuario.tipo === "cliente") { %>
 
-  <!-- CLIENTE -->
-  <a href="/"><i data-lucide="house"></i></a>
-  <a href="/tasks"><i data-lucide="clipboard-check"></i></a>
-  <a href="/programas"><i data-lucide="layout-grid"></i></a>
-  <a href="/historico"><i data-lucide="bar-chart-3"></i></a>
-  <figure class="foto-perfil">
-    <a href="/perfil" aria-label="Ir para perfil">
-      <img src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>" alt="Foto de perfil"/>
-    </a>
-  </figure>
+    <% if (usuario) { %>
 
-  <% } else if (usuario && usuario.tipo === "profissional") { %>
+      <a href="/" aria-label="Início">
+      <i data-lucide="house" aria-hidden="true"></i>
+      </a>
 
-  <!-- PROFISSIONAL -->
-  <a href="/profissional/painel-financeiro"><i data-lucide="chart-column"></i></a>
-  <a href="/profissional/planos"><i data-lucide="layout-grid"></i></a>
-  <a href="/profissional/pacientes"><i data-lucide="users"></i></a>
-  <a href="/profissional/agenda"><i data-lucide="clock-3"></i></a>
-  <figure class="foto-perfil">
-    <a href="/perfil" aria-label="Ir para perfil">
-      <img src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>" alt="Foto de perfil"/>
-    </a>
-  </figure>
+      <a href="/tasks" aria-label="Tarefas">
+      <i data-lucide="clipboard-check" aria-hidden="true"></i>
+      </a>
 
+      <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
+      <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
+      </button>
 
-  <% }  else { %>
+      <a href="/historico" aria-label="Histórico">
+      <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+      </a>
 
-  <!-- NÃO LOGADO -->
-  <a href="/"><i class="bi bi-house-door-fill"></i></a>
-  <a href="/login"><i class="bi bi-box-arrow-in-right"></i></a>
-  <a href="/cadastro"><i class="bi bi-person-plus"></i></a>
+      <figure class="foto-perfil">
+        <a href="/perfil" aria-label="Ir para perfil">
+          <img
+            src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
+            alt="Foto de perfil"
+          />
+        </a>
+      </figure>
 
-  <% } %>
+    <% } else { %>
+
+      <a href="/" aria-label="Início">
+      <i class="bi bi-house-door-fill" aria-hidden="true"></i>
+      </a>
+
+      <a href="/login" aria-label="Entrar">
+      <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+      </a>
+
+      <a href="/cadastro" aria-label="Cadastrar">
+      <i class="bi bi-person-plus" aria-hidden="true"></i>
+      </a>
+
+    <% } %>
+
   </section>
 </nav>
+
+<aside class="healthy-ai-sidebar" id="healthyAiSidebar" aria-hidden="true">
+    <section class="healthy-ai-panel">
+       <article class="healthy-ai-header">
+        <div>
+          <h3 class="healthy-ai-title"> Healthy AI</h3>
+          <p class="healthy-ai-subtitle">
+            Assistente de hábitos e produtividade
+          </p>
+        </div>
+        <button class="healthy-ai-close" id="healthyAiClose" aria-label="Fechar assistente">
+          ✕
+        </button>
+      </article>
+
+    <section class="healthy-ai-body" id="healthyAiBody" aria-live="polite">
+      <div class="healthy-ai-message bot">
+        <div class="healthy-ai-meta">Healthy AI</div>
+        <p>Olá! Eu sou o assistente Healthy AI. Posso ajudar você a organizar tarefas, estabelecer hábitos saudáveis e acompanhar suas metas.</p>
+      </div>
+      <div class="healthy-ai-message user">
+        <div class="healthy-ai-meta">Você</div>
+        <p>Quero melhorar minha rotina diária e manter o foco nos meus objetivos.</p>
+      </div>
+      <div class="healthy-ai-message bot">
+        <div class="healthy-ai-meta">Healthy AI</div>
+        <p>Perfeito! Vamos definir pequenas ações de saúde e produtividade para construir consistência com confiança.</p>
+      </div>
+    </section>
+
+    <article class="healthy-ai-footer">
+      <form id="healthyAiForm" class="healthy-ai-form">
+        <label class="sr-only" for="healthyAiInput">Digite sua mensagem</label>
+        <textarea id="healthyAiInput" class="healthy-ai-input" rows="1" placeholder="Escreva sua pergunta..." autocomplete="off"></textarea>
+        <button type="submit" class="healthy-ai-send">Enviar</button>
+      </form>
+    </article>
+    </section>
+</aside>
+
+<script src="/js/healthy-ai.js"></script>
 
 <style>
   .menu-inferior {
@@ -88,7 +138,7 @@
     border: 2px solid rgba(255,255,255,.4);
   }
 
-  .menu-container a {
+  .menu-container a,.menu-container button {
     flex: 1;
     text-align: center;
     text-decoration: none;
@@ -110,10 +160,20 @@
     opacity: 0.8;
   }
 
-  .menu-inferior i {
-    font-size: 25px;
-    margin-bottom: 2px;
+  .menu-inferior svg {
+  width: 24px;
+  height: 24px;
   }
+
+  .menu-inferior button {
+     background: var(--secondary-color);
+     color: var(--fundoescuro);
+      border: none;
+  }
+  .menu-inferior button.icone-destaque svg {
+  width: 35px;
+  height: 35px;
+ }
 
   @media (max-width: 768px) {
     .menu-inferior {

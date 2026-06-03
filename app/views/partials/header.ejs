@@ -1,37 +1,13 @@
 <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/healthy-ai.css" />
 
-<%
-  const configHref = usuario && usuario.tipo === "profissional"
-    ? "/profissional/configuracoes"
-    : "/configuracoes";
-%>
+<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
 
 <header class="site-header">
- <% if (!usuario || usuario.tipo === "cliente") { %>
-  <nav
-    class="header-nav2"
-    id="mobileNav"
-    aria-label="Menu principal do site Healthy Safely"
-  >
-    <article class="nav-spacer">
-      <a href="/tasks">Tarefas</a>
-      <a href="/programas">Programas</a>
-      <a href="/historico">Histórico</a>
-      <a href="/perfil">Perfil</a>
-    </article>
 
-    <article class="nav-spacer">
-      <a href="/notificacoes">Notificações</a>
-      <a href="/configuracoes">Configurações</a>
-      <a href="/ajuda">
-        <i class="bi bi-info-circle"></i> Ajuda
-      </a>
-    </article>
-  </nav>
-<% } %>
-
-  <!-- PARTE VISUAL DO HEADER -->
   <section class="header-container">
+
+    <!-- ======= LOGO ======= -->
     <a
       href="/"
       class="header-logo"
@@ -43,60 +19,66 @@
       />
     </a>
 
+    <!-- ======= AÇÕES DO USUÁRIO ======= -->
     <nav class="header-actions" aria-label="Ações do usuário">
 
-     <% if (usuario) { %>
-      <section class="user-menu cliente" aria-label="Menu de notificações">
-        <a href="/notificacoes" aria-label="Ir para notificações" class="notificacoes-mobile">
-          <i class="bi bi-bell" aria-hidden="true"></i>
-        </a>
-      </section>
+      <% if (usuario) { %>
+
+        <section class="user-menu cliente">
+
+          <a
+            href="/notificacoes"
+            aria-label="Ir para notificações"
+            class="notificacoes-mobile"
+          >
+            <i class="bi bi-bell" aria-hidden="true"></i>
+          </a>
+
+          <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
+          <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
+          </button>
+
+          <figure class="foto-perfil">
+            <button type="button" class="profile-toggle" aria-expanded="false" aria-controls="profileDropdown">
+              <img
+                src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
+                alt="Foto de perfil"
+              />
+            </button>
+          </figure>
+
+          <div class="user-menu-dropdown" id="profileDropdown" aria-label="Menu do usuário">
+            <a href="/perfil">Perfil</a>
+            <a href="/configuracoes">Configurações</a>
+            <a href="/ajuda">Ajuda</a>
+            <a href="/sair" class="logout-link">Sair</a>
+          </div>
+
+        </section>
+
+      <% } else { %>
+
+        <section class="logar-cadastrar">
+
+          <a href="/login" aria-label="Entrar">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+          </a>
+
+          <a href="/login" class="abrir">Entrar</a>
+          <span>|</span>
+          <a href="/cadastro" class="abrir-cadastro">Cadastrar</a>
+
+        </section>
+
       <% } %>
 
-      <!-- LOGIN / PERFIL -->
-      <section class="user-menu cliente">
-        <% if (usuario) { %>
-          <a href="<%= configHref %>" aria-label="Ir para configurações" class="notificacoes-mobile">
-              <i class="bi bi-gear" aria-hidden="true"></i>
-            </a>
-          <% if (usuario && usuario.tipo === "cliente") { %>
-          <figure class="foto-perfil">
-            <a href="/perfil" aria-label="Ir para perfil">
-            <img
-            src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
-            alt="Foto de perfil"
-             />
-            </a>
-          </figure>
-          <% } else if (usuario && usuario.tipo === "profissional") { %>
-           <figure class="foto-perfil">
-            <a href="/profissional/perfil-profissional" aria-label="Ir para perfil">
-            <img
-            src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
-            alt="Foto de perfil"
-             />
-            </a>
-          </figure>
-          </a>
-           <% } %>
-          
-        <% } else { %>
-          <section class="logar-cadastrar">
-            <a href="/perfil" aria-label="Ir para perfil">
-              <i class="bi bi-person-circle" aria-hidden="true"></i>
-            </a>
-
-            <a href="/login" class="abrir">Entrar</a>
-            <span> | </span>
-            <a href="/cadastro" class="abrir-cadastro">Cadastrar</a>
-          </section>
-        <% } %>
-      </section>
     </nav>
   </section>
+
   <script src="/js/darkmode.js"></script>
   <script src="/js/header-scroll.js"></script>
+  <script src="/js/user-dropdown.js"></script>
+
 </header>
-<%- include('../partials/menu-inferior.ejs') %> <!-- MENU INFERIOR-->
 
-
+<%- include('../partials/menu-inferior.ejs') %>
