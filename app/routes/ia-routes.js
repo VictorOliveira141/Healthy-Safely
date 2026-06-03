@@ -9,9 +9,13 @@ if (!process.env.OPENAI_API_KEY) {
   );
 }
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let client = null;
+function getClient() {
+  if (!client && process.env.OPENAI_API_KEY) {
+    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return client;
+}
 
 // proteção opcional (mesma lógica do seu sistema)
 function apenasCliente(req, res, next) {
@@ -33,7 +37,9 @@ router.post("/chat", apenasCliente, async (req, res) => {
       return res.status(400).json({ erro: "Mensagem não pode ficar vazia." });
     }
 
-    const modelName = process.env.OPENAI_MODEL || "gemini-1.5-mini";
+    const modelName = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+    const client = getClient();
 
     const response = await client.responses.create({
       model: modelName,
