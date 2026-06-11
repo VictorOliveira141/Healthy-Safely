@@ -147,7 +147,7 @@
 }
 
 /* Consolidated button styles for user menu */
-.user-menu button {
+.user-menu button, .user-menu.cliente .links {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -192,6 +192,10 @@
   text-decoration: none;
 }
 
+.header-logo-text{
+  display: none;
+}
+
 @media (max-width: 1280px) {
   .header-nav2 {
     gap: 100px;
@@ -219,11 +223,23 @@
 }
 
 @media (max-width: 768px) {
+  .header-container {
+    justify-content: center;
+  }
+  
   .header-nav2,
-  .header-actions .foto-perfil,
-  .header-actions .icone-destaque.healthy-ai-trigger {
+  .header-logo img,
+  .header-actions
+  {
     display: none;
   }
+
+  .header-logo-text {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--fundoescuro);
+    }
 
   .notificacoes-mobile {
     display: block;

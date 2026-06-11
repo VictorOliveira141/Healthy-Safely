@@ -17,6 +17,8 @@
         src="/imagem/1x/logozeko.webp"
         alt="Healthy Safely - Plataforma de hábitos saudáveis"
       />
+
+      <span class="header-logo-text">Healthy Safely</span>
     </a>
 
     <!-- ======= AÇÕES DO USUÁRIO ======= -->
@@ -25,13 +27,17 @@
       <% if (usuario) { %>
 
         <section class="user-menu cliente">
+          
+          <a href="/" class="links" aria-label="Início">
+          <i data-lucide="house" aria-hidden="true"></i>
+          </a>
 
-          <a
-            href="/notificacoes"
-            aria-label="Ir para notificações"
-            class="notificacoes-mobile"
-          >
-            <i class="bi bi-bell" aria-hidden="true"></i>
+          <a href="/tasks" class="links" aria-label="Tarefas">
+          <i data-lucide="clipboard-check" aria-hidden="true"></i>
+          </a>
+
+          <a href="/historico" class="links" aria-label="Histórico">
+          <i data-lucide="bar-chart-3" aria-hidden="true"></i>
           </a>
 
           <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
@@ -49,6 +55,7 @@
 
           <div class="user-menu-dropdown" id="profileDropdown" aria-label="Menu do usuário">
             <a href="/perfil">Perfil</a>
+            <a href="/notificacoes">Notificações</a>
             <a href="/configuracoes">Configurações</a>
             <a href="/ajuda">Ajuda</a>
             <a href="/sair" class="logout-link">Sair</a>
