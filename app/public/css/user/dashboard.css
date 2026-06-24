@@ -10,7 +10,7 @@ body {
 
 /* ────────────────────────────────── Cabeçalho ───────────────────────────────────── */
 .dashboard-cb {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 50px auto 1rem;
   padding: 1.35rem 1.4rem 2rem;
   display: flex;
@@ -25,7 +25,7 @@ body {
 }
 
 /* artigo de boas-vindas */
-.dashboard-cb .title {
+.dashboard-cb .title,.dashboard-tasks .title {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -125,7 +125,7 @@ body {
   padding: 0;
 }
 .task-tabs {
-  max-width: 1100px;
+  max-width: 1200px;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -136,7 +136,7 @@ body {
 .tab-btn,
 .tab-action-btn,
 .hs-user-btn {
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
   font-size: var(--small-text);
@@ -150,9 +150,8 @@ body {
   color: var(--fundoclaro);
 }
 .tab-btn.active {
-  background: var(--accent-color);
+  background: var(--botao);
   color: var(--fundoescuro);
-  border-color: var(--accent-color);
 }
 
 /* ─────── Botão + ─────── */
@@ -164,10 +163,11 @@ body {
   align-items: center;
   justify-content: center;
 
-  background: var(--accent-color);
+  background: var(--botao);
   color: var(--fundoescuro);
   font-size: 1.2rem;
 }
+
 /* ─────── "Ver todas" ─────── */
 .tab-link {
   margin-left: auto;
@@ -185,7 +185,7 @@ body {
   text-decoration: none;
   font-family: "Outfit", sans-serif;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: var(--small-text);
 }
 
 /* ─────── Tarefas listadas ─────── */
@@ -260,7 +260,7 @@ body {
   align-items: center;
   gap: 0.45rem;
   border: none;
-  background: var(--accent-color);
+  background: var(--botao);
   color: #fff;
   padding: 0.6rem 0.9rem;
   border-radius: 10px;
@@ -299,7 +299,7 @@ body {
 }
 .task-badge.categoria {
   background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  color: var(--accent-color);
 }
 .task-badge.limite {
   background: rgba(239, 68, 68, 0.1);
@@ -339,13 +339,17 @@ body {
 }
 
 
-
-
 /* ── Áreas de Saúde ───────────────────────────────────── */
-.hs-tasks-section {
-  background-color: var(--primary-color);
-  border-radius: 22px;
-  margin-bottom: 2.5rem;
+.dashboard-footer {
+  max-width: 1200px;
+  margin: 30px auto 1rem;
+  padding: 1.35rem 1.4rem 2rem;
+
+  gap: 1rem;
+  border-radius: var(--border-radius);
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .hs-section-header {
@@ -369,7 +373,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   padding: 1.5rem;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -405,11 +409,6 @@ body {
   height: 44px;
   object-fit: contain;
 }
-
-
-
-
-
 
 /* Conteúdo */
 .task-content {
@@ -483,5 +482,172 @@ body {
   .dashboard-progress .progress-label {
     margin-top: 0.65rem;
     font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboard-main {
+    padding: 0 1.25rem 4.5rem;
+  }
+
+  .dashboard-cb,
+  .dashboard-tasks,
+  .hs-categorias {
+    max-width: 100%;
+  }
+
+  .dashboard-cb {
+    padding: 1.25rem 1.2rem 1.8rem;
+  }
+
+  .dashboard-tasks {
+    padding: 1.25rem;
+  }
+
+  .hs-categorias {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-cb {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .dashboard-cb .welcome,
+  .dashboard-progress {
+    width: 100%;
+  }
+
+  .dashboard-progress {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-progress .progress-card {
+    width: 100%;
+    max-width: 170px;
+    margin: 0.35rem auto;
+  }
+
+  .hs-categorias {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 0 1rem 4rem;
+  }
+
+  .dashboard-cb {
+    padding: 1rem 0.9rem 1.3rem;
+    gap: 1rem;
+  }
+
+  .dashboard-cb .title {
+    margin-bottom: 0.9rem;
+  }
+
+  .dashboard-progress {
+    justify-content: center;
+    gap: 0.85rem;
+  }
+
+  .dashboard-progress .progress-card {
+    max-width: 140px;
+    width: 100%;
+  }
+
+  .dashboard-progress .circular-progress {
+    width: 88px;
+    height: 88px;
+  }
+
+  .dashboard-progress .circular-progress::before {
+    width: 76px;
+    height: 76px;
+  }
+
+  .dashboard-progress .progress-value {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-progress .progress-label {
+    margin-top: 0.65rem;
+    font-size: 0.95rem;
+  }
+
+  .dashboard-tasks {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .tab-link {
+    display: none;
+  }
+  .hs-pessoal-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .hs-pessoal-right {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hs-pessoal-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hs-categorias {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-main {
+    padding: 0 0.85rem 3.75rem;
+  }
+
+  .dashboard-cb {
+    padding: 0.95rem 0.85rem 1.1rem;
+  }
+
+  .dashboard-cb p {
+    font-size: 0.95rem;
+  }
+
+  .tab-link {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .hs-pessoal-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .hs-pessoal-btn {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .task-badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  .dashboard-progress .circular-progress {
+    width: 76px;
+    height: 76px;
+  }
+
+  .dashboard-progress .circular-progress::before {
+    width: 66px;
+    height: 66px;
   }
 }
