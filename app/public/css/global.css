@@ -109,6 +109,12 @@ html.dark body {
     linear-gradient(180deg, #091a14 0%, #0e241c 42%, #123328 100%);
 }
 
+@media (max-width: 768px) {
+  :root {
+    --font-text: 12px;
+  }
+}
+
 /* ── Reset ──────────────────────────────────────────────── */
 *,
 *::before,

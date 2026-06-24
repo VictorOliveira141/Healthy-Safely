@@ -19,183 +19,142 @@
 </head>
 <body>
   <%- include('../partials/header.ejs') %>
-
-  <!-- Flash message -->
-  <% if (flash) { %>
-  <aside id="flash-msg" class="hs-flash-msg" style="
-    background:<%= flash.tipo==='sucesso' ? '#d1fae5' : flash.tipo==='erro' ? '#fee2e2' : '#dbeafe' %>;
-    color:<%= flash.tipo==='sucesso' ? '#065f46' : flash.tipo==='erro' ? '#991b1b' : '#1e40af' %>;
-    border:1px solid <%= flash.tipo==='sucesso' ? '#6ee7b7' : flash.tipo==='erro' ? '#fca5a5' : '#93c5fd' %>;" aria-live="polite">
-    <%= flash.msg %>
-  </aside>
-  <% } %>
-
   <%
     const taskList = typeof tasks !== 'undefined' ? tasks : [];
     const tarefasHoje = taskList.filter(t => !t.completed).slice(0, 4);
   %>
 
-  <main class="hs-main hs-main-spaced">
-    <section class="hs-page-head card-base" aria-label="Boas-vindas">
-      <section class="hs-page-head-copy">
-        <span class="hs-page-kicker">
+  <main class="dashboard-main">
+    <!--CABEÇALHO-->
+    <section class="dashboard-cb" aria-label="Boas-vindas">
+      <article class="welcome">
+        <span class="title">
           Dashboard
         </span>
-        <h1>Olá, <span><%= nome ? nome.split(' ')[0] : 'Usuário' %></span> </h1>
-        <p>Acompanhe seu progresso, programas e tarefas — tudo em um só lugar.</p>
-      </section>
-    </section>
+        <!--Apresentação-->
+        <h1>Olá, <span style="color: var(--accent-color);"><%= nome ? nome.split(' ')[0] : 'Usuário' %></span> </h1>
+        <p>Hoje vc tem <%= tarefasHoje.length %> tarefas pendentes</p>
+        <p>Você já conseguiu concluir 12 Tarefas essa semana! Parabéns!🎉 </p>
+      </article>
 
-    <!-- ── PROGRAMAS ATIVOS ─────────────────────────────────── -->
-    <section class="hs-tasks-section" aria-labelledby="tit-programas">
-      <header class="hs-section-header">
-        <h2 class="hs-section-title" id="tit-programas">
-          Programas Ativos
-        </h2>
-        <a href="/programas" class="hs-section-link">Ver todos →</a>
-      </header>
+      <!--PROGRESSO-->
+      <article class="dashboard-progress" aria-label="Progresso de hoje e da semana">
+        <div class="progress-card">
+          <div class="circular-progress">
+              <span class="progress-value">80%</span>
+          </div>
+          <span class="progress-label">Hoje</span>
+        </div>
 
-      <!-- CARD DO PROGRAMA -->
-      <article class="hs-user-task-card programa-card-real">
-        <!-- TOPO -->
-        <header class="programa-topo">
-          <div>
-            <h3 class="hs-user-task-name" style="color: var(--accent-color)">
-              -- Plano Alimentar ------
-            </h3>
-            <p class="programa-profissional">
-              Criado por Nutricionista Ana
-            </p>
+        <div class="progress-card">
+          <div class="circular-progress">
+              <span class="progress-value">15%</span>
           </div>
-          <span class="programa-status">
-            Ativo
-          </span>
-        </header>
-
-        <!-- PROGRESSO -->
-        <section class="programa-progresso">
-          <div class="programa-progresso-info">
-            <span>Progresso diário</span>
-            <span id="programa-percentual">0%</span>
-          </div>
-          <div class="programa-barra">
-            <div class="programa-fill" id="programa-fill"></div>
-          </div>
-        </section>
-
-        <!-- ATIVIDADES -->
-        <section class="programa-atividades">
-          <p class="programa-subtitulo">
-            Atividades de hoje
-          </p>
-          <div class="atividade-item" data-concluida="false">
-            <div class="atividade-info">
-              <span>- Beber 2L de água</span>
-            </div>
-            <button class="atividade-btn">
-              Concluir
-            </button>
-          </div>
-          <div class="atividade-item" data-concluida="false">
-            <div class="atividade-info">
-              <span>- Comer salada no almoço</span>
-            </div>
-            <button class="atividade-btn">
-              Concluir
-            </button>
-          </div>
-          <div class="atividade-item" data-concluida="false">
-            <div class="atividade-info">
-              <span>- Evitar refrigerante</span>
-            </div>
-            <button class="atividade-btn">
-              Concluir
-            </button>
-          </div>
-          <div class="atividade-item" data-concluida="false">
-            <div class="atividade-info">
-              <span>- Comer fruta à tarde</span>
-            </div>
-            <button class="atividade-btn">
-              Concluir
-            </button>
-          </div>
-        </section>
-
-        <a href="/programas-detalhes" class="hs-user-btn hs-user-btn-fullwidth">
-          Ver plano completo
-        </a>
+          <span class="progress-label">Semana</span>
+        </div>
       </article>
     </section>
 
-    <!-- ── ATIVIDADES PESSOAIS DE HOJE ───────────────────────────────── -->
-    <section class="hs-tasks-section" aria-labelledby="tit-hoje">
-      <header class="hs-section-header">
-        <h2 class="hs-section-title" id="tit-hoje">
-          Atividades Pessoais de Hoje
-        </h2>
-        <a href="/tasks" class="hs-section-link">Ver todas →</a>
-      </header>
-      
-      <% if (!tarefasHoje || !tarefasHoje.length) { %>
-      <section class="hs-empty-state" aria-live="polite">
-          <i class="bi bi-journal-plus" aria-hidden="true"></i>
-          <p class="hs-empty-title">Nenhuma atividade pessoal hoje</p>
-          <p class="hs-empty-subtitle">
-            Adicione tarefas pessoais para acompanhar seu progresso diário.
-          </p>
-      </section>
+    <!--TAREFAS-->
+    <section class="dashboard-tasks">
+        <article class="task-tabs">
+          <button class="tab-btn active" onclick="showTasks('programadas')">
+            Programadas
+          </button>
+          <button class="tab-btn" onclick="showTasks('livres')">
+            Sem ordem
+          </button>
+          <button type="button" class="tab-action-btn">
+            +
+          </button>
+          <a href="/tasks" class="tab-link">
+            Ver todas -->
+          </a>
+        </article>
+        
+        <article class="task-content">
+          <!--Tarefas com horário definido-->
+          <div id="programadas" class="task-list active">
+            <ul class="hs-pessoais-wrapper" role="list" aria-label="Tarefas de hoje">
+              <% tarefasHoje.forEach((t, i) => { %>
+                <li role="listitem">
+                  <article class="hs-pessoal-card <%= t.completed ? 'concluida' : '' %>" aria-labelledby="tarefa-titulo-<%= i %>">
+                   
+                    <div class="hs-pessoal-left">
+                      <div class="hs-pessoal-icon" aria-hidden="true">
+                        <% if (t.categoria === 'sono') { %>
+                          <i class="bi bi-moon-stars" aria-hidden="true"></i>
+                        <% } else if (t.categoria === 'saude') { %>
+                          <i class="bi bi-heart-pulse" aria-hidden="true"></i>
+                        <% } else if (t.categoria === 'exercicio' || t.categoria === 'atividade fisica') { %>
+                          <i class="bi bi-bicycle" aria-hidden="true"></i>
+                        <% } else if (t.categoria === 'alimentacao') { %>
+                          <i class="bi bi-egg-fried" aria-hidden="true"></i>
+                        <% } else { %>
+                          <i class="bi bi-list" aria-hidden="true"></i>
+                        <% } %>
+                      </div>
 
-      <% } else { %>
-      <!-- TAREFAS PESSOAIS -->
-      <main class="hs-pessoais-wrapper">
-        <% tarefasHoje.forEach((t, i) => { %>
-        <article class="hs-pessoal-card <%= t.completed ? 'concluida' : '' %>">
-          <!-- ESQUERDA -->
-          <div class="hs-pessoal-left">
-            <div class="hs-pessoal-icon">
-            </div>
-            <div class="hs-pessoal-info">
-              <p class="hs-pessoal-titulo">
-                <%= t.title %>
-              </p>
-              <p class="hs-pessoal-meta">
-                <i class="bi bi-tag"></i>
-                <%= t.categoria || 'geral' %>
-              </p>
-            </div>
+                      <div class="hs-pessoal-info">
+                        <p id="tarefa-titulo-<%= i %>" class="hs-pessoal-titulo">
+                          <%= t.title %>
+                        </p>
+
+                        <div class="task-details">
+                          <span class="task-badge categoria">
+                            <i class="bi bi-tag" aria-hidden="true"></i>
+                            <span class="visually-hidden">Categoria:</span>
+                            <span aria-live="polite"><%= t.categoria || 'Geral' %></span>
+                          </span>
+
+                          <span class="task-badge">
+                            <i class="bi bi-play-circle" aria-hidden="true"></i>
+                            <time datetime="06:30">06:30</time>
+                          </span>
+
+                          <span class="task-badge limite">
+                            <i class="bi bi-alarm" aria-hidden="true"></i>
+                            <time datetime="22:00">22:00</time>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                      
+                    <div class="hs-pessoal-right">
+                      <% if (!t.completed) { %>
+                        <a href="/tasks/concluir?id=<%= t._id %>"
+                          class="hs-pessoal-btn"
+                          role="button"
+                          aria-label="Concluir: <%= t.title %>">
+                          <i class="bi bi-check-circle" aria-hidden="true"></i>
+                          Concluir
+                        </a>
+                        
+                        <% } else { %>
+                          <button class="hs-pessoal-btn" disabled aria-disabled="true">
+                            <span aria-hidden="true">✓</span> <span class="visually-hidden">Concluída</span>
+                          </button>
+                          <% } %>
+                    </div>
+                  </article>
+                </li>
+              <% }) %>  
+            </ul>
           </div>
-
-          <!-- DIREITA -->
-          <div class="hs-pessoal-right">
-            <div class="hs-pessoal-progress-area">
-              <div class="hs-pessoal-barra">
-                <div class="hs-pessoal-fill"
-                  style="width:<%= t.completed ? 100 : 0 %>%">
-                </div>
-              </div>
-              <span class="hs-pessoal-percentual">
-                <%= t.completed ? 100 : 0 %>%
-              </span>
+          
+          <!--Tarefas sem horário definido-->
+          <div id="livres" class="task-list">
+            <div class="hs-empty-state" aria-live="polite">
+              <i class="bi bi-journal-plus" aria-hidden="true"></i>
+              <p class="hs-empty-title">Nenhuma atividade pessoal hoje</p>
+              <p class="hs-empty-subtitle">
+                Adicione tarefas pessoais para acompanhar seu progresso diário.
+              </p>
             </div>
-
-            <% if (!t.completed) { %>
-            <a href="/tasks/concluir?id=<%= t._id %>"
-              class="hs-pessoal-btn">
-              <i class="bi bi-check-circle"></i>
-              Concluir
-            </a>
-            <% } else { %>
-            <button class="hs-pessoal-btn" disabled>
-              ✓ Concluída
-            </button>
-            <% } %>
           </div>
         </article>
-        <% }) %>
-      </main>
-      <% } %>
     </section>
+          
 
     <!-- ── ÁREAS DE SAÚDE ───────────────────────────────────── -->
     <section class="hs-tasks-section" aria-labelledby="tit-cats">
@@ -225,26 +184,29 @@
     </section>
   </main>
 
-  <!-- Modal -->
-  <section class="hs-user-modal" id="hs-user-modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <article class="hs-user-modal-content">
-      <button class="hs-user-modal-close" id="hs-user-modal-close" aria-label="Fechar">&times;</button>
-      <h2 id="hs-user-modal-title"></h2>
-      <p id="hs-user-modal-desc"></p>
-      <section class="hs-user-progress">
-        <section class="progress-bar">
-          <section class="fill" id="hs-user-modal-fill"></section>
-        </section>
-        <span class="percent-label" id="hs-user-modal-percent">0%</span>
-      </section>
-      <button class="hs-user-btn hs-user-modal-button" id="hs-user-modal-button">
-        Marcar como Concluída
-      </button>
-    </article>
-  </section>
 
   <%- include('../partials/footer.ejs') %>
 
   <script src="/js/dashboard.js"></script>
+  
+<script>
+function showTasks(type) {
+
+    document.querySelectorAll('.task-list').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById(type).classList.add('active');
+
+    event.target.classList.add('active');
+}
+</script>
+<style>
+  .visually-hidden{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+</style>
 </body>
 </html>
