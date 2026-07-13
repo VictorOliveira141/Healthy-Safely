@@ -44,7 +44,11 @@ router.get("/cadastro", (req, res) => {
       ? res.redirect("/profissional/painel-financeiro")
       : res.redirect("/dashboard");
   }
-  res.render("pages/cadastro");
+  res.render("pages/cadastro", {
+    valores: {},
+    erroValidacao: {},
+    msgErro: {},
+  });
 });
 router.get("/cadastroCliente", usuarioController.exibirCadastroCliente);
 router.get(

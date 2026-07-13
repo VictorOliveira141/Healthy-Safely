@@ -26,6 +26,11 @@
   </head>
 
   <body>
+    <%
+      const valoresForm = typeof valores !== 'undefined' ? valores : {};
+      const erroValidacaoForm = typeof erroValidacao !== 'undefined' ? erroValidacao : {};
+      const msgErroForm = typeof msgErro !== 'undefined' ? msgErro : {};
+    %>
     <%- include('../partials/header.ejs') %>
 
     <main class="main">
@@ -60,13 +65,13 @@
                   name="email"
                   type="email"
                   placeholder="Digite seu endereço de e-mail"
-                  value="<%= valores ? valores.email || '' : '' %>"
-                  class="<%= erroValidacao && erroValidacao.email ? 'erro-input' : '' %>"
+                  value="<%= valoresForm.email || '' %>"
+                  class="<%= erroValidacaoForm.email ? 'erro-input' : '' %>"
                   autocomplete="email"
                   required
                 />
                 <span class="msg-erro"
-                  ><%= msgErro && msgErro.email ? msgErro.email : '' %></span
+                  ><%= msgErroForm.email || '' %></span
                 >
               </article>
 
@@ -86,7 +91,7 @@
                     name="senha"
                     type="password"
                     placeholder="Crie uma senha"
-                    class="<%= erroValidacao && erroValidacao.senha ? 'erro-input' : '' %>"
+                    class="<%= erroValidacaoForm.senha ? 'erro-input' : '' %>"
                     autocomplete="new-password"
                     required
                   />
@@ -100,7 +105,7 @@
                   </button>
                 </article>
                 <span class="msg-erro"
-                  ><%= msgErro && msgErro.senha ? msgErro.senha : '' %></span
+                  ><%= msgErroForm.senha || '' %></span
                 >
               </article>
 
@@ -114,7 +119,7 @@
                     name="confirmarSenha"
                     type="password"
                     placeholder="Confirme sua senha"
-                    class="<%= erroValidacao && erroValidacao.confirmarSenha ? 'erro-input' : '' %>"
+                    class="<%= erroValidacaoForm.confirmarSenha ? 'erro-input' : '' %>"
                     autocomplete="new-password"
                     required
                   />
@@ -128,8 +133,7 @@
                   </button>
                 </article>
                 <span class="msg-erro"
-                  ><%= msgErro && msgErro.confirmarSenha ?
-                  msgErro.confirmarSenha : '' %></span
+                  ><%= msgErroForm.confirmarSenha || '' %></span
                 >
               </article>
 
@@ -151,13 +155,13 @@
                   name="nome"
                   type="text"
                   placeholder="Digite como você quer ser chamado"
-                  value="<%= valores ? valores.nome || '' : '' %>"
-                  class="<%= erroValidacao && erroValidacao.nome ? 'erro-input' : '' %>"
+                  value="<%= valoresForm.nome || '' %>"
+                  class="<%= erroValidacaoForm.nome ? 'erro-input' : '' %>"
                   autocomplete="name"
                   required
                 />
                 <span class="msg-erro"
-                  ><%= msgErro && msgErro.nome ? msgErro.nome : '' %></span
+                  ><%= msgErroForm.nome || '' %></span
                 >
               </article>
 
@@ -168,14 +172,13 @@
                   name="nomeusuario"
                   type="text"
                   placeholder="Escolha um nome de usuário"
-                  value="<%= valores ? valores.nomeusuario || '' : '' %>"
-                  class="<%= erroValidacao && erroValidacao.nomeusuario ? 'erro-input' : '' %>"
+                  value="<%= valoresForm.nomeusuario || '' %>"
+                  class="<%= erroValidacaoForm.nomeusuario ? 'erro-input' : '' %>"
                   autocomplete="username"
                   required
                 />
                 <span class="msg-erro"
-                  ><%= msgErro && msgErro.nomeusuario ? msgErro.nomeusuario : ''
-                  %></span
+                  ><%= msgErroForm.nomeusuario || '' %></span
                 >
               </article>
 
