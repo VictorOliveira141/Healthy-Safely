@@ -57,15 +57,15 @@ const usuarioController = {
       .withMessage("*3 a 50 caracteres!")
       .matches(/^[A-Za-zÀ-ú\s]+$/)
       .withMessage("*Somente letras!"),
-      body("nomeusuario")
-  .trim()
-  .notEmpty()
-  .withMessage("*Obrigatório!")
-  .bail()
-  .isLength({ min: 3, max: 30 })
-  .withMessage("*3 a 30 caracteres!")
-  .matches(/^[a-zA-Z0-9_-]+$/)
-  .withMessage("*Letras, números, hífen e underscore!"),
+    body("nomeusuario")
+      .trim()
+      .notEmpty()
+      .withMessage("*Obrigatório!")
+      .bail()
+      .isLength({ min: 3, max: 30 })
+      .withMessage("*3 a 30 caracteres!")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("*Letras, números, hífen e underscore!"),
     body("cref")
       .trim()
       .notEmpty()
@@ -113,6 +113,38 @@ const usuarioController = {
       }),
   ],
 
+  verificarDisponibilidade: async (req, res) => {
+    try {
+      const { email, nomeusuario } = req.query;
+      const resposta = {};
+
+      if (email) {
+        const valor = String(email).trim();
+        if (valor) {
+          resposta.email = {
+            valor,
+            disponivel: !(await usuarioModel.emailExiste(valor)),
+          };
+        }
+      }
+
+      if (nomeusuario) {
+        const valor = String(nomeusuario).trim();
+        if (valor) {
+          resposta.nomeusuario = {
+            valor,
+            disponivel: !(await usuarioModel.nomeUsuarioExiste(valor)),
+          };
+        }
+      }
+
+      res.json(resposta);
+    } catch (err) {
+      console.error("Erro ao verificar disponibilidade:", err);
+      res.status(500).json({ erro: "Erro interno." });
+    }
+  },
+
   exibirCadastroCliente: (req, res) => {
     res.render("pages/cadastroCliente", {
       valores: {},
@@ -133,11 +165,21 @@ const usuarioController = {
     const errors = validationResult(req);
     const erroValidacao = {},
       msgErro = {};
+    const isAjax =
+      req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest";
+
     if (!errors.isEmpty()) {
       errors.array().forEach((e) => {
         erroValidacao[e.path] = "erro";
         msgErro[e.path] = e.msg;
       });
+
+      if (isAjax) {
+        return res
+          .status(400)
+          .json({ sucesso: false, erroValidacao, msgErro, tipo: "validacao" });
+      }
+
       return res.render("pages/cadastroCliente", {
         valores: req.body,
         erroValidacao,
@@ -145,20 +187,16 @@ const usuarioController = {
         retorno: null,
       });
     }
+
     try {
       if (await usuarioModel.emailExiste(req.body.email)) {
         erroValidacao.email = "erro";
         msgErro.email = "*E-mail já cadastrado!";
-        return res.render("pages/cadastroCliente", {
-          valores: req.body,
-          erroValidacao,
-          msgErro,
-          retorno: null,
-        });
-      }
-      if (await usuarioModel.nomeUsuarioExiste(req.body.nomeusuario)) {
-        erroValidacao.nomeusuario = "erro";
-        msgErro.nomeusuario = "*Nome de usuário em uso!";
+        if (isAjax) {
+          return res
+            .status(400)
+            .json({ sucesso: false, erroValidacao, msgErro, tipo: "email" });
+        }
         return res.render("pages/cadastroCliente", {
           valores: req.body,
           erroValidacao,
@@ -167,17 +205,51 @@ const usuarioController = {
         });
       }
 
-      await usuarioModel.criarCliente({
+      if (await usuarioModel.nomeUsuarioExiste(req.body.nomeusuario)) {
+        erroValidacao.nomeusuario = "erro";
+        msgErro.nomeusuario = "*Nome de usuário em uso!";
+        if (isAjax) {
+          return res
+            .status(400)
+            .json({
+              sucesso: false,
+              erroValidacao,
+              msgErro,
+              tipo: "nomeusuario",
+            });
+        }
+        return res.render("pages/cadastroCliente", {
+          valores: req.body,
+          erroValidacao,
+          msgErro,
+          retorno: null,
+        });
+      }
+
+      const novoUsuario = await usuarioModel.criarCliente({
         nome: req.body.nome,
         nomeusuario: req.body.nomeusuario,
         email: req.body.email,
         senha: req.body.senha,
       });
 
-      res.redirect("/login");
+      req.session.usuario = { ...novoUsuario };
+      req.session.nome = novoUsuario.nome;
+      req.session.nivel = novoUsuario.nivel || "iniciante";
+      delete req.session.usuario.senha;
 
+      if (isAjax) {
+        return res.json({ sucesso: true, redirect: "/dashboard" });
+      }
+
+      res.redirect("/dashboard");
     } catch (err) {
       console.error("Erro ao cadastrar cliente:", err);
+      if (isAjax) {
+        return res
+          .status(500)
+          .json({ sucesso: false, msgErro: { geral: "Erro interno." } });
+      }
       res.render("pages/cadastroCliente", {
         valores: req.body,
         erroValidacao: {},

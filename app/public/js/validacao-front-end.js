@@ -1,314 +1,326 @@
-$(document).ready(function () {
-  // ============ VALIDAÇÕES EM TEMPO REAL (BLUR) ============
+(function ($) {
+  const validation = {
+    state: {
+      emailValid: false,
+      emailAvailable: null,
+      passwordValid: false,
+      confirmPasswordValid: false,
+      nameValid: false,
+      usernameValid: false,
+      usernameAvailable: null,
+    },
+    debounceTimer: null,
 
-  // CLIENTE
-  $("form input[name='email']").on("blur", function () {
-    validarCampo(this, validarEmail);
-  });
+    initClientForm: function ($form) {
+      if (!$form || !$form.length) return;
 
-  $("form input[name='senha']").on("blur", function () {
-    validarCampo(this, validarSenha);
-  });
+      const $email = $form.find("#email");
+      const $senha = $form.find("#senha");
+      const $confirmar = $form.find("#confirmarSenha");
+      const $nome = $form.find("#nome");
+      const $nomeusuario = $form.find("#nomeusuario");
 
-  $("form input[name='confirmarSenha']").on("blur", function () {
-    validarConfirmarSenha(this);
-  });
-
-  $("form input[name='nome']").on("blur", function () {
-    validarCampo(this, validarNome);
-  });
-
-  $("form input[name='nomeusuario']").on("blur", function () {
-    validarCampo(this, validarNomeUsuario);
-  });
-
-  // PROFISSIONAL
-  $("form input[name='cref']").on("blur", function () {
-    validarCampo(this, validarCref);
-  });
-
-  $("form select[name='areaAtuacao']").on("change blur", function () {
-    validarSelect(this);
-  });
-
-  $("form input[name='tempoExperiencia']").on("blur", function () {
-    validarCampo(this, validarTempoExperiencia);
-  });
-
-  $("form input[name='especialidades']").on("blur", function () {
-    validarCampo(this, validarEspecialidades);
-  });
-
-  //login
-  $("form input[name='email-login']").on("blur", function () {
-    validarCampo(this, validarEmailLogin);
-  });
-
-  $("form input[name='senha-login']").on("blur", function () {
-    validarCampo(this, validarSenhaLogin);
-  });
-
-  // ============ SUBMIT FORM ============
-  $("form").on("submit", function (e) {
-    const inputs = $(this).find("input, select, textarea");
-
-    let isValid = true;
-
-    inputs.each(function () {
-      if (!validarCampoAoSubmit(this)) {
-        isValid = false;
-      }
-    });
-
-    if (!isValid) {
-      e.preventDefault();
-      mostrarMensagemErro("Por favor, corrija os erros acima");
-    }
-  });
-
-  // ============ ENTER CONTROL ============
-  $("form").on("keydown", function (e) {
-    if (e.key === "Enter") {
-      const inputs = $(this).find("input, select, textarea");
-
-      let isValid = true;
-
-      inputs.each(function () {
-        if (!validarCampoAoSubmit(this)) {
-          isValid = false;
+      $email.on("input", () => {
+        const value = $email.val().trim();
+        const result = this.validateEmail(value);
+        this.state.emailValid = result.valid;
+        this.state.emailAvailable = null;
+        this.setFieldState($email, result.valid, result.message);
+        if (result.valid) {
+          this.checkEmailAvailability(value);
+        } else {
+          this.triggerUpdate();
         }
       });
 
-      if (!isValid) {
-        e.preventDefault();
-        mostrarMensagemErro("Por favor, corrija os erros acima");
-      }
-    }
-  });
-
-  // ============ FUNÇÕES AUXILIARES ============
-  function validarCampo(input, validarFuncao) {
-    const $input = $(input);
-    const resultado = validarFuncao($input.val().trim());
-
-    if (resultado.valido) {
-      mostrarSucesso($input);
-    } else {
-      mostrarErro($input, resultado.mensagem);
-    }
-  }
-
-  function validarCampoAoSubmit(input) {
-    const $input = $(input);
-    const name = $input.attr("name");
-    const valor = $input.val()?.trim();
-
-    switch (name) {
-      case "email":
-        return processarValidacao($input, validarEmail(valor));
-
-      case "senha":
-        return processarValidacao($input, validarSenha(valor));
-
-      case "confirmarSenha":
-        return validarConfirmarSenha(input);
-
-      case "nome":
-        return processarValidacao($input, validarNome(valor));
-
-      case "nomeusuario":
-        return processarValidacao($input, validarNomeUsuario(valor));
-
-      case "cref":
-        return processarValidacao($input, validarCref(valor));
-
-      case "areaAtuacao":
-        return validarSelect(input);
-
-      case "tempoExperiencia":
-        return processarValidacao($input, validarTempoExperiencia(valor));
-
-      case "especialidades":
-        return processarValidacao($input, validarEspecialidades(valor));
-
-      case "bio":
-        return processarValidacao($input, validarBio(valor));
-
-      default:
-        return true;
-    }
-  }
-
-  function processarValidacao($input, resultado) {
-    if (resultado.valido) {
-      mostrarSucesso($input);
-      return true;
-    } else {
-      mostrarErro($input, resultado.mensagem);
-      return false;
-    }
-  }
-
-  // ============ VALIDADORES ============
-
-  // CLIENTE
-  function validarEmail(valor) {
-    if (!valor)
-      return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor))
-      return { valido: false, mensagem: "⚠️E-mail inválido." };
-    return { valido: true, mensagem: "" };
-  }
-
-  function validarSenha(valor) {
-    if (!valor)
-      return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
-    if (valor.length < 8)
-      return { valido: false, mensagem: "⚠️Mínimo 8 caracteres" };
-    if (!/[A-Z]/.test(valor))
-      return { valido: false, mensagem: "⚠️Letra maiúscula obrigatória" };
-    if (!/[0-9]/.test(valor))
-      return { valido: false, mensagem: "⚠️Número obrigatório" };
-    if (!/[!@#$%^&*]/.test(valor))
-      return { valido: false, mensagem: "⚠️Caractere especial obrigatório" };
-    return { valido: true, mensagem: "" };
-  }
-
-  function validarConfirmarSenha(input) {
-    const $input = $(input);
-    const senha = $input.closest("form").find("input[name='senha']").val();
-
-    if (!$input.val()) {
-      mostrarErro($input, "⚠️Confirmação obrigatória");
-      return false;
-    }
-
-    if ($input.val() !== senha) {
-      mostrarErro($input, "⚠️Senhas não coincidem");
-      return false;
-    }
-
-    mostrarSucesso($input);
-    return true;
-  }
-
-  function validarNome(valor) {
-    if (!valor) return { valido: false, mensagem: "⚠️Campo obrigatório" };
-    if (valor.length < 3)
-      return { valido: false, mensagem: "⚠️Mínimo 3 caracteres" };
-    return { valido: true, mensagem: "" };
-  }
-
-  function validarNomeUsuario(valor) {
-    if (!valor) return { valido: false, mensagem: "⚠️Campo obrigatório" };
-    if (!/^[A-Za-z0-9_]+$/.test(valor))
-      return { valido: false, mensagem: "⚠️Apenas letras, números e _" };
-    return { valido: true, mensagem: "" };
-  }
-
-  // PROFISSIONAL
-  function validarCref(valor) {
-    if (!valor) return { valido: false, mensagem: "⚠️CREF obrigatório" };
-    if (!/^\d{4,6}-[A-Z]\/[A-Z]{2}$/.test(valor))
-      return { valido: false, mensagem: "⚠️Formato inválido (123456-G/SP)" };
-    return { valido: true, mensagem: "" };
-  }
-
-  function validarSelect(select) {
-    const $select = $(select);
-    if (!$select.val()) {
-      mostrarErro($select, "⚠️Selecione uma área");
-      return false;
-    }
-    mostrarSucesso($select);
-    return true;
-  }
-
-  function validarTempoExperiencia(valor) {
-    if (!valor) return { valido: false, mensagem: "⚠️Campo obrigatório" };
-    if (isNaN(valor) || valor < 0)
-      return { valido: false, mensagem: "⚠️Valor inválido" };
-    return { valido: true, mensagem: "" };
-  }
-
-  function validarEspecialidades(valor) {
-    if (!valor) return { valido: false, mensagem: "⚠️Campo obrigatório" };
-    if (valor.length < 3)
-      return { valido: false, mensagem: "⚠️Mínimo 3 caracteres" };
-    return { valido: true, mensagem: "" };
-  }
-
-  // LOGIN
-
-  function validarEmailLogin(valor) {
-  if (!valor)
-    return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
-
-  if (valor.length < 3)
-    return { valido: false, mensagem: "⚠️Login inválido." };
-
-  return { valido: true, mensagem: "" };
-}
-
-  function validarSenhaLogin(valor) {
-    if (!valor)
-      return { valido: false, mensagem: "⚠️Este campo é obrigatório." };
-    return { valido: true, mensagem: "" };
-  }
-
-  // ============ FEEDBACK VISUAL ============
-  function mostrarErro($input, mensagem) {
-    $input.addClass("erro-input").removeClass("sucesso-input");
-    let $msg = $input.next(".msg-erro");
-
-    if (!$msg.length) {
-      const $campoSenha = $input.closest(".campo-senha");
-      if ($campoSenha.length) {
-        $msg = $campoSenha.next(".msg-erro");
-      }
-    }
-
-    if ($msg.length) $msg.text(mensagem).show();
-    else $input.after(`<span class="msg-erro">${mensagem}</span>`);
-  }
-
-  function mostrarSucesso($input) {
-    $input.removeClass("erro-input").addClass("sucesso-input");
-
-    let $msg = $input.next(".msg-erro");
-
-    if (!$msg.length) {
-      const $campoSenha = $input.closest(".campo-senha");
-      if ($campoSenha.length) {
-        $msg = $campoSenha.next(".msg-erro");
-      }
-    }
-
-    if ($msg.length) $msg.empty().hide();
-  }
-
-  function mostrarMensagemErro(msg) {
-    const alerta = $(`
-      <div class="alerta-erro">
-        ${msg}
-      </div>
-    `);
-
-    $("body").append(alerta);
-
-    setTimeout(() => {
-      alerta.fadeOut(300, function () {
-        $(this).remove();
+      $email.on("blur", () => {
+        const value = $email.val().trim();
+        if (value) {
+          this.checkEmailAvailability(value);
+        }
       });
-    }, 4000);
-  }
 
-  // LIMPEZA
-  $("form input, textarea").on("input", function () {
-    const $input = $(this);
-    if ($input.hasClass("erro-input")) {
+      $senha.on("input", () => {
+        const value = $senha.val();
+        const result = this.validatePassword(value);
+        this.state.passwordValid = result.valid;
+        this.setFieldState($senha, result.valid, result.message);
+
+        if ($confirmar.val()) {
+          const confirm = this.validateConfirmPassword(value, $confirmar.val());
+          this.state.confirmPasswordValid = confirm.valid;
+          this.setFieldState($confirmar, confirm.valid, confirm.message);
+        } else {
+          this.state.confirmPasswordValid = false;
+        }
+
+        this.triggerUpdate();
+      });
+
+      $confirmar.on("input", () => {
+        const result = this.validateConfirmPassword(
+          $senha.val(),
+          $confirmar.val(),
+        );
+        this.state.confirmPasswordValid = result.valid;
+        this.setFieldState($confirmar, result.valid, result.message);
+        this.triggerUpdate();
+      });
+
+      $nome.on("input", () => {
+        const result = this.validateName($nome.val().trim());
+        this.state.nameValid = result.valid;
+        this.setFieldState($nome, result.valid, result.message);
+        this.triggerUpdate();
+      });
+
+      $nomeusuario.on("input", () => {
+        const value = $nomeusuario.val().trim();
+        const result = this.validateUsername(value);
+        this.state.usernameValid = result.valid;
+        this.setFieldState($nomeusuario, result.valid, result.message);
+
+        if (result.valid) {
+          this.scheduleUsernameCheck(value);
+        } else {
+          this.state.usernameAvailable = null;
+          this.triggerUpdate();
+        }
+      });
+
+      $nomeusuario.on("blur", () => {
+        const value = $nomeusuario.val().trim();
+        if (value && this.state.usernameValid) {
+          this.checkUsernameAvailability(value);
+        }
+      });
+
+      this.syncInitialValues($form);
+    },
+
+    syncInitialValues: function ($form) {
+      const $email = $form.find("#email");
+      const $senha = $form.find("#senha");
+      const $confirmar = $form.find("#confirmarSenha");
+      const $nome = $form.find("#nome");
+      const $nomeusuario = $form.find("#nomeusuario");
+
+      if ($email.val()) {
+        const result = this.validateEmail($email.val().trim());
+        this.state.emailValid = result.valid;
+        this.setFieldState($email, result.valid, result.message);
+        if (result.valid) this.checkEmailAvailability($email.val().trim());
+      }
+
+      if ($senha.val()) {
+        const result = this.validatePassword($senha.val());
+        this.state.passwordValid = result.valid;
+        this.setFieldState($senha, result.valid, result.message);
+      }
+
+      if ($confirmar.val() && $senha.val()) {
+        const result = this.validateConfirmPassword(
+          $senha.val(),
+          $confirmar.val(),
+        );
+        this.state.confirmPasswordValid = result.valid;
+        this.setFieldState($confirmar, result.valid, result.message);
+      }
+
+      if ($nome.val()) {
+        const result = this.validateName($nome.val().trim());
+        this.state.nameValid = result.valid;
+        this.setFieldState($nome, result.valid, result.message);
+      }
+
+      if ($nomeusuario.val()) {
+        const result = this.validateUsername($nomeusuario.val().trim());
+        this.state.usernameValid = result.valid;
+        this.setFieldState($nomeusuario, result.valid, result.message);
+        if (result.valid)
+          this.checkUsernameAvailability($nomeusuario.val().trim());
+      }
+
+      this.triggerUpdate();
+    },
+
+    triggerUpdate: function () {
+      $(document).trigger("cadastro-validation:update");
+    },
+
+    setFieldState: function ($input, isValid, message) {
       $input.removeClass("erro-input");
-      $input.next(".msg-erro").empty();
+      if (message) {
+        $input.addClass(isValid ? "" : "erro-input");
+        let $msg = $input.next(".msg-erro");
+        if (!$msg.length) {
+          const $wrapper = $input.closest(".campo-senha");
+          if ($wrapper.length) {
+            $msg = $wrapper.next(".msg-erro");
+          }
+        }
+        if ($msg.length) {
+          $msg.text(message).show();
+        }
+      } else {
+        let $msg = $input.next(".msg-erro");
+        if (!$msg.length) {
+          const $wrapper = $input.closest(".campo-senha");
+          if ($wrapper.length) {
+            $msg = $wrapper.next(".msg-erro");
+          }
+        }
+        if ($msg.length) {
+          $msg.empty().hide();
+        }
+      }
+    },
+
+    validateEmail: function (value) {
+      if (!value) return { valid: false, message: "Informe seu e-mail." };
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        return { valid: false, message: "E-mail inválido." };
+      }
+      return { valid: true, message: "" };
+    },
+
+    validatePassword: function (value) {
+      if (!value) return { valid: false, message: "Informe uma senha." };
+      if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(value)) {
+        return {
+          valid: false,
+          message: "Use 8+ caracteres, letra maiúscula, número e símbolo.",
+        };
+      }
+      return { valid: true, message: "" };
+    },
+
+    validateConfirmPassword: function (password, confirmValue) {
+      if (!confirmValue)
+        return { valid: false, message: "Confirme sua senha." };
+      if (password !== confirmValue) {
+        return { valid: false, message: "As senhas não coincidem." };
+      }
+      return { valid: true, message: "" };
+    },
+
+    validateName: function (value) {
+      if (!value)
+        return { valid: false, message: "Informe seu nome completo." };
+      if (
+        value.length < 3 ||
+        value.length > 50 ||
+        !/^[A-Za-zÀ-ú\s]+$/.test(value)
+      ) {
+        return { valid: false, message: "Nome inválido." };
+      }
+      return { valid: true, message: "" };
+    },
+
+    validateUsername: function (value) {
+      if (!value)
+        return { valid: false, message: "Escolha um nome de usuário." };
+      if (
+        !/^[a-zA-Z0-9_-]+$/.test(value) ||
+        value.length < 3 ||
+        value.length > 30
+      ) {
+        return {
+          valid: false,
+          message: "Use apenas letras, números, hífen e underscore.",
+        };
+      }
+      return { valid: true, message: "" };
+    },
+
+    checkEmailAvailability: function (value) {
+      if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        this.state.emailAvailable = null;
+        this.triggerUpdate();
+        return $.Deferred().resolve(true).promise();
+      }
+
+      return $.ajax({
+        url: "/api/cadastro/disponibilidade",
+        data: { email: value },
+        dataType: "json",
+      })
+        .then((response) => {
+          if (response.email && !response.email.disponivel) {
+            this.state.emailAvailable = false;
+            this.setFieldState(
+              $("#email"),
+              false,
+              "Este e-mail já está cadastrado.",
+            );
+            return false;
+          }
+          this.state.emailAvailable = true;
+          this.setFieldState($("#email"), true, "");
+          return true;
+        })
+        .always(() => this.triggerUpdate());
+    },
+
+    scheduleUsernameCheck: function (value) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.checkUsernameAvailability(value);
+      }, 300);
+    },
+
+    checkUsernameAvailability: function (value) {
+      if (!value || !/^[a-zA-Z0-9_-]+$/.test(value) || value.length < 3) {
+        this.state.usernameAvailable = null;
+        this.triggerUpdate();
+        return $.Deferred().resolve(true).promise();
+      }
+
+      return $.ajax({
+        url: "/api/cadastro/disponibilidade",
+        data: { nomeusuario: value },
+        dataType: "json",
+      })
+        .then((response) => {
+          if (response.nomeusuario && !response.nomeusuario.disponivel) {
+            this.state.usernameAvailable = false;
+            this.setFieldState(
+              $("#nomeusuario"),
+              false,
+              "Nome de usuário indisponível.",
+            );
+            return false;
+          }
+          this.state.usernameAvailable = true;
+          this.setFieldState($("#nomeusuario"), true, "");
+          return true;
+        })
+        .always(() => this.triggerUpdate());
+    },
+
+    getStep1Valid: function () {
+      return this.state.emailValid && this.state.emailAvailable !== false;
+    },
+
+    getStep2Valid: function () {
+      return this.state.passwordValid && this.state.confirmPasswordValid;
+    },
+
+    getStep3Valid: function () {
+      return (
+        this.state.nameValid &&
+        this.state.usernameValid &&
+        this.state.usernameAvailable !== false
+      );
+    },
+  };
+
+  $(function () {
+    const $form = $(".form-multistep");
+    if ($form.length) {
+      validation.initClientForm($form);
     }
   });
-});
+
+  window.HealthySafelyValidation = validation;
+})(jQuery);

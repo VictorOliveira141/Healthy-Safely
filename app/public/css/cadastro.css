@@ -3,13 +3,13 @@
    ============================================================ */
 
 /* ── Layout ──────────────────────────────────────────────── */
-main.main, main {
+main.main,
+main {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 2.5rem 1.5rem 5rem;
   min-height: calc(100vh - 120px);
-  
 }
 
 /* ── Card formulário ─────────────────────────────────────── */
@@ -18,8 +18,8 @@ main.main, main {
   max-width: 640px;
   background: var(--primary-color);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(12,79,67,.12);
-  border: 1px solid rgba(12,79,67,.08);
+  box-shadow: 0 8px 32px rgba(12, 79, 67, 0.12);
+  border: 1px solid rgba(12, 79, 67, 0.08);
   overflow: hidden;
 }
 
@@ -27,7 +27,9 @@ main.main, main {
   padding: 2.5rem 2.5rem 2rem;
 }
 
-form { width: 100%; }
+form {
+  width: 100%;
+}
 
 .form-title {
   font-size: 1.5rem;
@@ -45,25 +47,34 @@ form { width: 100%; }
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 1.5px solid rgba(12,79,67,.14);
+  border: 1.5px solid rgba(12, 79, 67, 0.14);
   background: var(--botao);
   cursor: pointer;
   text-decoration: none;
   color: var(--fundoescuro);
   margin-bottom: 1.25rem;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
   font-family: "Outfit", sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   min-height: 48px;
 }
 .btn-google:hover {
-  border-color: #1a8a75;
-  box-shadow: 0 2px 10px rgba(12,79,67,.1);
+  box-shadow: 0 2px 10px rgba(12, 79, 67, 0.1);
   transform: translateY(-1px);
 }
-.btn-google .icone-google { font-size: 1rem; color: #db4437; }
-.btn-google p, .btn-google span { font-size: 0.9rem; font-weight: 600; }
+.btn-google .icone-google {
+  font-size: 1rem;
+  color: #db4437;
+}
+.btn-google p,
+.btn-google span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
 
 /* ── Divisor ─────────────────────────────────────────────── */
 .or {
@@ -74,30 +85,26 @@ form { width: 100%; }
   color: #7a9490;
   margin-bottom: 1.25rem;
 }
-.or::before, .or::after {
+.or::before,
+.or::after {
   content: "";
   flex: 1;
   height: 1px;
-  background: rgba(12,79,67,.1);
+  background: rgba(12, 79, 67, 0.1);
 }
 
 /* ── Grupos de campo ─────────────────────────────────────── */
-.form-group, article.form-group {
-  margin-bottom: 1.1rem;
+.form-group,
+article.form-group {
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.form-duplo, article.form-duplo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.1rem;
-}
-
 /* ── Labels ──────────────────────────────────────────────── */
-.inputs, label.inputs {
+.inputs,
+label.inputs {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--fundoclaro);
@@ -114,25 +121,46 @@ select,
 textarea {
   width: 100%;
   padding: 0.72rem 1rem;
-  border: 1.5px solid rgba(12,79,67,.14);
+  border: 1.5px solid rgba(12, 79, 67, 0.14);
   border-radius: 10px;
   font-family: "Outfit", sans-serif;
   font-size: 0.9rem;
   color: var(--fundoclaro);
   background: var(--primary-color);
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
   min-height: 44px;
 }
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: none;
-  border-color: #1a8a75;
-
-  box-shadow: 0 0 0 3px rgba(26,138,117,.12);
+  border-color: rgba(12, 79, 67, 0.28);
+  box-shadow: 0 0 0 2px rgba(12, 79, 67, 0.08);
 }
+
+.form-multistep input:focus,
+.form-multistep select:focus,
+.form-multistep textarea:focus,
+.form-multistep input:focus-visible,
+.form-multistep select:focus-visible,
+.form-multistep textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: rgba(12, 79, 67, 0.28);
+}
+
 input.erro-input {
   border-color: #ef4444;
 }
-input.erro-input:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
+input.erro-input:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
 
 /* ── Mensagens de erro ───────────────────────────────────── */
 .msg-erro {
@@ -143,21 +171,15 @@ input.erro-input:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
   display: block;
 }
 
-/* ── Texto auxiliar (small) ──────────────────────────────── */
-p.small, .small {
-  font-size: 0.75rem;
-  color: #7a9490;
-  line-height: 1.45;
-  margin-top: 0.2rem;
-}
-
 /* ── Campo senha (com olho) ──────────────────────────────── */
 .campo-senha {
   position: relative;
   display: flex;
   align-items: center;
 }
-.campo-senha input { padding-right: 2.8rem; }
+.campo-senha input {
+  padding-right: 2.8rem;
+}
 .btn-olho {
   position: absolute;
   right: 0.75rem;
@@ -169,10 +191,9 @@ p.small, .small {
   padding: 0.25rem;
   transition: color 0.2s;
 }
-.btn-olho:hover { color: #0c4f43; }
-
-/* ── Espaço extra campo ──────────────────────────────────── */
-.espaco-campo { margin-bottom: 1.1rem; }
+.btn-olho:hover {
+  color: var(--accent-color);
+}
 
 /* ── Botão submit ────────────────────────────────────────── */
 .btn-primary {
@@ -186,7 +207,10 @@ p.small, .small {
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    box-shadow 0.2s;
   min-height: 50px;
   display: flex;
   align-items: center;
@@ -194,56 +218,155 @@ p.small, .small {
   gap: 0.4rem;
 }
 .btn-primary:hover {
-  background: #0f6354;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(12,79,67,.22);
+  box-shadow: 0 4px 16px rgba(12, 79, 67, 0.22);
 }
-.btn-primary:active { transform: scale(0.99); }
+.btn-primary:active {
+  transform: scale(0.99);
+}
 
 /* ── Ações ───────────────────────────────────────────────── */
-.actions { margin-top: 1.25rem; margin-bottom: 1rem; }
+.actions {
+  margin-top: 1.25rem;
+  margin-bottom: 1rem;
+}
 
-/* ── Links do formulário ─────────────────────────────────── */
-.link-cadastro {
+/* ── Multi-step cadastro ────────────────────────────────── */
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+.step-indicator__bar {
+  width: 100%;
+  height: 7px;
+  background: rgba(12, 79, 67, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.step-indicator__fill {
+  height: 100%;
+  width: 33.33%;
+  background: linear-gradient(90deg, #1a8a75, #0c4f43);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+.step-indicator__labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #7a9490;
+}
+.step-label {
+  font-weight: 600;
+}
+.step-label.active {
+  color: var(--fundoclaro);
+}
+.step-label.completed {
+  color: #1a8a75;
+}
+.step-panel {
+  display: none;
+  animation: fadeSlide 0.3s ease;
+}
+.step-panel.active {
+  display: block;
+}
+.step-heading {
+  margin-bottom: 1rem;
+}
+.step-heading .form-title {
+  margin-bottom: 0.25rem;
+}
+.actions-duplo {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+.btn-secondary {
+  flex: 1;
+  min-height: 50px;
+  border: 1.5px solid rgba(12, 79, 67, 0.14);
+  background: var(--botao);
+  color: var(--fundoescuro);
+  padding: 3px;
+  border-radius: 11px;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    transform 0.15s;
+}
+.btn-secondary:hover {
+  transform: translateY(-1px);
+}
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+.form-loading {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0.25rem 0 0.75rem;
   color: #1a8a75;
   font-weight: 700;
-  text-decoration: none;
-  transition: color 0.2s;
+  font-size: 0.9rem;
 }
-.link-cadastro:hover { text-decoration: underline; color: #0c4f43; }
-
-/* ── Mensagem de retorno ─────────────────────────────────── */
-.msg-retorno-erro {
-  background: #fee2e2;
-  color: #991b1b;
-  border-left: 4px solid #ef4444;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+.form-loading.active {
+  display: flex;
 }
-.msg-retorno-ok {
-  background: #d1fae5;
-  color: #065f46;
-  border-left: 4px solid #34d399;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(12, 79, 67, 0.16);
+  border-top-color: #1a8a75;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Responsividade ──────────────────────────────────────── */
 @media (max-width: 600px) {
-  main.main, main { padding: 1.25rem 1rem 5rem; }
-  .form-area       { padding: 1.75rem 1.25rem 1.5rem; }
-  .form-duplo, article.form-duplo { grid-template-columns: 1fr; }
-  .form-title      { font-size: 1.25rem; }
+  main.main,
+  main {
+    padding: 1.25rem 1rem 5rem;
+  }
+  .form-area {
+    padding: 1.75rem 1.25rem 1.5rem;
+  }
+  .form-title {
+    font-size: 1.25rem;
+  }
+  .actions-duplo {
+    flex-direction: column;
+  }
 }
 
 /* Remove o botão nativo de mostrar senha do Edge */
 input::-ms-reveal,
 input::-ms-clear {
-    display: none;
+  display: none;
 }

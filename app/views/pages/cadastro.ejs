@@ -1,205 +1,220 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Escolha seu tipo de conta | Healthy Safely</title>
-    <meta
-      property="og:title"
-      content="Escolha seu tipo de conta | Healthy Safely"
-    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Criar Conta | Healthy Safely</title>
+    <meta property="og:title" content="Criar Conta | Healthy Safely" />
     <meta
       property="og:description"
-      content="Cadastre-se como cliente ou profissional e comece a gerenciar sua saúde com o Healthy Safely."
+      content="Abra sua conta no Healthy Safely e comece a acompanhar sua saúde hoje mesmo."
     />
     <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
-    <meta property="og:url" content="https://healthysafely.com/cadastro" />
+    <meta
+      property="og:url"
+      content="https://healthysafely.com/cadastroCliente"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Healthy Safely" />
-    <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
-
-    <link rel="stylesheet" href="/css/global.css" />
     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/cadastro.css" />
+    <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
   </head>
+
   <body>
     <%- include('../partials/header.ejs') %>
 
-    <main class="cadastro-escolha">
-      <article class="cadastro-card" aria-labelledby="titulo-cadastro">
-        <h1 id="titulo-cadastro">Criar conta</h1>
-        <p>Escolha como você deseja se cadastrar na plataforma</p>
+    <main class="main">
+      <section class="card" aria-labelledby="titulo-cadastro">
+        <section class="form-area">
+          <h1 id="titulo-cadastro" class="form-title">
+            Cadastra-se e comece a cuidar da sua saúde!
+          </h1>
 
-        <nav class="opcoes-tipo" aria-label="Tipos de cadastro disponíveis">
-          <a
-            href="/cadastroCliente"
-            class="opcao-tipo"
-            aria-label="Cadastrar como Usuário comum"
+          <div class="step-indicator" aria-label="Progresso do cadastro">
+            <div class="step-indicator__bar">
+              <div class="step-indicator__fill"></div>
+            </div>
+            <div class="step-indicator__labels">
+              <span class="step-label active" data-step="1">1. E-mail</span>
+              <span class="step-label" data-step="2">2. Senha</span>
+              <span class="step-label" data-step="3">3. Usuário</span>
+            </div>
+          </div>
+
+          <form
+            class="form-multistep"
+            action="/cadastroCliente"
+            method="POST"
+            novalidate
           >
-            <figure class="opcao-icone" aria-hidden="true">
-              <i class="bi bi-person-fill"></i>
-            </figure>
-            <section class="opcao-texto">
-              <strong>Usuário</strong>
-              <span>Acompanhe sua saúde, tarefas e progresso diário</span>
+            <section class="step-panel active" data-step="1">
+              <article class="form-group">
+                <label for="email" class="inputs">E-mail</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Digite seu endereço de e-mail"
+                  value="<%= valores ? valores.email || '' : '' %>"
+                  class="<%= erroValidacao && erroValidacao.email ? 'erro-input' : '' %>"
+                  autocomplete="email"
+                  required
+                />
+                <span class="msg-erro"
+                  ><%= msgErro && msgErro.email ? msgErro.email : '' %></span
+                >
+              </article>
+
+              <article class="actions">
+                <button class="btn-primary" type="button" data-action="next">
+                  Próximo
+                </button>
+              </article>
             </section>
-            <i class="bi bi-chevron-right opcao-seta" aria-hidden="true"></i>
-          </a>
 
-          <a
-            href="/cadastroProfissional"
-            class="opcao-tipo"
-            aria-label="Cadastrar como Profissional de saúde"
-          >
-            <figure class="opcao-icone" aria-hidden="true">
-              <i class="bi bi-briefcase-fill"></i>
-            </figure>
-            <section class="opcao-texto">
-              <strong>Profissional</strong>
-              <span>Gerencie pacientes e acompanhe seu desempenho</span>
+            <section class="step-panel" data-step="2">
+              <article class="form-group">
+                <label for="senha" class="inputs">Senha</label>
+                <article class="campo-senha">
+                  <input
+                    id="senha"
+                    name="senha"
+                    type="password"
+                    placeholder="Crie uma senha"
+                    class="<%= erroValidacao && erroValidacao.senha ? 'erro-input' : '' %>"
+                    autocomplete="new-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn-olho"
+                    onclick="toggleSenha('senha')"
+                    aria-label="Mostrar senha"
+                  >
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                </article>
+                <span class="msg-erro"
+                  ><%= msgErro && msgErro.senha ? msgErro.senha : '' %></span
+                >
+              </article>
+
+              <article class="form-group">
+                <label for="confirmarSenha" class="inputs"
+                  >Confirmar Senha</label
+                >
+                <article class="campo-senha">
+                  <input
+                    id="confirmarSenha"
+                    name="confirmarSenha"
+                    type="password"
+                    placeholder="Confirme sua senha"
+                    class="<%= erroValidacao && erroValidacao.confirmarSenha ? 'erro-input' : '' %>"
+                    autocomplete="new-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn-olho"
+                    onclick="toggleSenha('confirmarSenha')"
+                    aria-label="Mostrar senha"
+                  >
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                </article>
+                <span class="msg-erro"
+                  ><%= msgErro && msgErro.confirmarSenha ?
+                  msgErro.confirmarSenha : '' %></span
+                >
+              </article>
+
+              <article class="actions actions-duplo">
+                <button class="btn-secondary" type="button" data-action="back">
+                  <i data-lucide="ArrowLeft" aria-hidden="true"></i>
+                </button>
+                <button class="btn-primary" type="button" data-action="next">
+                  Próximo
+                </button>
+              </article>
             </section>
-            <i class="bi bi-chevron-right opcao-seta" aria-hidden="true"></i>
-          </a>
-        </nav>
 
-        <p class="divisor">já tem uma conta?</p>
+            <section class="step-panel" data-step="3">
+              <article class="form-group">
+                <label for="nome" class="inputs">Nome</label>
+                <input
+                  id="nome"
+                  name="nome"
+                  type="text"
+                  placeholder="Digite como você quer ser chamado"
+                  value="<%= valores ? valores.nome || '' : '' %>"
+                  class="<%= erroValidacao && erroValidacao.nome ? 'erro-input' : '' %>"
+                  autocomplete="name"
+                  required
+                />
+                <span class="msg-erro"
+                  ><%= msgErro && msgErro.nome ? msgErro.nome : '' %></span
+                >
+              </article>
 
-        <p class="link-login">Faça <a href="/login">login aqui</a></p>
-      </article>
+              <article class="form-group">
+                <label for="nomeusuario" class="inputs">Nome de Usuário</label>
+                <input
+                  id="nomeusuario"
+                  name="nomeusuario"
+                  type="text"
+                  placeholder="Escolha um nome de usuário"
+                  value="<%= valores ? valores.nomeusuario || '' : '' %>"
+                  class="<%= erroValidacao && erroValidacao.nomeusuario ? 'erro-input' : '' %>"
+                  autocomplete="username"
+                  required
+                />
+                <span class="msg-erro"
+                  ><%= msgErro && msgErro.nomeusuario ? msgErro.nomeusuario : ''
+                  %></span
+                >
+              </article>
+
+              <div class="form-loading" aria-live="polite">
+                <div class="spinner"></div>
+                <span>Criando sua conta...</span>
+              </div>
+
+              <article class="actions actions-duplo">
+                <button class="btn-secondary" type="button" data-action="back">
+                  <i data-lucide="ArrowLeft" aria-hidden="true"></i>
+                </button>
+                <button class="btn-primary" type="submit">Criar</button>
+              </article>
+            </section>
+
+            <p class="or" aria-hidden="true">ou</p>
+
+            <a
+              class="btn-google"
+              href="/auth/google"
+              role="button"
+              aria-label="Cadastrar com Google"
+            >
+              <i class="bi bi-google"></i>
+              <p>Continuar com Google</p>
+            </a>
+          </form>
+        </section>
+      </section>
     </main>
 
-    <%- include('../partials/footer.ejs') %>
-  
-
-    <style>
-      .cadastro-escolha {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1rem 5rem;
-      }
-
-      .cadastro-card {
-        background: var(--primary-color);
-        border-radius: var(--border-radius);
-        border: 1px solid var(--border);
-        padding: 2.5rem 2rem;
-        max-width: 480px;
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
-      }
-
-      .cadastro-card h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--fundoclaro);
-        margin-bottom: 0.4rem;
-      }
-
-      .cadastro-card p {
-        color: var(--muted);
-        font-size: var(--font-text);
-        margin-bottom: 2rem;
-      }
-
-      .opcoes-tipo {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .opcao-tipo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.2rem 1.4rem;
-        border: 1.5px solid var(--border);
-        border-radius: var(--border-radius);
-        text-decoration: none;
-        color: var(--fundoclaro);
-        background: var(--primary-color);
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s,
-          transform 0.2s;
-      }
-
-      .opcao-tipo:hover {
-        border-color: var(--accent-color);
-        box-shadow: 0 4px 16px rgba(26, 138, 117, 0.12);
-        transform: var(--animacao);
-      }
-
-      .opcao-icone {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: #e6f4f1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        font-size: 1.4rem;
-        color: var(--secondary-color);
-      }
-
-      .opcao-texto {
-        text-align: left;
-      }
-
-      .opcao-texto strong {
-        display: block;
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 2px;
-      }
-
-      .opcao-texto span {
-        font-size: var(--font-text);
-        color: var(--muted);
-      }
-
-      .opcao-seta {
-        margin-left: auto;
-        color: var(--muted);
-        font-size: 1.1rem;
-      }
-
-      .divisor {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin: 1.5rem 0;
-        color: var(--muted);
-        font-size: var(--font-text);
-      }
-
-      .divisor::before,
-      .divisor::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-
-      .link-login {
-        font-size: var(--font-text);
-        color: var(--muted);
-      }
-
-      .link-login a {
-        color: var(--accent-color);
-        font-weight: 600;
-        text-decoration: none;
-      }
-
-      .link-login a:hover {
-        text-decoration: underline;
-      }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/validacao-front-end.js"></script>
+    <script src="/js/cadastro-multistep.js"></script>
+    <script src="/js/ver-senha.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>

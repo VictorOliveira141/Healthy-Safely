@@ -18,6 +18,34 @@ const usuarioModel = {
     } catch (e) { return null; }
   },
 
+  buscarPorEmail: async (email) => {
+    try {
+      const [linhas] = await pool.query("SELECT * FROM usuarios WHERE email = ? LIMIT 1", [email]);
+      return linhas[0] || null;
+    } catch (e) { return null; }
+  },
+
+  gerarNomeUsuarioDisponivel: async (base) => {
+    const baseLimpo = String(base || "usuario")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[^a-z0-9_-]/g, "")
+      .slice(0, 20) || "usuario";
+
+    let nomeusuario = baseLimpo;
+    let contador = 1;
+
+    while (await usuarioModel.nomeUsuarioExiste(nomeusuario)) {
+      nomeusuario = `${baseLimpo}${contador}`;
+      contador += 1;
+      if (nomeusuario.length > 30) {
+        nomeusuario = `${baseLimpo.slice(0, 30 - contador.toString().length)}${contador}`;
+      }
+    }
+
+    return nomeusuario;
+  },
+
   emailExiste: async (email) => {
     try {
       const [linhas] = await pool.query("SELECT id FROM usuarios WHERE email = ?", [email]);
@@ -53,6 +81,17 @@ const usuarioModel = {
       await conn.rollback();
       throw e;
     } finally { conn.release(); }
+  },
+
+  criarClienteGoogle: async ({ nome, nomeusuario, email, foto_perfil }) => {
+    const senhaHash = await bcrypt.hash(`${Date.now()}-${Math.random()}-${email}`, 10);
+    const [r] = await pool.query(
+      `INSERT INTO usuarios (nome, nomeusuario, email, senha, tipo, nivel, foto_perfil)
+       VALUES (?, ?, ?, ?, 'cliente', 'iniciante', ?)`,
+      [nome, nomeusuario, email, senhaHash, foto_perfil || null],
+    );
+    const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [r.insertId]);
+    return linhas[0];
   },
 
   // Cria profissional + dados extras (transação)

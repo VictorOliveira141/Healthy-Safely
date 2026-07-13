@@ -2,6 +2,9 @@ require("dotenv").config();
 
 const express = require("express");
 const session = require("express-session");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { usuarioModel } = require("./app/models/Usuario");
 const app = express();
 const porta = process.env.PORT || 3000;
 
@@ -13,6 +16,69 @@ app.use(
     saveUninitialized: false,
   }),
 );
+
+// ── Autenticação com Google ───────────────────────────────
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const usuario = await usuarioModel.buscarPorId(id);
+    done(null, usuario || null);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+const googleConfigured = Boolean(
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+);
+
+if (googleConfigured) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL:
+          process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback",
+        passReqToCallback: true,
+      },
+      async (req, accessToken, refreshToken, params, profile, done) => {
+        try {
+          const email = profile.emails?.[0]?.value;
+          if (!email) {
+            return done(new Error("Google não retornou um e-mail válido."));
+          }
+
+          let usuario = await usuarioModel.buscarPorEmail(email);
+          if (usuario) {
+            return done(null, usuario);
+          }
+
+          const nome =
+            profile.displayName ||
+            [profile.name?.givenName, profile.name?.familyName]
+              .filter(Boolean)
+              .join(" ") ||
+            email.split("@")[0];
+          const nomeusuario = await usuarioModel.gerarNomeUsuarioDisponivel(nome);
+          const novoUsuario = await usuarioModel.criarClienteGoogle({
+            nome,
+            nomeusuario,
+            email,
+            foto_perfil: profile.photos?.[0]?.value || null,
+          });
+
+          return done(null, novoUsuario);
+        } catch (error) {
+          return done(error);
+        }
+      },
+    ),
+  );
+}
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ── Torna o usuário disponível em todas as views EJS ──────
 app.use((req, res, next) => {

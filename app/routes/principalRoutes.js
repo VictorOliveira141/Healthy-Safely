@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const iaRoutes = require("./ia-routes");
 
 const usuarioController = require("../controllers/usuarioController");
@@ -47,6 +48,10 @@ router.get("/cadastro", (req, res) => {
 });
 router.get("/cadastroCliente", usuarioController.exibirCadastroCliente);
 router.get(
+  "/api/cadastro/disponibilidade",
+  usuarioController.verificarDisponibilidade,
+);
+router.get(
   "/cadastroProfissional",
   usuarioController.exibirCadastroProfissional,
 );
@@ -59,6 +64,38 @@ router.get("/login", (req, res) => {
   }
   usuarioController.exibirLogin(req, res);
 });
+
+router.get(
+  "/auth/google",
+  (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(500).send(
+        "Google OAuth não está configurado. Defina GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET.",
+      );
+    }
+
+    req.session.returnTo = req.query.returnTo || "/dashboard";
+    next();
+  },
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login?erro=google" }),
+  (req, res) => {
+    const usuario = req.user;
+    req.session.usuario = { ...usuario };
+    req.session.nome = usuario.nome;
+    req.session.nivel = usuario.nivel || "iniciante";
+    delete req.session.usuario.senha;
+
+    const redirectTo = req.session.returnTo || "/dashboard";
+    delete req.session.returnTo;
+
+    res.redirect(redirectTo);
+  },
+);
 
 /* ── APENAS CLIENTE ─────────────────────────────────────────────── */
 router.get("/dashboard", apenasCliente, tarefaController.exibirDashboard);

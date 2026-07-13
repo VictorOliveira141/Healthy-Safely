@@ -53,10 +53,10 @@
 
   /* Tipografia */
   --font-family: "Outfit", system-ui, sans-serif;
-  --font-title: 20px;
-  --font-text: 14px;
-  --font-small: 12px;
-  --font-icon: 16px;
+  --font-title: 18px;
+  --font-text: 12px;
+  --font-small: 10px;
+  --font-icon: 15px;
 
   /* Transições */
   --transition: 0.2s ease;
