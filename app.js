@@ -18,11 +18,18 @@ app.use(
 );
 
 // ── Autenticação com Google ───────────────────────────────
-passport.serializeUser((user, done) => done(null, user.id));
+passport.serializeUser((user, done) => {
+  if (user?.id) return done(null, user.id);
+  if (user?.usuario?.id) return done(null, user.usuario.id);
+  done(null, user?.email || null);
+});
 passport.deserializeUser(async (id, done) => {
   try {
+    if (!id) return done(null, null);
     const usuario = await usuarioModel.buscarPorId(id);
-    done(null, usuario || null);
+    if (usuario) return done(null, usuario);
+    const porEmail = await usuarioModel.buscarPorEmail(id);
+    done(null, porEmail || null);
   } catch (error) {
     done(error, null);
   }
@@ -39,7 +46,8 @@ if (googleConfigured) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL:
-          process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback",
+          process.env.GOOGLE_CALLBACK_URL ||
+          "http://localhost:3000/auth/google/callback",
         passReqToCallback: true,
       },
       async (req, accessToken, refreshToken, params, profile, done) => {
@@ -49,26 +57,21 @@ if (googleConfigured) {
             return done(new Error("Google não retornou um e-mail válido."));
           }
 
-          let usuario = await usuarioModel.buscarPorEmail(email);
-          if (usuario) {
-            return done(null, usuario);
-          }
-
+          const usuario = await usuarioModel.buscarPorEmail(email);
           const nome =
             profile.displayName ||
             [profile.name?.givenName, profile.name?.familyName]
               .filter(Boolean)
               .join(" ") ||
             email.split("@")[0];
-          const nomeusuario = await usuarioModel.gerarNomeUsuarioDisponivel(nome);
-          const novoUsuario = await usuarioModel.criarClienteGoogle({
-            nome,
-            nomeusuario,
-            email,
-            foto_perfil: profile.photos?.[0]?.value || null,
-          });
 
-          return done(null, novoUsuario);
+          return done(null, {
+            email,
+            nome,
+            foto_perfil: profile.photos?.[0]?.value || null,
+            profile,
+            usuario,
+          });
         } catch (error) {
           return done(error);
         }

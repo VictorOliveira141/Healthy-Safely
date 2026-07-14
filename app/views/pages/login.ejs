@@ -14,8 +14,8 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/cadastro.css" />
     <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/cadastro.css" />
   </head>
 
   <body>
@@ -33,12 +33,12 @@
 
            <a
               class="btn-google"
-              href="/auth/google"
+              href="/auth/google?flow=login"
               role="button"
-              aria-label="Cadastrar com Google"
+              aria-label="Entrar com Google"
             >
               <i class="bi bi-google"></i>
-              <p>Continuar com Google</p>
+              <p>Entrar com Google</p>
             </a>
 
             <section class="or" aria-hidden="true">ou</section>
@@ -113,20 +113,15 @@
             </p>
 
             <p class="small">
-              Ainda não tem uma conta? Cadastra-se como um
-              <a href="/cadastroCliente" class="link-cadastro">Cliente </a> ou
-              <a href="/cadastroProfissional" class="link-cadastro"
-                >Profissional</a
-              >!
+              Ainda não tem uma conta? 
+              <a href="/cadastroCliente" class="link-cadastro">Cadastra-se </a>
+              agora!
             </p>
           </form>
         </section>
       </article>
     </main>
 
-    <%- include('../partials/footer.ejs') %>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/validacao-front-end.js"></script>
     <script src="/js/ver-senha.js"></script>
   </body>

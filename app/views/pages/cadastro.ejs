@@ -51,6 +51,18 @@
             </div>
           </div>
 
+          <a
+            class="btn-google"
+            href="/auth/google?flow=cadastro"
+            role="button"
+            aria-label="Cadastrar com Google"
+          >
+            <i class="bi bi-google"></i>
+            <p>Cadastrar com Google</p>
+          </a>
+
+          <p class="or" aria-hidden="true">ou</p>
+
           <form
             class="form-multistep"
             action="/cadastroCliente"
@@ -70,9 +82,7 @@
                   autocomplete="email"
                   required
                 />
-                <span class="msg-erro"
-                  ><%= msgErroForm.email || '' %></span
-                >
+                <span class="msg-erro"><%= msgErroForm.email || '' %></span>
               </article>
 
               <article class="actions">
@@ -104,9 +114,7 @@
                     <i class="bi bi-eye-slash-fill"></i>
                   </button>
                 </article>
-                <span class="msg-erro"
-                  ><%= msgErroForm.senha || '' %></span
-                >
+                <span class="msg-erro"><%= msgErroForm.senha || '' %></span>
               </article>
 
               <article class="form-group">
@@ -160,9 +168,7 @@
                   autocomplete="name"
                   required
                 />
-                <span class="msg-erro"
-                  ><%= msgErroForm.nome || '' %></span
-                >
+                <span class="msg-erro"><%= msgErroForm.nome || '' %></span>
               </article>
 
               <article class="form-group">
@@ -194,18 +200,6 @@
                 <button class="btn-primary" type="submit">Criar</button>
               </article>
             </section>
-
-            <p class="or" aria-hidden="true">ou</p>
-
-            <a
-              class="btn-google"
-              href="/auth/google"
-              role="button"
-              aria-label="Cadastrar com Google"
-            >
-              <i class="bi bi-google"></i>
-              <p>Continuar com Google</p>
-            </a>
           </form>
         </section>
       </section>

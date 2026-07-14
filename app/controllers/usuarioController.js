@@ -209,14 +209,12 @@ const usuarioController = {
         erroValidacao.nomeusuario = "erro";
         msgErro.nomeusuario = "*Nome de usuário em uso!";
         if (isAjax) {
-          return res
-            .status(400)
-            .json({
-              sucesso: false,
-              erroValidacao,
-              msgErro,
-              tipo: "nomeusuario",
-            });
+          return res.status(400).json({
+            sucesso: false,
+            erroValidacao,
+            msgErro,
+            tipo: "nomeusuario",
+          });
         }
         return res.render("pages/cadastroCliente", {
           valores: req.body,
@@ -321,6 +319,135 @@ const usuarioController = {
       msgErro: {},
       sucesso: false,
     });
+  },
+
+  exibirConfirmacaoGoogle: (req, res) => {
+    const dados = req.session.googleAuth;
+
+    if (!dados?.email) {
+      return res.redirect("/login");
+    }
+
+    res.render("pages/google-confirmacao", {
+      dados,
+      valores: {
+        nome: dados.nome || "",
+        email: dados.email || "",
+        nomeusuario: "",
+      },
+      erroValidacao: {},
+      msgErro: {},
+    });
+  },
+
+  confirmarLoginGoogle: (req, res) => {
+    const dados = req.session.googleAuth;
+    if (!dados?.usuario) {
+      return res.redirect("/login");
+    }
+
+    const usuario = { ...dados.usuario };
+    delete usuario.senha;
+    req.session.usuario = usuario;
+    req.session.nome = usuario.nome;
+    req.session.nivel = usuario.nivel || "iniciante";
+
+    if (usuario.tipo === "profissional") {
+      return res.redirect("/profissional/painel-financeiro");
+    }
+    return res.redirect("/dashboard");
+  },
+
+  cancelarLoginGoogle: (req, res) => {
+    delete req.session.googleAuth;
+    res.redirect("/login");
+  },
+
+  concluirCadastroGoogle: async (req, res) => {
+    const dados = req.session.googleAuth;
+    if (!dados?.email) {
+      return res.redirect("/login");
+    }
+
+    const nome = String(req.body.nome || "").trim();
+    const nomeusuario = String(req.body.nomeusuario || "").trim();
+    const senha = String(req.body.senha || "");
+    const confirmarSenha = String(req.body.confirmarSenha || "");
+    const erroValidacao = {};
+    const msgErro = {};
+
+    if (
+      !nome ||
+      nome.length < 3 ||
+      nome.length > 50 ||
+      !/^[A-Za-zÀ-ú\s]+$/.test(nome)
+    ) {
+      erroValidacao.nome = "erro";
+      msgErro.nome = "Nome inválido.";
+    }
+
+    if (
+      !nomeusuario ||
+      !/^[a-zA-Z0-9_-]+$/.test(nomeusuario) ||
+      nomeusuario.length < 3 ||
+      nomeusuario.length > 30
+    ) {
+      erroValidacao.nomeusuario = "erro";
+      msgErro.nomeusuario = "Use apenas letras, números, hífen ou underscore.";
+    } else if (await usuarioModel.nomeUsuarioExiste(nomeusuario)) {
+      erroValidacao.nomeusuario = "erro";
+      msgErro.nomeusuario = "Nome de usuário indisponível.";
+    }
+
+    if (!senha || !/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(senha)) {
+      erroValidacao.senha = "erro";
+      msgErro.senha = "Use 8+ caracteres, letra maiúscula, número e símbolo.";
+    }
+
+    if (!confirmarSenha || confirmarSenha !== senha) {
+      erroValidacao.confirmarSenha = "erro";
+      msgErro.confirmarSenha = "As senhas não coincidem.";
+    }
+
+    if (await usuarioModel.emailExiste(dados.email)) {
+      erroValidacao.email = "erro";
+      msgErro.email = "Já existe uma conta utilizando este e-mail.";
+    }
+
+    if (Object.keys(erroValidacao).length > 0) {
+      return res.render("pages/google-confirmacao", {
+        dados,
+        valores: { nome, email: dados.email, nomeusuario },
+        erroValidacao,
+        msgErro,
+      });
+    }
+
+    try {
+      const novoUsuario = await usuarioModel.criarClienteGoogle({
+        nome,
+        nomeusuario,
+        email: dados.email,
+        foto_perfil: dados.foto_perfil || null,
+        senha,
+      });
+
+      delete req.session.googleAuth;
+      req.session.usuario = { ...novoUsuario };
+      req.session.nome = novoUsuario.nome;
+      req.session.nivel = novoUsuario.nivel || "iniciante";
+      delete req.session.usuario.senha;
+
+      res.redirect("/dashboard");
+    } catch (error) {
+      console.error("Erro ao concluir cadastro Google:", error);
+      res.render("pages/google-confirmacao", {
+        dados,
+        valores: { nome, email: dados.email, nomeusuario },
+        erroValidacao: {},
+        msgErro: { geral: "Erro interno ao criar a conta." },
+      });
+    }
   },
 
   // Login com bcrypt

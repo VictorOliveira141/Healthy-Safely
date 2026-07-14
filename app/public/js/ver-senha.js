@@ -14,4 +14,4 @@ function toggleSenha(inputId) {
     icone.classList.add("bi-eye-slash-fill");
   }
 }
-/* ===================== FIM DO SCRIPT PARA VER A SENHA ======================= */ a;
+/* ===================== FIM DO SCRIPT PARA VER A SENHA ======================= */ ;

@@ -1,36 +1,49 @@
-var pool   = require("../../app/config/pool_conexoes");
+var pool = require("../../app/config/pool_conexoes");
 var bcrypt = require("bcryptjs");
 
 const usuarioModel = {
-
   buscarPorId: async (id) => {
     try {
-      const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [id]);
+      const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
+        id,
+      ]);
       return linhas[0] || null;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 
   buscarPorLogin: async (valor) => {
     try {
       const [linhas] = await pool.query(
-        "SELECT * FROM usuarios WHERE email = ? OR nomeusuario = ?", [valor, valor]);
+        "SELECT * FROM usuarios WHERE email = ? OR nomeusuario = ?",
+        [valor, valor],
+      );
       return linhas[0] || null;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 
   buscarPorEmail: async (email) => {
     try {
-      const [linhas] = await pool.query("SELECT * FROM usuarios WHERE email = ? LIMIT 1", [email]);
+      const [linhas] = await pool.query(
+        "SELECT * FROM usuarios WHERE email = ? LIMIT 1",
+        [email],
+      );
       return linhas[0] || null;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 
   gerarNomeUsuarioDisponivel: async (base) => {
-    const baseLimpo = String(base || "usuario")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[^a-z0-9_-]/g, "")
-      .slice(0, 20) || "usuario";
+    const baseLimpo =
+      String(base || "usuario")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[^a-z0-9_-]/g, "")
+        .slice(0, 20) || "usuario";
 
     let nomeusuario = baseLimpo;
     let contador = 1;
@@ -48,16 +61,26 @@ const usuarioModel = {
 
   emailExiste: async (email) => {
     try {
-      const [linhas] = await pool.query("SELECT id FROM usuarios WHERE email = ?", [email]);
+      const [linhas] = await pool.query(
+        "SELECT id FROM usuarios WHERE email = ?",
+        [email],
+      );
       return linhas.length > 0;
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   },
 
   nomeUsuarioExiste: async (nomeusuario) => {
     try {
-      const [linhas] = await pool.query("SELECT id FROM usuarios WHERE nomeusuario = ?", [nomeusuario]);
+      const [linhas] = await pool.query(
+        "SELECT id FROM usuarios WHERE nomeusuario = ?",
+        [nomeusuario],
+      );
       return linhas.length > 0;
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   },
 
   // Cria cliente + copia tarefas_padrao (transação)
@@ -69,33 +92,59 @@ const usuarioModel = {
       const [r] = await conn.query(
         `INSERT INTO usuarios (nome, nomeusuario, email, senha, tipo, nivel)
          VALUES (?, ?, ?, ?, 'cliente', 'iniciante')`,
-        [nome, nomeusuario, email, senhaHash]);
+        [nome, nomeusuario, email, senhaHash],
+      );
       const novoId = r.insertId;
       await conn.query(
         `INSERT INTO tarefas (usuario_id, titulo, pontos, categoria)
-         SELECT ?, titulo, pontos, categoria FROM tarefas_padrao`, [novoId]);
+         SELECT ?, titulo, pontos, categoria FROM tarefas_padrao`,
+        [novoId],
+      );
       await conn.commit();
-      const [linhas] = await conn.query("SELECT * FROM usuarios WHERE id = ?", [novoId]);
+      const [linhas] = await conn.query("SELECT * FROM usuarios WHERE id = ?", [
+        novoId,
+      ]);
       return linhas[0];
     } catch (e) {
       await conn.rollback();
       throw e;
-    } finally { conn.release(); }
+    } finally {
+      conn.release();
+    }
   },
 
-  criarClienteGoogle: async ({ nome, nomeusuario, email, foto_perfil }) => {
-    const senhaHash = await bcrypt.hash(`${Date.now()}-${Math.random()}-${email}`, 10);
+  criarClienteGoogle: async ({
+    nome,
+    nomeusuario,
+    email,
+    foto_perfil,
+    senha,
+  }) => {
+    const senhaHash = senha
+      ? await bcrypt.hash(senha, 10)
+      : await bcrypt.hash(`${Date.now()}-${Math.random()}-${email}`, 10);
     const [r] = await pool.query(
       `INSERT INTO usuarios (nome, nomeusuario, email, senha, tipo, nivel, foto_perfil)
        VALUES (?, ?, ?, ?, 'cliente', 'iniciante', ?)`,
       [nome, nomeusuario, email, senhaHash, foto_perfil || null],
     );
-    const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [r.insertId]);
+    const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
+      r.insertId,
+    ]);
     return linhas[0];
   },
 
   // Cria profissional + dados extras (transação)
-  criarProfissional: async ({ nome, nomeusuario, email, senha, cref, areaAtuacao, tempoExperiencia, especialidades }) => {
+  criarProfissional: async ({
+    nome,
+    nomeusuario,
+    email,
+    senha,
+    cref,
+    areaAtuacao,
+    tempoExperiencia,
+    especialidades,
+  }) => {
     const senhaHash = await bcrypt.hash(senha, 10);
     const conn = await pool.getConnection();
     try {
@@ -103,19 +152,25 @@ const usuarioModel = {
       const [r] = await conn.query(
         `INSERT INTO usuarios (nome, nomeusuario, email, senha, tipo, nivel)
          VALUES (?, ?, ?, ?, 'profissional', 'profissional')`,
-        [nome, nomeusuario || null, email, senhaHash]);
+        [nome, nomeusuario || null, email, senhaHash],
+      );
       const novoId = r.insertId;
       await conn.query(
         `INSERT INTO profissionais (usuario_id, cref, area_atuacao, tempo_experiencia, especialidades)
          VALUES (?, ?, ?, ?, ?)`,
-        [novoId, cref, areaAtuacao, tempoExperiencia, especialidades]);
+        [novoId, cref, areaAtuacao, tempoExperiencia, especialidades],
+      );
       await conn.commit();
-      const [linhas] = await conn.query("SELECT * FROM usuarios WHERE id = ?", [novoId]);
+      const [linhas] = await conn.query("SELECT * FROM usuarios WHERE id = ?", [
+        novoId,
+      ]);
       return linhas[0];
     } catch (e) {
       await conn.rollback();
       throw e;
-    } finally { conn.release(); }
+    } finally {
+      conn.release();
+    }
   },
 
   verificarSenha: async (senhaDigitada, senhaHash) => {
@@ -125,16 +180,27 @@ const usuarioModel = {
   // Atualiza pontos e recalcula nível
   atualizarPontos: async (usuarioId, pontosGanhos) => {
     try {
-      await pool.query("UPDATE usuarios SET pontos = pontos + ? WHERE id = ?", [pontosGanhos, usuarioId]);
-      const [linhas] = await pool.query("SELECT pontos FROM usuarios WHERE id = ?", [usuarioId]);
+      await pool.query("UPDATE usuarios SET pontos = pontos + ? WHERE id = ?", [
+        pontosGanhos,
+        usuarioId,
+      ]);
+      const [linhas] = await pool.query(
+        "SELECT pontos FROM usuarios WHERE id = ?",
+        [usuarioId],
+      );
       const total = linhas[0]?.pontos || 0;
       let nivel = "iniciante";
       if (total >= 600) nivel = "elite";
       else if (total >= 300) nivel = "avancado";
       else if (total >= 100) nivel = "intermediario";
-      await pool.query("UPDATE usuarios SET nivel = ? WHERE id = ?", [nivel, usuarioId]);
+      await pool.query("UPDATE usuarios SET nivel = ? WHERE id = ?", [
+        nivel,
+        usuarioId,
+      ]);
       return { pontos: total, nivel };
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 
   // Listar profissionais disponíveis com busca
@@ -148,9 +214,13 @@ const usuarioModel = {
          INNER JOIN profissionais p ON p.usuario_id = u.id
          WHERE u.tipo = 'profissional' AND p.disponivel = 1
            AND (u.nome LIKE ? OR p.area_atuacao LIKE ? OR p.especialidades LIKE ?)
-         ORDER BY u.nome ASC`, [t, t, t]);
+         ORDER BY u.nome ASC`,
+        [t, t, t],
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Lista todos os clientes com stats (para profissional)
@@ -165,9 +235,12 @@ const usuarioModel = {
          FROM usuarios u
          LEFT JOIN tarefas t ON t.usuario_id = u.id
          WHERE u.tipo = 'cliente'
-         GROUP BY u.id ORDER BY u.pontos DESC, u.nome ASC`);
+         GROUP BY u.id ORDER BY u.pontos DESC, u.nome ASC`,
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Busca tarefas de um cliente específico (para profissional)
@@ -175,9 +248,12 @@ const usuarioModel = {
     try {
       const [linhas] = await pool.query(
         "SELECT * FROM tarefas WHERE usuario_id = ? ORDER BY concluida ASC, criado_em DESC",
-        [clienteId]);
+        [clienteId],
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Deletar usuário (admin)
@@ -185,7 +261,9 @@ const usuarioModel = {
     try {
       await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
       return true;
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   },
 
   // Vínculos
@@ -193,12 +271,18 @@ const usuarioModel = {
     try {
       await pool.query(
         `INSERT IGNORE INTO vinculos (paciente_id, profissional_id, status)
-         VALUES (?, ?, 'pendente')`, [pacienteId, profissionalId]);
+         VALUES (?, ?, 'pendente')`,
+        [pacienteId, profissionalId],
+      );
       await pool.query(
         `INSERT INTO solicitacoes (paciente_id, profissional_id, tipo, status)
-         VALUES (?, ?, 'vinculo', 'pendente')`, [pacienteId, profissionalId]);
+         VALUES (?, ?, 'vinculo', 'pendente')`,
+        [pacienteId, profissionalId],
+      );
       return true;
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   },
 
   buscarVinculo: async (pacienteId) => {
@@ -209,9 +293,13 @@ const usuarioModel = {
          JOIN usuarios u ON u.id = v.profissional_id
          JOIN profissionais p ON p.usuario_id = v.profissional_id
          WHERE v.paciente_id = ? AND v.status IN ('pendente','ativo')
-         LIMIT 1`, [pacienteId]);
+         LIMIT 1`,
+        [pacienteId],
+      );
       return linhas[0] || null;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 
   // Criar notificação
@@ -219,9 +307,13 @@ const usuarioModel = {
     try {
       await pool.query(
         "INSERT INTO notificacoes (usuario_id, mensagem) VALUES (?, ?)",
-        [usuarioId, mensagem]);
+        [usuarioId, mensagem],
+      );
       return true;
-    } catch (e) { console.error("Erro notificacao:", e); return false; }
+    } catch (e) {
+      console.error("Erro notificacao:", e);
+      return false;
+    }
   },
 
   // Listar notificações do usuário
@@ -229,17 +321,25 @@ const usuarioModel = {
     try {
       const [linhas] = await pool.query(
         "SELECT * FROM notificacoes WHERE usuario_id = ? ORDER BY criado_em DESC LIMIT 50",
-        [usuarioId]);
+        [usuarioId],
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Marcar notificações como lidas
   marcarTodasLidas: async (usuarioId) => {
     try {
-      await pool.query("UPDATE notificacoes SET lida = 1 WHERE usuario_id = ?", [usuarioId]);
+      await pool.query(
+        "UPDATE notificacoes SET lida = 1 WHERE usuario_id = ?",
+        [usuarioId],
+      );
       return true;
-    } catch (e) { return false; }
+    } catch (e) {
+      return false;
+    }
   },
 
   // Listar solicitações de vínculo para um profissional
@@ -251,39 +351,47 @@ const usuarioModel = {
          JOIN usuarios u ON u.id = s.paciente_id
          WHERE s.profissional_id = ? AND s.status = 'pendente'
          ORDER BY s.criado_em DESC`,
-        [profissionalId]);
+        [profissionalId],
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Profissional aceita/recusa vínculo
   gerenciarVinculo: async (solicitacaoId, acao) => {
     const statusSolic = acao === "aprovar" ? "aprovada" : "rejeitada";
-    const statusVinc  = acao === "aprovar" ? "ativo"    : "recusado";
+    const statusVinc = acao === "aprovar" ? "ativo" : "recusado";
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
       // Atualiza a solicitação
-      await conn.query(
-        "UPDATE solicitacoes SET status = ? WHERE id = ?",
-        [statusSolic, solicitacaoId]);
+      await conn.query("UPDATE solicitacoes SET status = ? WHERE id = ?", [
+        statusSolic,
+        solicitacaoId,
+      ]);
       if (acao === "aprovar") {
         // Busca paciente_id e profissional_id
         const [rows] = await conn.query(
           "SELECT paciente_id, profissional_id FROM solicitacoes WHERE id = ?",
-          [solicitacaoId]);
+          [solicitacaoId],
+        );
         if (rows[0]) {
           await conn.query(
             `UPDATE vinculos SET status = ? WHERE paciente_id = ? AND profissional_id = ?`,
-            [statusVinc, rows[0].paciente_id, rows[0].profissional_id]);
+            [statusVinc, rows[0].paciente_id, rows[0].profissional_id],
+          );
         }
       }
       await conn.commit();
       return true;
-    } catch(e) {
+    } catch (e) {
       await conn.rollback();
       throw e;
-    } finally { conn.release(); }
+    } finally {
+      conn.release();
+    }
   },
 
   // Registrar sono
@@ -293,9 +401,13 @@ const usuarioModel = {
         `INSERT INTO registros_sono (usuario_id, horas_dormidas, qualidade, data)
          VALUES (?, ?, ?, CURDATE())
          ON DUPLICATE KEY UPDATE horas_dormidas = VALUES(horas_dormidas), qualidade = VALUES(qualidade)`,
-        [usuarioId, horasDormidas, qualidade]);
+        [usuarioId, horasDormidas, qualidade],
+      );
       return true;
-    } catch (e) { console.error(e); return false; }
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   },
 
   // Listar registros de sono
@@ -303,9 +415,12 @@ const usuarioModel = {
     try {
       const [linhas] = await pool.query(
         "SELECT * FROM registros_sono WHERE usuario_id = ? ORDER BY data DESC LIMIT 14",
-        [usuarioId]);
+        [usuarioId],
+      );
       return linhas;
-    } catch (e) { return []; }
+    } catch (e) {
+      return [];
+    }
   },
 
   // Buscar dados reais do perfil
@@ -320,13 +435,15 @@ const usuarioModel = {
          LEFT JOIN tarefas t ON t.usuario_id = u.id
          WHERE u.id = ?
          GROUP BY u.id`,
-        [usuarioId]);
+        [usuarioId],
+      );
       return linhas[0] || null;
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
 };
 
 module.exports = { usuarioModel };
-
 
 // Adicionar métodos extras ao usuarioModel (append)

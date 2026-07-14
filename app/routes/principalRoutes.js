@@ -73,12 +73,15 @@ router.get(
   "/auth/google",
   (req, res, next) => {
     if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-      return res.status(500).send(
-        "Google OAuth não está configurado. Defina GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET.",
-      );
+      return res
+        .status(500)
+        .send(
+          "Google OAuth não está configurado. Defina GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET.",
+        );
     }
 
     req.session.returnTo = req.query.returnTo || "/dashboard";
+    req.session.googleFlow = req.query.flow || "login";
     next();
   },
   passport.authenticate("google", { scope: ["profile", "email"] }),
@@ -88,18 +91,35 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login?erro=google" }),
   (req, res) => {
-    const usuario = req.user;
-    req.session.usuario = { ...usuario };
-    req.session.nome = usuario.nome;
-    req.session.nivel = usuario.nivel || "iniciante";
-    delete req.session.usuario.senha;
+    const dadosGoogle = req.user || {};
 
-    const redirectTo = req.session.returnTo || "/dashboard";
-    delete req.session.returnTo;
+    req.session.googleAuth = {
+      email: dadosGoogle.email,
+      nome: dadosGoogle.nome,
+      foto_perfil: dadosGoogle.foto_perfil,
+      usuario: dadosGoogle.usuario || null,
+      flow: req.session.googleFlow || "login",
+      possuiConta: !!dadosGoogle.usuario,
+    };
 
-    res.redirect(redirectTo);
+   return res.redirect("/google/loading");
   },
 );
+
+router.get("/google/loading", (req, res) => {
+  if (!req.session.googleAuth) {
+    return res.redirect("/login");
+  }
+
+  res.render("pages/google-loading");
+});
+router.get("/google/confirmacao", usuarioController.exibirConfirmacaoGoogle);
+
+router.post("/google/confirmacao", usuarioController.confirmarLoginGoogle);
+
+router.post("/google/cadastro", usuarioController.concluirCadastroGoogle);
+
+router.post("/google/cancelar", usuarioController.cancelarLoginGoogle);
 
 /* ── APENAS CLIENTE ─────────────────────────────────────────────── */
 router.get("/dashboard", apenasCliente, tarefaController.exibirDashboard);
