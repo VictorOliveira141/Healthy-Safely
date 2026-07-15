@@ -1,3 +1,5 @@
+/* js para validação front-end na página de cadastro e login */
+
 (function ($) {
   const validation = {
     state: {

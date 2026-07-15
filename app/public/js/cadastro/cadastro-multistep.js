@@ -1,3 +1,5 @@
+/* js para o cadastro de usuário em múltiplos passos */
+
 $(document).ready(function () {
   const $form = $(".form-multistep");
   const $steps = $(".step-panel");

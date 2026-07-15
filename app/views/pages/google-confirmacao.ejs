@@ -26,15 +26,15 @@
                 </h1>
                 
                 <p style="font-size: 1rem;">
-                    Você está entrando com a conta abaixo.
+                    Você está entrando com a conta abaixo:
                 </p>
                 
                 <div class="google-card">
                     <% if (dados.foto_perfil) { %>
                         <img
-                        src="https://lh3.googleusercontent.com/a/default-user"
-                        class="google-avatar"
-                        alt="Foto do Google">
+                    src="<%= dados.foto_perfil %>"
+                    class="google-avatar"
+                    alt="Foto do Google">
                         <% } else { %>
                             <div class="google-avatar google-avatar--fallback">
                                 <i class="bi bi-person-fill"></i>
@@ -91,15 +91,19 @@
                     <% } %>
                     
                     <form
+                    class="form-multistep"
                     action="/google/cadastro"
                     method="POST"
                     novalidate>
+
                     <section>
                         <label class="inputs">E-mail</label>
 
                         <input
                         type="email"
+                        id="email"
                         value="<%= valores.email %>"
+                        placeholder="Digite seu endereço de e-mail"
                         disabled>
                     </section>
 
@@ -107,8 +111,10 @@
                         <label class="inputs">Nome</label>
                         <input
                         name="nome"
+                        id="nome"
                         type="text"
-                        value="<%= valores.nome %>">
+                        placeholder="Digite como você quer ser chamado"
+                        value="<%= valores.nome.split(' ')[0] %>">
                         <span class="msg-erro">
                         <%= msgErro.nome || '' %>
                         </span>
@@ -121,7 +127,9 @@
             
                         <input
                         name="nomeusuario"
+                        id="nomeusuario"
                         type="text"
+                        placeholder="Escolha um nome de usuário"
                         value="<%= valores.nomeusuario %>">
 
                         <span class="msg-erro">
@@ -133,13 +141,29 @@
                         <label class="inputs">
                             Senha
                         </label>
+
+                        <section class="campo-senha">
                         <input
                         name="senha"
-                        type="password">
+                        id="senha"
+                        type="password"
+                        placeholder="Crie uma senha">
+                        <button
+                    type="button"
+                    class="btn-olho"
+                    onclick="toggleSenha('senha')"
+                    aria-label="Mostrar senha"
+                  >
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+
+                        </section>
                         
                         <span class="msg-erro">
                             <%= msgErro.senha || '' %>
                         </span>
+                        
+                        
                     </section>
                     
                     <section>
@@ -147,9 +171,21 @@
                             Confirmar senha
                         </label>
 
+                        <section class="campo-senha">
                         <input
                         name="confirmarSenha"
-                        type="password">
+                        id="confirmarSenha"
+                        type="password"
+                        placeholder="Confirme sua senha">
+                        <button
+                    type="button"
+                    class="btn-olho"
+                    onclick="toggleSenha('confirmarSenha')"
+                    aria-label="Mostrar senha"
+                  >
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                </section>
                         <span class="msg-erro">
                             <%= msgErro.confirmarSenha || '' %>
                         </span>
@@ -173,7 +209,8 @@
             </section>
         </main>
         
-        <%- include('../partials/footer.ejs') %>
-        <script src="/js/ver-senha.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/js/cadastro/google-confirmacao.js"></script>
+        <script src="/js/cadastro/ver-senha.js"></script>
 </body>
 </html>

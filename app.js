@@ -1,5 +1,8 @@
 require("dotenv").config();
 
+/* ============================================================
+   Requisições
+============================================================ */
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
@@ -8,7 +11,9 @@ const { usuarioModel } = require("./app/models/Usuario");
 const app = express();
 const porta = process.env.PORT || 3000;
 
-// ── Sessão ────────────────────────────────────────────────
+/* ============================================================
+   SESSÃO
+============================================================ */
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "hs-segredo-dev",
@@ -103,11 +108,10 @@ app.set("views", "./app/views");
 
 // ── Routers ───────────────────────────────────────────────
 const rotaPrincipal = require("./app/routes/principalRoutes");
-const rotaProfissional = require("./app/routes/profissionalRoutes");
+
 const rotaAdmin = require("./app/routes/admRoutes");
 
 app.use("/", rotaPrincipal);
-app.use("/profissional", rotaProfissional);
 app.use("/admin", rotaAdmin);
 
 // ── 404 ───────────────────────────────────────────────────
