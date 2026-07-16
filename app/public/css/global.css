@@ -53,7 +53,7 @@
 
   /* Tipografia */
   --font-family: "Outfit", system-ui, sans-serif;
-  --font-title: 18px;
+  --font-title: 17px;
   --font-text: 12px;
   --font-small: 10px;
   --font-icon: 15px;
@@ -109,6 +109,65 @@ html.dark body {
     linear-gradient(180deg, #091a14 0%, #0e241c 42%, #123328 100%);
 }
 
+/* ===========================
+   TAMANHO DE FONTE
+=========================== */
+
+html.fonte-media {
+  --font-title: 20px;
+  --font-text: 16px;
+  --font-small: 14px;
+  --font-icon: 17px;
+}
+
+html.fonte-grande {
+  --font-title: 24px;
+  --font-text: 19px;
+  --font-small: 16px;
+  --font-icon: 20px
+}
+
+/* Reduz animações */
+
+html.sem-animacao *,
+html.sem-animacao *::before,
+html.sem-animacao *::after {
+  animation: none !important;
+
+  transition: none !important;
+
+  scroll-behavior: auto !important;
+}
+
+/* ===========================
+   ALTO CONTRASTE
+=========================== */
+
+html.contraste {
+  --c-verde-900: #001a13;
+  --c-verde-800: #003d30;
+  --c-verde-700: #00604b;
+  --c-verde-600: #00a67d;
+  --c-verde-500: #00d6a0;
+
+  --primary-color: #ffffff;
+  --secondary-color: #003d30;
+
+  --accent-color: #00ffb7;
+
+  --fundoclaro: #001a13;
+  --fundoescuro: #ffffff;
+
+  --surface-bg: #ffffff;
+  --surface-card: #ffffff;
+  --surface-muted: #f1f1f1;
+
+  --text-primary: #000000;
+  --text-secondary: #111111;
+  --text-muted: #333333;
+
+  --border: rgba(0, 0, 0, 0.35);
+}
 @media (max-width: 768px) {
   :root {
     --font-text: 12px;

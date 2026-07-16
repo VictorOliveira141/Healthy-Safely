@@ -1,3 +1,75 @@
+<link rel="stylesheet" href="/css/menu-inferior.css">
+
+<!-- Botão de acessibilidade -->
+<button
+  id="btnAcessibilidade"
+  class="botao-acessibilidade"
+  aria-label="Abrir opções de acessibilidade"
+>
+  <i data-lucide="accessibility"></i>
+</button>
+
+<div class="menu-acessibilidade" id="menuAcessibilidade">
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="moon"></i>
+      <span>Modo escuro</span>
+    </div>
+
+    <label class="toggle" aria-label="Ativar lembretes de tarefas">
+      <input type="checkbox" checked id="toggleDarkMode" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="type"></i>
+      <span>Aumentar fonte</span>
+    </div>
+
+    <button class="botao-fonte" id="aumentarFonte">A+</button>
+    <button class="botao-fonte" id="diminuirFonte">A-</button>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="contrast"></i>
+      <span>Alto contraste</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleContraste" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="sparkles"></i>
+      <span>Reduzir animações</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleAnimacoes" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="volume-2"></i>
+      <span>Leitor de tela</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleLeitor" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+</div>
+
+<!-- MENU INFERIOR-->
 <nav role="navigation" class="menu-inferior" aria-label="Menu inferior">
   <section class="menu-container">
 
@@ -47,6 +119,7 @@
   </section>
 </nav>
 
+<!-- HEALTHY AI-->
 <aside class="healthy-ai-sidebar" id="healthyAiSidebar" aria-hidden="true">
     <section class="healthy-ai-panel">
        <article class="healthy-ai-header">
@@ -82,98 +155,5 @@
     </section>
 </aside>
 
-<script src="/js/healthy-ai.js"></script>
-
-<style>
-  .menu-inferior {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100vw;
-    background: var(--secondary-color);
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
-    z-index: 1002;
-    display: none; /* começa escondido */
-    justify-content: center;
-    height: 55px;
-    padding: 0;
-  }
-
-  .menu-container {
-    display: flex;
-    max-width: 500px;
-    width: 100%;
-    gap: 0;
-  }
-  
-  .menu-container .foto-perfil {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-
-  .menu-container .foto-perfil a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0;
-  }
-
-  .menu-container .foto-perfil img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255,255,255,.4);
-  }
-
-  .menu-container a,.menu-container button {
-    flex: 1;
-    text-align: center;
-    text-decoration: none;
-    font-size: var(--font-icon);
-    padding: 8px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    color: var(--fundoescuro);
-    transition: opacity 0.2s ease;
-  }
-
-  .menu-container a:hover {
-    opacity: 0.8;
-  }
-
-  .menu-inferior svg {
-  width: 24px;
-  height: 24px;
-  }
-
-  .menu-inferior button {
-     background: var(--secondary-color);
-     color: var(--fundoescuro);
-      border: none;
-  }
-  .menu-inferior button.icone-destaque svg {
-  width: 35px;
-  height: 35px;
- }
-
-  @media (max-width: 768px) {
-    .menu-inferior {
-      display: flex;
-    }
-  }
-</style>
+<script src="/js/navegacao/healthy-ai.js"></script>
+<script src="/js/navegacao/acessibilidade.js"></script>
