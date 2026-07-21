@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta property="og:title" content="Plataforma para construir hábitos saudáveis com apoio real e metas inteligentes." />
-    <meta property="og:description" content="Transforme sua rotina com hábitos saudáveis, metas realistas e apoio constante. Pequenas mudanças que geram grandes resultados no seu bem-estar." />
-    <meta property="og:image" content="https://healthy-safely.onrender.com/imagem/Logo repaginado 2.webp" />
+    <meta
+      property="og:title"
+      content="Plataforma para construir hábitos saudáveis com apoio real e metas inteligentes."
+    />
+    <meta
+      property="og:description"
+      content="Transforme sua rotina com hábitos saudáveis, metas realistas e apoio constante. Pequenas mudanças que geram grandes resultados no seu bem-estar."
+    />
+    <meta
+      property="og:image"
+      content="https://healthy-safely.onrender.com/imagem/Logo repaginado 2.webp"
+    />
     <meta property="og:url" content="https://healthy-safely.onrender.com" />
     <meta property="og:type" content="website" />
     <meta charset="UTF-8" />
@@ -21,127 +30,168 @@
   <body id="topo">
     <%- include('../partials/header.ejs') %>
 
+    <div id="imageModal" class="image-modal">
+      <span class="close-modal">&times;</span>
+      <img id="modalImage" class="modal-content" alt="Imagem ampliada" />
+    </div>
+
     <main>
-      <section class="main-fundo">
-        <section class="main-container">
-          <section class="hero-panel">
-            <span class="hero-badge">
-              <i class="bi bi-activity"></i>
-              Plataforma Healthy Safely
-            </span>
-            <h1>
-              Construa habitos saudaveis com apoio real e metas inteligentes
-            </h1>
-            <p>
-              Organize sua rotina, acompanhe sua evolucao e tenha orientacao
-              profissional em um ambiente simples, bonito e focado no seu
-              progresso diario.
-            </p>
+      <!--APRESENTAÇÃO-->
+      <section class="hero-container">
+        <section class="hero-panel">
+          <span class="hero-badge">
+            <i class="bi bi-activity"></i>
+            Plataforma Healthy Safely
+          </span>
+          <h1>Construa hábitos saudáveis de forma simples e consistente.</h1>
+          <p>
+            Organize tarefas, acompanhe seu progresso, defina metas inteligentes
+            e transforme pequenas ações em grandes resultados.
+          </p>
 
-            <section class="hero-actions">
-              <a class="hero-btn hero-btn-primary" href="/cadastro"
-                >Comecar agora</a
-              >
-              <a class="hero-btn hero-btn-ghost" href="#planos">Ver planos</a>
-            </section>
-
-            <section class="hero-tags" aria-label="Principais recursos">
-              <span>Metas personalizadas</span>
-              <span>Checklist diario</span>
-              <span>Acompanhamento profissional</span>
-            </section>
+          <section class="hero-actions">
+            <a class="hero-btn hero-btn-primary" href="/cadastro"
+              >Começar 7 dias gratis!</a
+            >
+            <a class="hero-btn hero-btn-ghost" href="#planos"
+              >Ver nossos planos</a
+            >
           </section>
 
-          <section class="hero-insights" aria-label="Resumo da plataforma">
-            <article class="insight-card">
-              <i class="bi bi-graph-up-arrow"></i>
-              <h3>Progresso visual</h3>
-              <p>
-                Veja seu desempenho semanal com indicadores claros e objetivos.
-              </p>
-            </article>
-
-            <article class="insight-card">
-              <i class="bi bi-shield-check"></i>
-              <h3>Rotina segura</h3>
-              <p>
-                Ferramentas para manter consistencia e equilibrio no dia a dia.
-              </p>
-            </article>
-
-            <article class="insight-card">
-              <i class="bi bi-people"></i>
-              <h3>Conta para cada perfil</h3>
-              <p>
-                Escolha entre usuario e profissional com experiencia dedicada.
-              </p>
-            </article>
+          <section class="hero-tags" aria-label="Principais recursos">
+            <span>Metas personalizadas</span>
+            <span>Checklist diario</span>
+            <span>Acompanhamento profissional</span>
           </section>
+        </section>
+
+        <section class="hero-insights">
+          <div class="carousel">
+            <div class="slides">
+              <div class="slide">
+                <h3>Dashboard organizado</h3>
+                <img
+                  src="/imagem/dashboard.png"
+                  class="zoom-image"
+                  alt="Dashboard"
+                />
+              </div>
+
+              <div class="slide">
+                <h3>Gerenciamento de tarefas</h3>
+                <img
+                  src="/imagem/tarefas.png"
+                  class="zoom-image"
+                  alt="Tarefas"
+                />
+              </div>
+
+              <div class="slide">
+                <h3>Assistência personalizada com IA</h3>
+                <img src="/imagem/healthyia.png" class="zoom-image" alt="IA" />
+              </div>
+            </div>
+          </div>
         </section>
       </section>
 
-      <!-- TIPO DE CONTA -->
-      <section class="tpcnt">
-        <h2>ESCOLHA SEU TIPO DE CONTA</h2>
+      <!--COMO FUNCIONA?-->
+      <section class="como-funciona centro" id="como-funciona">
+        <h2>COMO FUNCIONA</h2>
 
-        <section class="tpcnt-container">
-          <article
-            class="tpcnt-card"
-            tabindex="0"
-            role="button"
-            aria-pressed="false"
-          >
-            <section class="card-inner">
-              <section class="card-front">
-                <img
-                  src="../imagem/profissional.webp"
-                  alt="Conta Profissional"
-                  class="tpcnt-img"
-                />
-                <h3 class="tpcnt-title">Profissional</h3>
-              </section>
-              <section class="card-back">
-                <p>
-                  Conta para profissionais: Ideal para educadores físicos que
-                  desejam acompanhar alunos, criar treinos personalizados e
-                  monitorar a evolução em tempo real com ferramentas
-                  inteligentes.
-                </p>
-                <button class="btn-criar" data-target="/cadastroProfissional">
-                  Criar conta
-                </button>
-              </section>
-            </section>
+        <section class="como-container">
+          <article class="como-card">
+            <div class="como-icon">
+              <i class="bi bi-list-check"></i>
+            </div>
+
+            <span class="como-numero">01</span>
+
+            <h3>Crie seus hábitos</h3>
+
+            <p>
+              Cadastre hábitos e tarefas personalizados de acordo com seus
+              objetivos e rotina.
+            </p>
           </article>
 
-          <article
-            class="tpcnt-card"
-            tabindex="0"
-            role="button"
-            aria-pressed="false"
-          >
-            <section class="card-inner">
-              <section class="card-front">
-                <img
-                  src="../imagem/usuario.webp"
-                  alt="Conta usuário comum"
-                  class="tpcnt-img"
-                />
-                <h3 class="tpcnt-title">Usuário</h3>
-              </section>
-              <section class="card-back">
-                <p>
-                  Conta para usuários: Perfeita para quem quer melhorar a saúde
-                  e o desempenho com acompanhamento profissional, acesso a
-                  treinos personalizados e controle da própria evolução.
-                </p>
-                <button class="btn-criar" data-target="/cadastroCliente">
-                  Criar conta
-                </button>
-              </section>
-            </section>
+          <article class="como-card">
+            <div class="como-icon">
+              <i class="bi bi-calendar-check"></i>
+            </div>
+
+            <span class="como-numero">02</span>
+
+            <h3>Organize seu dia</h3>
+
+            <p>
+              Utilize checklists e acompanhe diariamente tudo o que precisa ser
+              realizado.
+            </p>
+          </article>
+
+          <article class="como-card">
+            <div class="como-icon">
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+
+            <span class="como-numero">03</span>
+
+            <h3>Acompanhe sua evolução</h3>
+
+            <p>
+              Visualize gráficos, estatísticas e acompanhe seu desempenho ao
+              longo do tempo.
+            </p>
+          </article>
+
+          <article class="como-card">
+            <div class="como-icon">
+              <i class="bi bi-stars"></i>
+            </div>
+
+            <span class="como-numero">04</span>
+
+            <h3>Evolua continuamente</h3>
+
+            <p>
+              Mantenha a constância, alcance metas e receba sugestões da IA para
+              melhorar sua rotina.
+            </p>
           </article>
         </section>
+      </section>
+
+      <!-- DEMONSTRAÇÃO DA PLATAFORMA -->
+      <section class="demo-video" id="demonstracao">
+        <div class="demo-header">
+          <span class="demo-badge">
+            <i class="bi bi-play-circle-fill"></i>
+            Demonstração
+          </span>
+
+          <h2>Veja o Healthy Safely em ação</h2>
+
+          <p>
+            Descubra como é simples criar hábitos, organizar tarefas e
+            acompanhar sua evolução em poucos segundos.
+          </p>
+        </div>
+
+        <div class="phone-mockup">
+          <video
+            class="phone-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            controls
+            preload="metadata"
+          >
+            <source src="/imagem/demo.mp4" type="video/mp4" />
+            Seu navegador não suporta vídeos.
+          </video>
+        </div>
       </section>
 
       <!--PLANOS-->
@@ -215,67 +265,10 @@
         </section>
       </section>
 
-      <!--UPDATES-->
-      <section class="centro updates" id="updates">
-        <h2>NOVIDADES</h2>
-        <p>Confira as últimas atualizações do nosso serviço!</p>
-
-        <section class="updates-container">
-          <article class="update-card">
-            <h3>Nova funcionalidade: Programas</h3>
-            <p>
-              Agora você pode participar de programas criados por profissionais para alcançar seus objetivos de forma mais estruturada. Experimente já!
-            </p>
-          </article>
-
-          <article class="update-card">
-            <h3>Melhorias na interface</h3>
-            <p>
-              Fizemos melhorias na interface para tornar a navegação mais
-              intuitiva e agradável. Experimente agora!
-            </p>
-          </article>
-
-          <article class="update-card">
-            <h3>Novos planos de assinatura</h3>
-            <p>
-              Lançamos novos planos de assinatura com benefícios exclusivos.
-              Veja qual é o melhor para você!
-            </p>
-          </article>
-        </section>
-      </section>
-
       <!-- VOLTAR -->
-       <%- include('../partials/voltar-topo.ejs') %>
+      <%- include('../partials/voltar-topo.ejs') %>
     </main>
     <%- include('../partials/footer.ejs') %>
-
-    <script>
-      // Flip card: toggle .is-flipped on click; button stops propagation and navigates
-      (function () {
-        const cards = document.querySelectorAll(".tpcnt-card");
-        cards.forEach((card) => {
-          card.addEventListener("click", () =>
-            card.classList.toggle("is-flipped"),
-          );
-          card.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              card.classList.toggle("is-flipped");
-            }
-          });
-        });
-
-        const buttons = document.querySelectorAll(".tpcnt-card .btn-criar");
-        buttons.forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const tgt = btn.getAttribute("data-target") || "#";
-            if (tgt && tgt !== "#") window.location.href = tgt;
-          });
-        });
-      })();
-    </script>
+    <script src="/js/tomarammeutela.js"></script>
   </body>
 </html>
