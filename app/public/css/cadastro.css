@@ -19,7 +19,7 @@ main {
   background: var(--primary-color);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(12, 79, 67, 0.12);
-  border: 1px solid rgba(12, 79, 67, 0.08);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -32,7 +32,7 @@ form {
 }
 
 .form-title {
-  font-size: 1.5rem;
+  font-size: var(--font-title);
   font-weight: 800;
   color: var(--fundoclaro);
   margin-bottom: 1.5rem;
@@ -45,8 +45,8 @@ form {
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.1rem;
-  border: 1px solid rgba(12, 79, 67, 0.14);
-  border-radius: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
   margin-bottom: 1rem;
 }
 .google-avatar {
@@ -62,18 +62,18 @@ form {
   justify-content: center;
   background: rgba(12, 79, 67, 0.12);
   color: var(--fundoclaro);
-  font-size: 1.4rem;
+  font-size: var(--font-text);
 }
 .google-user-info h2,.google-user-info p {
   margin: 0 0 0.25rem;
-  font-size: 1rem;
+  font-size: var(--font-text);
   color: var(--fundoclaro);
 }
 
 .google-description {
   margin: 0 0 1rem;
   color: #4b6b63;
-  font-size: 0.95rem;
+  font-size: var(--font-text);
 }
 .google-actions {
   margin-bottom: 0.75rem;
@@ -91,8 +91,8 @@ form {
   gap: 0.75rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1.5px solid rgba(12, 79, 67, 0.14);
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--border);
   background: var(--botao);
   cursor: pointer;
   text-decoration: none;
@@ -103,7 +103,7 @@ form {
     box-shadow 0.2s,
     transform 0.15s;
   font-family: "Outfit", sans-serif;
-  font-size: 0.9rem;
+  font-size: var(--font-text);
   font-weight: 600;
   min-height: 48px;
 }
@@ -112,12 +112,12 @@ form {
   transform: translateY(-1px);
 }
 .btn-google .icone-google {
-  font-size: 1rem;
+  font-size: var(--font-icon);
   color: #db4437;
 }
 .btn-google p,
 .btn-google span {
-  font-size: 0.9rem;
+  font-size: var(--font-text);
   font-weight: 600;
 }
 
@@ -126,7 +126,7 @@ form {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.82rem;
+  font-size:var(--font-small);
   color: #7a9490;
   margin-bottom: 1.25rem;
 }
@@ -150,14 +150,14 @@ article.form-group {
 /* ── Labels ──────────────────────────────────────────────── */
 .inputs,
 label.inputs {
-  font-size: 0.8rem;
+  font-size: var(--font-text);
   font-weight: 700;
   color: var(--fundoclaro);
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
 .small{
-  font-size: var(--small-text)
+  font-size: var(--font-small)
 }
 .link-cadastro {
   color: var(--accent-color)
@@ -172,10 +172,10 @@ select,
 textarea {
   width: 100%;
   padding: 0.72rem 1rem;
-  border: 1.5px solid rgba(12, 79, 67, 0.14);
-  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--border-radius);
   font-family: "Outfit", sans-serif;
-  font-size: 0.9rem;
+  font-size: var(--font-text);
   color: var(--fundoclaro);
   background: var(--primary-color);
   transition:
@@ -215,7 +215,7 @@ input.erro-input:focus {
 
 /* ── Mensagens de erro ───────────────────────────────────── */
 .msg-erro {
-  font-size: 0.75rem;
+  font-size: var(--font-small);
   color: #dc2626;
   font-weight: 600;
   min-height: 1rem;
@@ -238,7 +238,7 @@ input.erro-input:focus {
   border: none;
   cursor: pointer;
   color: #7a9490;
-  font-size: 1rem;
+  font-size: var(--font-icon);
   padding: 0.25rem;
   transition: color 0.2s;
 }
@@ -253,9 +253,9 @@ input.erro-input:focus {
   background: var(--botao);
   color: var(--fundoescuro);
   border: none;
-  border-radius: 11px;
+  border-radius: var(--border-radius);
   font-family: "Outfit", sans-serif;
-  font-size: 1rem;
+  font-size: var(--font-text);
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -340,13 +340,13 @@ input.erro-input:focus {
 .btn-secondary {
   flex: 1;
   min-height: 50px;
-  border: 1.5px solid rgba(12, 79, 67, 0.14);
+  border: 1.5px solid var(--border);
   background: var(--botao);
   color: var(--fundoescuro);
   padding: 3px;
   border-radius: 11px;
   font-family: "Outfit", sans-serif;
-  font-size: 0.95rem;
+  font-size: var(--font-text);
   font-weight: 700;
   cursor: pointer;
   transition:
@@ -378,7 +378,7 @@ input.erro-input:focus {
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(12, 79, 67, 0.16);
+  border: 2px solid var(--border);
   border-top-color: #1a8a75;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -407,9 +407,6 @@ input.erro-input:focus {
   }
   .form-area {
     padding: 1.75rem 1.25rem 1.5rem;
-  }
-  .form-title {
-    font-size: 1.25rem;
   }
   .actions-duplo {
     flex-direction: column;

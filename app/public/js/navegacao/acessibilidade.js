@@ -31,24 +31,17 @@ const toggleContraste = document.getElementById("toggleContraste");
 if (toggleDarkMode) {
   toggleDarkMode.checked = localStorage.getItem("hs_tema") === "dark";
 
+  if (toggleDarkMode.checked) {
+    document.documentElement.classList.add("dark");
+  }
+
   toggleDarkMode.addEventListener("change", () => {
     if (toggleDarkMode.checked) {
-      // desativa contraste
-      document.documentElement.classList.remove("contraste");
-
-      if (toggleContraste) {
-        toggleContraste.checked = false;
-      }
-
-      localStorage.setItem("contraste", "false");
-
-      localStorage.setItem("hs_tema", "dark");
-
       document.documentElement.classList.add("dark");
+      localStorage.setItem("hs_tema", "dark");
     } else {
-      localStorage.setItem("hs_tema", "light");
-
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("hs_tema", "light");
     }
   });
 }
@@ -60,17 +53,22 @@ if (toggleDarkMode) {
 const aumentarFonte = document.getElementById("aumentarFonte");
 const diminuirFonte = document.getElementById("diminuirFonte");
 
-let tamanhoFonte = Number(localStorage.getItem("tamanhoFonte") || 0);
+let tamanhoFonte = Number(localStorage.getItem("tamanhoFonte") ?? 2);
 
 // aplicar ao carregar
 
-document.documentElement.classList.toggle("fonte-media", tamanhoFonte === 1);
-
-document.documentElement.classList.toggle("fonte-grande", tamanhoFonte === 2);
+document.documentElement.classList.toggle(
+  "fonte-minuscula",
+  tamanhoFonte === 0,
+);
+document.documentElement.classList.toggle("fonte-pequena", tamanhoFonte === 1);
+document.documentElement.classList.toggle("fonte-padrao", tamanhoFonte === 2);
+document.documentElement.classList.toggle("fonte-grande", tamanhoFonte === 3);
+document.documentElement.classList.toggle("fonte-gigante", tamanhoFonte === 4);
 
 if (aumentarFonte) {
   aumentarFonte.addEventListener("click", () => {
-    if (tamanhoFonte < 2) {
+    if (tamanhoFonte < 4) {
       tamanhoFonte++;
     }
 
@@ -88,16 +86,17 @@ if (diminuirFonte) {
   });
 }
 
+const classesFonte = [
+  "fonte-minuscula",
+  "fonte-pequena",
+  "fonte-padrao",
+  "fonte-grande",
+  "fonte-gigante",
+];
+
 function aplicarFonte() {
-  document.documentElement.classList.remove("fonte-media", "fonte-grande");
-
-  if (tamanhoFonte === 1) {
-    document.documentElement.classList.add("fonte-media");
-  }
-
-  if (tamanhoFonte === 2) {
-    document.documentElement.classList.add("fonte-grande");
-  }
+  document.documentElement.classList.remove(...classesFonte);
+  document.documentElement.classList.add(classesFonte[tamanhoFonte]);
 
   localStorage.setItem("tamanhoFonte", tamanhoFonte);
 }
@@ -109,24 +108,17 @@ function aplicarFonte() {
 if (toggleContraste) {
   toggleContraste.checked = localStorage.getItem("contraste") === "true";
 
+  if (toggleContraste.checked) {
+    document.documentElement.classList.add("contraste");
+  }
+
   toggleContraste.addEventListener("change", () => {
     if (toggleContraste.checked) {
-      // desativa dark mode
-      document.documentElement.classList.remove("dark");
-
-      if (toggleDarkMode) {
-        toggleDarkMode.checked = false;
-      }
-
-      localStorage.setItem("hs_tema", "light");
-
-      localStorage.setItem("contraste", "true");
-
       document.documentElement.classList.add("contraste");
+      localStorage.setItem("contraste", "true");
     } else {
-      localStorage.setItem("contraste", "false");
-
       document.documentElement.classList.remove("contraste");
+      localStorage.setItem("contraste", "false");
     }
   });
 }

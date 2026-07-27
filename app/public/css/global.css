@@ -53,9 +53,9 @@
 
   /* Tipografia */
   --font-family: "Outfit", system-ui, sans-serif;
-  --font-title: 17px;
-  --font-text: 12px;
-  --font-small: 10px;
+  --font-title: 19px;
+  --font-text: 15px;
+  --font-small: 12px;
   --font-icon: 15px;
 
   /* Transições */
@@ -112,23 +112,46 @@ html.dark body {
 /* ===========================
    TAMANHO DE FONTE
 =========================== */
+html.fonte-minuscula {
+  --font-title: 15px;
+  --font-text: 11px;
+  --font-small: 8px;
+  --font-icon: 11px;
+}
 
-html.fonte-media {
-  --font-title: 20px;
-  --font-text: 16px;
+html.fonte-pequena {
+  --font-title: 17px;
+  --font-text: 13px;
+  --font-small: 10px;
+  --font-icon: 13px;
+}
+
+/* ⬆ -2px ⬆ */
+html.fonte-padrao {
+  --font-title: 19px;
+  --font-text: 15px;
+  --font-small: 12px;
+  --font-icon: 15px;
+}
+/* ⬇ +2px ⬇ */
+
+html.fonte-grande {
+  --font-title: 21px;
+  --font-text: 17px;
   --font-small: 14px;
   --font-icon: 17px;
 }
 
-html.fonte-grande {
-  --font-title: 24px;
+html.fonte-gigante {
+  --font-title: 23px;
   --font-text: 19px;
   --font-small: 16px;
-  --font-icon: 20px
+  --font-icon: 19px;
 }
 
-/* Reduz animações */
-
+/* ===========================
+   SEM ANIMAÇÕES
+=========================== */
 html.sem-animacao *,
 html.sem-animacao *::before,
 html.sem-animacao *::after {
@@ -143,35 +166,58 @@ html.sem-animacao *::after {
    ALTO CONTRASTE
 =========================== */
 
+/* --- no modo claro --- */
 html.contraste {
-  --c-verde-900: #001a13;
-  --c-verde-800: #003d30;
-  --c-verde-700: #00604b;
-  --c-verde-600: #00a67d;
-  --c-verde-500: #00d6a0;
-
   --primary-color: #ffffff;
-  --secondary-color: #003d30;
-
-  --accent-color: #00ffb7;
-
-  --fundoclaro: #001a13;
-  --fundoescuro: #ffffff;
-
-  --surface-bg: #ffffff;
-  --surface-card: #ffffff;
-  --surface-muted: #f1f1f1;
+  --secondary-color: #063b32;
+  --accent-color: #0d7d63;
 
   --text-primary: #000000;
-  --text-secondary: #111111;
-  --text-muted: #333333;
+  --text-secondary: #1b1b1b;
+  --text-muted: #3d3d3d;
 
-  --border: rgba(0, 0, 0, 0.35);
+  --fundoclaro: #000000;
+
+  --border: rgba(0, 0, 0, 0.22);
+
+  --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.14);
 }
-@media (max-width: 768px) {
-  :root {
-    --font-text: 12px;
-  }
+html.contraste .card,
+html.contraste input,
+html.contraste textarea,
+html.contraste select,
+html.contraste button {
+  border-width: 2px;
+}
+html.contraste a {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* --- no modo escuro --- */
+html.dark.contraste body {
+  --primary-color: #0b0f0e;
+  --secondary-color: #000000;
+
+  --surface-bg: #000000;
+  --surface-card: #111111;
+  --surface-muted: #181818;
+
+  --text-primary: #ffffff;
+  --text-secondary: #f0f0f0;
+  --text-muted: #d5d5d5;
+
+  --fundoclaro: #ffffff;
+  --fundoescuro: #ffffff;
+
+  --border: rgba(255, 255, 255, 0.35);
+
+  --accent-color: #4dffbf;
+  --botao: #2de5a8;
+
+  --shadow-sm: 0 6px 16px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 /* ── Reset ──────────────────────────────────────────────── */

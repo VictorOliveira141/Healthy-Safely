@@ -12,215 +12,400 @@
   <meta property="og:site_name" content="Healthy Safely" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="/css/global.css" />
-  <link rel="stylesheet" href="/css/hs-user-dashboard.css" />
-  <link rel="stylesheet" href="/css/tasks.css" />
+  <link rel="stylesheet" href="/css/user/tasks.css" />
+  <link rel="stylesheet" href="/css/user/tasksmodal.css" />
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
 </head>
 <body>
 <%- include('../partials/header.ejs') %>
 
-<!-- Flash message -->
-<% if (flash) { %>
-<div id="flash-msg" style="
-  position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:9999;
-  padding:.75rem 1.5rem;border-radius:12px;font-weight:700;font-size:.9rem;
-  box-shadow:0 4px 20px rgba(0,0,0,.15);animation:slideDown .3s ease;
-  background:<%= flash.tipo==='sucesso' ? '#d1fae5' : flash.tipo==='erro' ? '#fee2e2' : '#dbeafe' %>;
-  color:<%= flash.tipo==='sucesso' ? '#065f46' : flash.tipo==='erro' ? '#991b1b' : '#1e40af' %>;
-  border:1px solid <%= flash.tipo==='sucesso' ? '#6ee7b7' : flash.tipo==='erro' ? '#fca5a5' : '#93c5fd' %>;">
-  <%= flash.msg %>
-</div>
-<style>@keyframes slideDown{from{opacity:0;top:.25rem}to{opacity:1;top:1rem}}</style>
-<script>setTimeout(()=>{const el=document.getElementById('flash-msg');if(el)el.remove();},3500);</script>
-<% } %>
-
 <main class="hs-tasks-main">
-  <section class="hs-page-head card-base" aria-label="Tarefas">
-    <section class="hs-page-head-copy">
-      <span class="hs-page-kicker">Tarefas</span>
-      <h1>Organize o dia com saúde</h1>
-      <p>Crie, conclua tarefas e acompanhe seu progresso.</p>
-    </section>
-  </section>
-
-  <!-- Barra de adicionar -->
-  <section class="hs-add-bar" aria-label="Adicionar tarefa">
-    <form action="/tasks/criar" method="POST" class="hs-add-inner">
-      <label for="campoTarefa" class="visually-hidden">Nova tarefa</label>
-      <input
-        type="text"
-        id="campoTarefa"
-        name="titulo"
-        placeholder="Nova tarefa… (ex: Caminhar 30 min)"
-        class="hs-task-input"
-        required
-        maxlength="200"
-        autocomplete="off"
-      />
-      <select name="categoria" class="hs-tasks-select" aria-label="Categoria">
-        <option value="geral">📋 Geral</option>
-        <option value="saude">💊 Saúde</option>
-        <option value="sono">🌙 Sono</option>
-        <option value="alimentacao">🥗 Alimentação</option>
-        <option value="exercicio">💪 Exercício</option>
-      </select>
-      <button type="submit" class="hs-add-task-btn" aria-label="Adicionar tarefa">
-        <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
-        Adicionar
-      </button>
-    </form>
-  </section>
-
-  <!-- Conteúdo principal -->
-  <section class="hs-tasks-content">
-
-    <!-- Lista de tarefas -->
-    <section class="hs-tasks-section" aria-labelledby="tit-tarefas">
-      <header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-        <h2 class="hs-section-title" id="tit-tarefas">Tarefas</h2>
-        <% if (tasks && tasks.length) { %>
-        <span class="hs-section-count">
-          <%= tasks.filter(t=>t.completed).length %> / <%= tasks.length %> concluídas
-        </span>
-        <% } %>
-      </header>
-
-      <% if (!tasks || !tasks.length) { %>
-        <section class="hs-empty-state" aria-live="polite">
-          <i class="bi bi-inbox" aria-hidden="true"></i>
-          <p class="hs-empty-title">Nenhuma tarefa ainda</p>
-          <p class="hs-empty-subtitle">Adicione sua primeira tarefa usando o campo acima!</p>
+    <!-- HERO -->
+    <section class="hs-page-head card-base">
+        <section class="hs-page-head-copy">
+            <span class="hs-page-kicker">
+                Tarefas
+            </span>
+            <h1>
+                Organize sua rotina saudável
+            </h1>
+            <p>
+                Pequenos hábitos diários geram grandes resultados. Crie tarefas,
+                acompanhe seu progresso e mantenha sua rotina em dia.
+            </p>
         </section>
-      <% } else { %>
-      <ul class="hs-user-tasks" id="listaTarefasServidor" aria-label="Lista de tarefas">
-        <% tasks.forEach(tarefa => {
-             const icons = {saude:'💊',sono:'🌙',alimentacao:'🥗',exercicio:'💪',geral:'✅'};
-           %>
-        <li>
-          <article class="hs-user-task-card <%= tarefa.completed ? 'hs-task-completed' : '' %>">
-            <header class="hs-task-header">
-              <section class="hs-task-left">
-                <figure class="hs-task-icon" aria-hidden="true">
-                  <% if (tarefa.completed) { %>
-                    <i class="bi bi-check-circle-fill" style="color:#34d399"></i>
-                  <% } else { %>
-                    <%= icons[tarefa.categoria] || '✅' %>
-                  <% } %>
-                </figure>
-                <section class="hs-task-content">
-                  <h3 class="hs-task-name <%= tarefa.completed ? 'hs-task-name-completed' : '' %>">
-                    <%= tarefa.title %>
-                  </h3>
-                  <section class="hs-task-meta">
-                    <span class="hs-task-cat-badge"><%= tarefa.categoria || 'geral' %></span>
-                  </section>
+    </section>
+
+    <!-- MOTIVAÇÃO-->
+    <section class="hs-motivation-grid">
+        <!--card 1-->
+        <article class="hs-info-card">
+            <span class="hs-info-icon">
+                📋
+            </span>
+            <section>
+                <h2>Tarefas Restantes</h2>
+                <p>
+                    <%= tasks ? tasks.filter(t => !t.completed).length : 0 %>
+                </p>
+            </section>
+        </article>
+
+        <!--card 2-->
+        <article class="hs-info-card">
+            <span class="hs-info-icon">
+                🎯
+            </span>
+            <section>
+                <h2>Meta diária</h2>
+                <p>
+                    <%= tasks ? tasks.filter(t => t.completed).length : 0 %> / 5
+                </p>
+
+                <section class="hs-progress">
+                    <section
+                        class="hs-progress-bar"
+                        style="width:<%= Math.min(((tasks ? tasks.filter(t => t.completed).length : 0)/5)*100,100)%>%">
+                    </section>
                 </section>
-              </section>
+            </section>
+        </article>
 
-              <% if (!tarefa.completed) { %>
-                <a href="/tasks/concluir?id=<%= tarefa._id %>" class="hs-task-btn"
-                  aria-label="Concluir: <%= tarefa.title %>">
-                  <i class="bi bi-check" aria-hidden="true"></i> Concluir
-                </a>
-              <% } else { %>
-                <span class="hs-task-btn hs-btn-completed">
-                  <i class="bi bi-check-circle-fill" aria-hidden="true"></i> Feita
-                </span>
-              <% } %>
+        <!--card 3-->
+        <article class="hs-info-card">
+            <span class="hs-info-icon">
+                🔥
+            </span>
+            <section>
+                <h2>Sequência</h2>
+                <p>
+                    <%= usuario.ofensive || 0 %> dias
+                </p>
+            </section>
+        </article>
+    </section>
 
-              <form action="/tasks/excluir/<%= tarefa._id %>" method="POST" style="margin:0"
-                onsubmit="return confirm('Excluir esta tarefa?')">
-                <button type="submit" class="hs-btn-excluir" title="Excluir tarefa"
-                  aria-label="Excluir: <%= tarefa.title %>">
-                  <i class="bi bi-trash3" aria-hidden="true"></i>
+    <!-- PESQUISA,FILTROS e + NOVA TAREFA -->
+    <section class="hs-task-toolbar">
+        <!-- barra de pesquisa -->
+        <input
+            type="search"
+            id="searchTask"
+            placeholder="Pesquisar tarefa..."
+        >
+
+        <!-- filtro -->
+        <select id="filterStatus">
+            <option value="today">
+                Hoje
+            </option>
+
+            <option value="nextweek">
+                Próxima semana
+            </option>
+        </select>
+
+        <!-- categoria -->
+        <select id="filterCategory">
+            <option value="">
+                Categoria
+            </option>
+
+            <option value="geral">
+                Geral
+            </option>
+
+            <option value="saude">
+                Saúde
+            </option>
+
+            <option value="sono">
+                Sono
+            </option>
+
+            <option value="alimentacao">
+                Alimentação
+            </option>
+
+            <option value="exercicio">
+                Exercício
+            </option>
+        </select>
+
+        <button id="btnNovaTarefa" class="hs-floating-add">
+         <i class="bi bi-plus-lg"></i>
+         Nova tarefa
+        </button>
+    </section>
+
+    <!-- CONTAINER TAREFAS-->
+    <section class="hs-tasks-container">
+    <section class="hs-tasks-section">
+        <header class="hs-section-header">
+            <h2>
+                Tarefas pendentes de hoje
+            </h2>
+            <span class="hs-section-count">
+                <%= tasks ? tasks.filter(t => !t.completed).length : 0 %>
+            </span>
+        </header>
+
+        <% if(!tasks || tasks.filter(t => !t.completed).length === 0){ %>
+            <section class="hs-empty-state">
+                <i class="bi bi-check2-circle"></i>
+                <h3>
+                    Nenhuma tarefa pendente
+                </h3>
+                <p>
+                    Excelente! Você concluiu todas as tarefas.
+                </p>
+            </section>
+        <% } else { %>
+        <ul class="hs-user-tasks">
+            <% tasks
+                .filter(t => !t.completed)
+                .forEach(tarefa => { %>
+                <li>
+                    <article class="hs-user-task-card">
+                        <section class="hs-task-main">
+
+                          <a
+                                href="/tasks/concluir?id=<%= tarefa._id %>"
+                                class="hs-task-btn"
+                            >
+                                <i class="bi bi-check-lg"></i>
+                                
+                          </a>
+
+                            <section class="hs-task-icon">
+                                <% if(tarefa.categoria === "saude"){ %>
+                                    💊
+                                <% } else if(tarefa.categoria === "sono"){ %>
+                                    🌙
+                                <% } else if(tarefa.categoria === "alimentacao"){ %>
+                                    🥗
+                                <% } else if(tarefa.categoria === "exercicio"){ %>
+                                    💪
+                                <% } else { %>
+                                    📋
+                                <% } %>
+                            </section>
+
+                            <section class="hs-task-info">
+                                <h3>
+                                    <%= tarefa.title %>
+                                </h3>
+
+                                <section class="hs-task-meta">
+                                    <span class="hs-task-cat">
+                                      <h4>Categoria:
+                                        <%= tarefa.categoria %>
+                                      </h4>
+                                    </span>
+
+                                    <% if(tarefa.data){ %>
+                                        <span>
+                                            <i class="bi bi-calendar3"></i>
+                                            <%= tarefa.data %>
+                                        </span>
+                                    <% } %>
+
+                                    <% if(tarefa.horario){ %>
+                                        <span>
+                                            <i class="bi bi-clock"></i>
+                                            <%= tarefa.horario %>
+                                        </span>
+                                    <% } %>
+                                </section>
+                            </section>
+                        </section>
+
+                        <section class="hs-task-actions">
+                            <a
+                                href="/tasks/editar/<%= tarefa._id %>"
+                                class="hs-task-edit"
+                            >
+                                <i class="bi bi-pencil"></i>
+
+                            </a>
+
+                            <form
+                                action="/tasks/excluir/<%= tarefa._id %>"
+                                method="POST"
+                                onsubmit="return confirm('Excluir esta tarefa?')"
+                            >
+                                <button
+                                    type="submit"
+                                    class="hs-btn-excluir"
+                                >
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+                        </section>
+                    </article>
+                </li>
+            <% }) %>
+        </ul>
+        <% } %>
+    </section>
+    </section>
+
+    <!-- CATEGORIAS -->
+    <section class="hs-tasks-section">
+    <header class="hs-section-header">
+            <h2>
+                Explore conteúdos
+            </h2>
+            
+        </header>
+
+    <nav class="hs-categorias">
+        <a href="/sono" class="hs-categoria-link">
+            <img src="/imagem/sono.webp" alt="Sono">
+            <span>Sono</span>
+            <p>Aprenda hábitos para dormir melhor.</p>
+        </a>
+
+        <a href="/saude-mental" class="hs-categoria-link">
+            <img src="/imagem/saudemental.webp" alt="Saúde Mental">
+            <span>Saúde Mental</span>
+            <p>Reduza estresse e ansiedade.</p>
+        </a>
+
+        <a href="/atividade-fisica" class="hs-categoria-link">
+            <img src="/imagem/atf.webp" alt="Atividade Física">
+            <span>Atividade Física</span>
+            <p>Dicas para manter a rotina.</p>
+        </a>
+
+        <a href="/alimentacao" class="hs-categoria-link">
+            <img src="/imagem/alimentacao.webp" alt="Alimentação">
+            <span>Alimentação</span>
+            <p>Melhore sua nutrição.</p>
+        </a>
+    </nav>
+</section>
+
+<%- include('../partials/voltar-topo.ejs') %>
+
+
+<!-- OVERLAY -->
+<div class="hs-drawer-overlay" id="drawerOverlay">
+    <!-- Drawer -->
+    <aside class="hs-task-drawer" id="taskDrawer">
+        <header class="hs-drawer-header">
+            <section>
+                <h2>Nova tarefa</h2>
+                <p>
+                    Organize sua rotina de forma simples.
+                </p>
+            </section>
+            <button
+                class="hs-close-drawer"
+                id="closeDrawer"
+                type="button"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+
+        <form
+            action="/tasks/criar"
+            method="POST"
+            class="hs-drawer-form"
+        >
+            <section class="hs-form-group">
+                <label>Título</label>
+                <input
+                    type="text"
+                    name="titulo"
+                    required
+                    maxlength="200"
+                    placeholder="Ex.: Caminhar 30 minutos"
+                >
+            </section>
+
+            <section class="hs-form-group">
+                <label>Descrição</label>
+                <textarea
+                    rows="4"
+                    name="descricao"
+                    placeholder="Opcional..."
+                ></textarea>
+            </section>
+
+            <section class="hs-form-group">
+                <label>Categoria</label>
+                <select name="categoria">
+                    <option value="geral">📋 Geral</option>
+                    <option value="saude">💊 Saúde</option>
+                    <option value="sono">🌙 Sono</option>
+                    <option value="alimentacao">🥗 Alimentação</option>
+                    <option value="exercicio">💪 Exercício</option>
+                </select>
+            </section>
+
+            <section class="hs-inline">
+                <section class="hs-form-group">
+                    <label>Data</label>
+                    <input
+                        type="date"
+                        name="data"
+                    >
+                </section>
+
+                <section class="hs-form-group">
+                    <label>Horário</label>
+                    <input
+                        type="time"
+                        name="horario"
+                    >
+                </section>
+            </section>
+
+            <section class="hs-form-group">
+                <label>Repetição</label>
+                <select name="repeticao">
+                    <option value="once">
+                        Apenas uma vez
+                    </option>
+
+                    <option value="daily">
+                        Todos os dias
+                    </option>
+
+                    <option value="weekly">
+                        Dias da semana
+                    </option>
+                </select>
+            </section>
+
+            <footer class="hs-drawer-footer">
+                <button
+                    type="button"
+                    class="hs-btn-cancel"
+                    id="cancelDrawer"
+                >
+                    Cancelar
                 </button>
-              </form>
-            </header>
-          </article>
-        </li>
-        <% }) %>
-      </ul>
-      <% } %>
 
-      <!-- Tarefas locais adicionadas via JS (legado) -->
-      <ul class="hs-user-tasks" id="listaTarefasLocais" aria-label="Tarefas locais" aria-live="polite"></ul>
-    </section>
+                <button
+                    type="submit"
+                    class="hs-btn-save"
+                >
+                    <i class="bi bi-plus-circle-fill"></i>
 
-    <!-- Categorias de saúde -->
-    <section class="hs-tasks-section" aria-labelledby="tit-cats">
-      <h2 class="hs-section-title" id="tit-cats">Categorias de Saúde</h2>
-      <nav class="hs-categorias" aria-label="Navegar por categoria">
-        <a href="/sono"             class="hs-categoria-link"><img src="/imagem/sono.webp"        alt="" aria-hidden="true" /><span>Sono</span></a>
-        <a href="/saude-mental"     class="hs-categoria-link"><img src="/imagem/saudemental.webp" alt="" aria-hidden="true" /><span>Saúde Mental</span></a>
-        <a href="/atividade-fisica" class="hs-categoria-link"><img src="/imagem/atf.webp"         alt="" aria-hidden="true" /><span>Atividade Física</span></a>
-        <a href="/alimentacao"      class="hs-categoria-link"><img src="/imagem/alimentacao.webp" alt="" aria-hidden="true" /><span>Alimentação</span></a>
-      </nav>
-    </section>
+                    Salvar tarefa
+                </button>
+            </footer>
+        </form>
+    </aside>
+</div>
 
-  </section>
 </main>
 
 <%- include('../partials/footer.ejs') %>
-
-<style>
-  .visually-hidden{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
-  .hs-task-name-completed{text-decoration:line-through;opacity:.55;}
-</style>
-
-<script src="/js/tasks.js"></script>
-<script>
-  /* Suporte a tarefas locais (sem banco) */
-  function adicionarTarefa() {
-    const campo = document.getElementById('campoTarefa');
-    if (!campo) return;
-    const texto = campo.value.trim();
-    if (!texto) return;
-    const lista = document.getElementById('listaTarefasLocais');
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <article class="hs-user-task-card">
-        <header class="hs-task-header">
-          <section class="hs-task-left">
-            <figure class="hs-task-icon">✅</figure>
-            <section class="hs-task-content">
-              <h3 class="hs-task-name">${texto}</h3>
-              <section class="hs-task-meta">
-                <span class="hs-task-pts-badge">+10 pts</span>
-                <span class="hs-task-cat-badge">geral</span>
-              </section>
-            </section>
-          </section>
-          <button type="button" class="hs-task-btn" onclick="concluirLocal(this)">
-            <i class="bi bi-check"></i> Concluir
-          </button>
-        </header>
-      </article>`;
-    lista.appendChild(li);
-    campo.value = '';
-    campo.focus();
-    mostrarToast('✓ Tarefa adicionada!');
-  }
-  function concluirLocal(btn) {
-    const card = btn.closest('.hs-user-task-card');
-    card.classList.add('hs-task-completed');
-    const nome = card.querySelector('.hs-task-name');
-    if (nome) nome.style.textDecoration = 'line-through';
-    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Feita';
-    btn.className = 'hs-task-btn hs-btn-completed';
-    btn.disabled = true;
-    mostrarToast('🎉 Tarefa concluída! +10 pts');
-  }
-  function mostrarToast(msg) {
-    let t = document.querySelector('.toast');
-    if (!t) { t = document.createElement('p'); t.className = 'toast'; document.body.appendChild(t); }
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    const campo = document.getElementById('campoTarefa');
-    if (campo) campo.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); document.querySelector('[type=submit]')?.click(); } });
-  });
-</script>
+<script src="/js/tarefas/tarefalocal.js"></script>
+<script src="/js/tarefas/criartarefa.js"></script>
 </body>
 </html>
