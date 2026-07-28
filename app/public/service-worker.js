@@ -1,7 +1,6 @@
 const CACHE_NAME = "healthy-safely-v2";
 
 const urlsToCache = [
-  "/",
   "/offline.html",
   "/css/global.css",
   "/manifest.json",
@@ -41,33 +40,18 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  // Não cacheia páginas HTML
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("/offline.html")),
+    );
+    return;
+  }
+
+  // Cache apenas de arquivos estáticos
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const networkFetch = fetch(event.request)
-        .then((networkResponse) => {
-          if (
-            networkResponse &&
-            networkResponse.status === 200 &&
-            event.request.url.startsWith(self.location.origin)
-          ) {
-            const responseClone = networkResponse.clone();
-
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-          }
-
-          return networkResponse;
-        })
-        .catch(async () => {
-          if (event.request.mode === "navigate") {
-            return caches.match("/offline.html");
-          }
-
-          return cachedResponse;
-        });
-
-      return cachedResponse || networkFetch;
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
     }),
   );
 });

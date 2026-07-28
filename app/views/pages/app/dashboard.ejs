@@ -18,7 +18,7 @@
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
 </head>
 <body>
-  <%- include('../partials/header.ejs') %>
+  <%- include('../../partials/header.ejs') %>
   <%
     const taskList = typeof tasks !== 'undefined' ? tasks : [];
     const tarefasHoje = taskList.filter(t => !t.completed).slice(0, 4);
@@ -184,7 +184,7 @@
   </main>
 
 
-  <%- include('../partials/footer.ejs') %>
+  <%- include('../../partials/footer.ejs') %>
 
   <script src="/js/dashboard.js"></script>
   

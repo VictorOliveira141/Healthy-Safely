@@ -26,7 +26,7 @@
     <meta name="theme-color" content="#5BBF6A" />
   </head>
   <body>
-    <%- include('../partials/header.ejs') %>
+    <%- include('../../partials/header.ejs') %>
     <main id="main-content" class="perfil-corpo" tabindex="-1">
       <section class="perfil" aria-labelledby="perfil-nome">
         <figure class="foto-perfil">
@@ -45,8 +45,7 @@
             <span>Seu perfil</span>
           </p>
           <h1 id="perfil-nome">
-            <%= usuario && usuario.nome ? usuario.nome.split('
-            ').slice(0,2).join(' ') : 'Usuário' %>
+          <%= usuario && usuario.nome ? usuario.nome.split(' ').slice(0,2).join(' ') : 'Usuário' %>
           </h1>
           <p>
             @<%= usuario && usuario.nomeusuario ? usuario.nomeusuario : '—' %>
@@ -153,6 +152,6 @@
       </section>
     </main>
 
-    <%- include('../partials/footer.ejs') %>
+    <%- include('../../partials/footer.ejs') %>
   </body>
 </html>

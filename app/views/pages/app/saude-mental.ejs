@@ -3,17 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Atividade Física | Healthy Safely</title>
-    <meta property="og:title" content="Atividade Física | Healthy Safely" />
+    <title>Saúde Mental | Healthy Safely</title>
+    <meta property="og:title" content="Saúde Mental | Healthy Safely" />
     <meta
       property="og:description"
-      content="Acompanhe seus exercícios e mantenha a rotina ativa com o Healthy Safely."
+      content="Pratique hábitos saudáveis para sua mente e acompanhe seu bem-estar com o Healthy Safely."
     />
     <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
-    <meta
-      property="og:url"
-      content="https://healthysafely.com/atividade-fisica"
-    />
+    <meta property="og:url" content="https://healthysafely.com/saude-mental" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Healthy Safely" />
     <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
@@ -27,23 +24,23 @@
     <meta name="theme-color" content="#5BBF6A" />
   </head>
   <body>
-    <%- include('../partials/header.ejs') %>
+    <%- include('../../partials/header.ejs') %>
 
     <main class="pt-page">
       <div class="pt-hero" aria-hidden="true"></div>
 
       <div class="pt-card-wrap">
-        <section class="pt-card" aria-labelledby="titulo-atf">
+        <section class="pt-card" aria-labelledby="titulo-saudemental">
           <header class="pt-card-topo">
-            <img src="/imagem/atf.webp" alt="Ícone de atividade física" />
-            <h1 id="titulo-atf">Atividade Física</h1>
+            <img src="/imagem/saudemental.webp" alt="Ícone de saúde mental" />
+            <h1 id="titulo-saudemental">Saúde Mental</h1>
           </header>
 
           <div class="pt-card-corpo">
             <p class="pt-card-texto">
-              Realize no mínimo 30 minutos de atividade física moderada por dia
-              durante 7 dias consecutivos e registre sua evolução.<br />
-              Um profissional irá acompanhar seu relatório.
+              Pratique 10 minutos de meditação ou respiração consciente por dia
+              durante uma semana e registre como se sentiu.<br />
+              Um profissional irá acompanhar seu progresso.
             </p>
           </div>
 
@@ -72,49 +69,48 @@
               type="button"
               onclick="registrar()"
             >
-              Registrar atividade
+              Iniciar prática
             </button>
           </footer>
         </section>
       </div>
 
-      <section class="pt-secao" aria-labelledby="titulo-treinos">
-        <h2 class="pt-secao-titulo" id="titulo-treinos">Sugestões de treino</h2>
+      <section class="pt-secao" aria-labelledby="titulo-dicas-sm">
+        <h2 class="pt-secao-titulo" id="titulo-dicas-sm">
+          Dicas para o bem-estar mental
+        </h2>
         <div class="pt-grid">
           <article class="pt-grid-card">
-            <i class="bi bi-person-walking" aria-hidden="true"></i>
-            <h4>Caminhada</h4>
+            <i class="bi bi-wind" aria-hidden="true"></i>
+            <h4>Respiração 4-7-8</h4>
             <p>
-              Ideal para iniciantes. Melhora a saúde cardiovascular com baixo
-              impacto.
+              Inspire por 4s, segure por 7s e expire por 8s. Reduz a ansiedade
+              em minutos.
             </p>
-            <span class="badge-dificuldade">30 min · Fácil</span>
           </article>
           <article class="pt-grid-card">
-            <i class="bi bi-bicycle" aria-hidden="true"></i>
-            <h4>Ciclismo</h4>
+            <i class="bi bi-journal-text" aria-hidden="true"></i>
+            <h4>Diário emocional</h4>
             <p>
-              Baixo impacto e ótimo para condicionamento físico e queima
-              calórica.
+              Escreva 3 coisas pelas quais é grato todo dia para treinar o
+              pensamento positivo.
             </p>
-            <span class="badge-dificuldade">45 min · Moderado</span>
           </article>
           <article class="pt-grid-card">
-            <i class="bi bi-person-arms-up" aria-hidden="true"></i>
-            <h4>Funcional</h4>
+            <i class="bi bi-phone-landscape" aria-hidden="true"></i>
+            <h4>Detox digital</h4>
             <p>
-              Exercícios com peso corporal para força, resistência e equilíbrio.
+              30 minutos sem telas antes de dormir melhora o sono e reduz o
+              estresse.
             </p>
-            <span class="badge-dificuldade">30 min · Moderado</span>
           </article>
           <article class="pt-grid-card">
-            <i class="bi bi-lightning-fill" aria-hidden="true"></i>
-            <h4>HIIT</h4>
+            <i class="bi bi-people-fill" aria-hidden="true"></i>
+            <h4>Conexão social</h4>
             <p>
-              Treino intervalado de alta intensidade para queima acelerada de
-              gordura.
+              Fale com alguém de confiança. Relações saudáveis são fundamentais
+              para a saúde mental.
             </p>
-            <span class="badge-dificuldade">25 min · Intenso</span>
           </article>
         </div>
       </section>
@@ -128,15 +124,12 @@
           <a href="/sono" class="pt-nav-item"
             ><img src="/imagem/sono.webp" alt="Sono" /><span>Sono</span></a
           >
-          <a href="/saude-mental" class="pt-nav-item"
+          <a href="/saude-mental" class="pt-nav-item ativo" aria-current="page"
             ><img src="/imagem/saudemental.webp" alt="Saúde Mental" /><span
               >Saúde Mental</span
             ></a
           >
-          <a
-            href="/atividade-fisica"
-            class="pt-nav-item ativo"
-            aria-current="page"
+          <a href="/atividade-fisica" class="pt-nav-item"
             ><img src="/imagem/atf.webp" alt="Atividade Física" /><span
               >Atividade</span
             ></a
@@ -155,10 +148,10 @@
       </nav>
     </main>
 
-    <%- include('../partials/footer.ejs') %>
+    <%- include('../../partials/footer.ejs') %>
 
     <script>
-      const CHAVE = "hs_atf_prog";
+      const CHAVE = "hs_saudemental_prog";
       let progresso = Number(localStorage.getItem(CHAVE) || 0);
       const btn = document.getElementById("btnAcao");
       const porcTexto = document.getElementById("porcTexto");
@@ -180,7 +173,7 @@
         progresso = Math.min(progresso + 14, 100);
         localStorage.setItem(CHAVE, progresso);
         renderProgresso();
-        if (progresso < 100) btn.textContent = "Registrar novamente";
+        if (progresso < 100) btn.textContent = "Continuar prática";
       }
 
       renderProgresso();

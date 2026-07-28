@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
@@ -24,92 +23,120 @@ function apenasAutenticado(req, res, next) {
 router.use("/ia", iaRoutes);
 
 /* ============================================================
-   ROTAS PÚBLICAS
+   APP (núcleo do site)
 ============================================================ */
 
-router.get("/", (req, res) => {
-  if (req.session?.usuario) {
-       return res.redirect("/dashboard");
-    }
-    res.render("pages/tomarammeutela");
+/* ---------------- Dashboard ---------------- */
+
+router.get("/dashboard", apenasAutenticado, (req, res) => {
+  console.log("ENTROU NO DASHBOARD");
+  console.log(req.session.usuario);
+
+  tarefaController.exibirDashboard(req, res);
+});
+/* ---------------- Histórico ---------------- */
+
+router.get("/historico", apenasAutenticado, tarefaController.exibirHistorico);
+
+/* ---------------- Tarefas ---------------- */
+
+router.get("/tasks", apenasAutenticado, tarefaController.listarTarefas);
+
+router.post(
+  "/tasks/criar",
+  apenasAutenticado,
+  tarefaController.regrasValidacaoTarefa,
+  tarefaController.criarTarefa,
+);
+
+router.get(
+  "/tasks/concluir",
+  apenasAutenticado,
+  tarefaController.alternarConclusao,
+);
+
+router.post(
+  "/tasks/excluir/:id",
+  apenasAutenticado,
+  tarefaController.excluirTarefa,
+);
+
+/* ---------------- Saúde ---------------- */
+
+router.get("/sono", apenasAutenticado, async (req, res) => {
+  const { usuarioModel } = require("../models/Usuario");
+
+  const registros = await usuarioModel.listarSono(req.session.usuario.id);
+
+  const flash = req.session.flash || null;
+  delete req.session.flash;
+
+  res.render("pages/sono", { registros, flash });
 });
 
-router.get("/ajuda", (req, res) => res.render("pages/ajuda"));
+router.post(
+  "/sono/registrar",
+  apenasAutenticado,
+  tarefaController.registrarSono,
+);
 
-router.get("/configuracoes", (req, res) =>
-  res.render("pages/configuracoes"),
+router.get("/saude-mental", apenasAutenticado, (req, res) =>
+  res.render("pages/saude-mental"),
+);
+
+router.get("/atividade-fisica", apenasAutenticado, (req, res) =>
+  res.render("pages/atividade-fisica"),
+);
+
+router.get("/alimentacao", apenasAutenticado, (req, res) =>
+  res.render("pages/alimentacao"),
 );
 
 /* ============================================================
-   AUTENTICAÇÃO
+   AUTH (cadatro, login, mudar senha, confirmações)
 ============================================================ */
 
+/* ---------------- Login ---------------- */
 router.get("/login", (req, res) => {
   if (req.session?.usuario) {
-    return req.session.usuario.tipo === "profissional"
-      ? res.redirect("/profissional/painel-financeiro")
-      : res.redirect("/dashboard");
+    return res.redirect("/dashboard");
   }
 
-  usuarioController.exibirLogin(req, res);
+  res.render("pages/auth/login", {
+    erro: null,
+    valores: { email: "" },
+    erroValidacao: {},
+    msgErro: {},
+    sucesso: false,
+  });
 });
-
 router.post("/login", usuarioController.login);
 
-router.get("/logout", usuarioController.logout);
-router.get("/sair", usuarioController.logout);
-
-/* ============================================================
-   CADASTRO
-============================================================ */
-
+/* ---------------- Cadastro ---------------- */
 router.get("/cadastro", (req, res) => {
   if (req.session?.usuario) {
-    return req.session.usuario.tipo === "profissional"
-      ? res.redirect("/profissional/painel-financeiro")
-      : res.redirect("/dashboard");
+    return res.redirect("/dashboard");
   }
 
-  res.render("pages/cadastro", {
+  res.render("pages/auth/cadastro", {
     valores: {},
     erroValidacao: {},
     msgErro: {},
   });
 });
 
-router.get(
-  "/cadastroCliente",
-  usuarioController.exibirCadastroCliente,
-);
-
-router.get(
-  "/cadastroProfissional",
-  usuarioController.exibirCadastroProfissional,
-);
-
+router.get("/cadastroCliente", usuarioController.exibirCadastroCliente);
 router.post(
   "/cadastroCliente",
   usuarioController.regrasValidacaoCliente,
   usuarioController.cadastrarCliente,
 );
 
-router.post(
-  "/cadastroProfissional",
-  usuarioController.regrasValidacaoProfissional,
-  usuarioController.cadastrarProfissional,
-);
-
-/* ============================================================
-   GOOGLE OAUTH
-============================================================ */
-
+/* ---------------- Confirmação com google ---------------- */
 router.get(
   "/auth/google",
   (req, res, next) => {
-    if (
-      !process.env.GOOGLE_CLIENT_ID ||
-      !process.env.GOOGLE_CLIENT_SECRET
-    ) {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       return res
         .status(500)
         .send(
@@ -153,27 +180,79 @@ router.get("/google/loading", (req, res) => {
     return res.redirect("/login");
   }
 
-  res.render("pages/google-loading");
+  res.render("pages/auth/google-loading");
 });
 
-router.get(
-  "/google/confirmacao",
-  usuarioController.exibirConfirmacaoGoogle,
-);
+router.get("/google/confirmacao", usuarioController.exibirConfirmacaoGoogle);
+
+router.post("/google/confirmacao", usuarioController.confirmarLoginGoogle);
+
+router.post("/google/cadastro", usuarioController.concluirCadastroGoogle);
+
+router.post("/google/cancelar", usuarioController.cancelarLoginGoogle);
+
+/* ============================================================
+   Marketing (apresentação, pagina de compras, suporte)
+============================================================ */
+
+router.get("/", (req, res) => {
+  if (req.session?.usuario) {
+    return res.redirect("/dashboard");
+  }
+  res.render("pages/marketing/tomarammeutela");
+});
+
+router.get("/ajuda", (req, res) => res.render("pages/marketing/ajuda"));
+
+/* ============================================================
+   User (configurações, notificações, perfil, privacidade)
+============================================================ */
+
+/* ---------------- Perfil ---------------- */
+router.get("/perfil", apenasAutenticado, async (req, res) => {
+  const { usuarioModel } = require("../models/Usuario");
+
+  const usuario =
+    (await usuarioModel.buscarPerfilCompleto(req.session.usuario.id)) ||
+    req.session.usuario;
+
+  res.render("pages/user/perfil", { usuario });
+});
+
+router.get("/logout", usuarioController.logout);
+router.get("/sair", usuarioController.logout);
+
+/* ---------------- Notificações ---------------- */
+router.get("/notificacoes", apenasAutenticado, async (req, res) => {
+  const { usuarioModel } = require("../models/Usuario");
+
+  const notificacoes = await usuarioModel.listarNotificacoes(
+    req.session.usuario.id,
+  );
+
+  res.render("pages/user/notificacoes", { notificacoes });
+});
 
 router.post(
-  "/google/confirmacao",
-  usuarioController.confirmarLoginGoogle,
+  "/notificacoes/marcar-lidas",
+  apenasAutenticado,
+  async (req, res) => {
+    const { usuarioModel } = require("../models/Usuario");
+
+    await usuarioModel.marcarTodasLidas(req.session.usuario.id);
+
+    res.redirect("/notificacoes");
+  },
 );
 
-router.post(
-  "/google/cadastro",
-  usuarioController.concluirCadastroGoogle,
+/* ---------------- Configurações ---------------- */
+router.get("/configuracoes", apenasAutenticado, (req, res) =>
+  res.render("pages/user/configuracoes"),
 );
 
-router.post(
-  "/google/cancelar",
-  usuarioController.cancelarLoginGoogle,
+/* ---------------- Privacidade ---------------- */
+router.get("/privacidade", apenasAutenticado, (req, res) =>
+  res.render("pages/user/privacidade"),
 );
 
 /* ============================================================
@@ -183,154 +262,6 @@ router.post(
 router.get(
   "/api/cadastro/disponibilidade",
   usuarioController.verificarDisponibilidade,
-);
-
-router.get(
-  "/api/profissionais",
-  apenasAutenticado,
-  tarefaController.buscarProfissionais,
-);
-
-/* ============================================================
-   ÁREA DO CLIENTE
-============================================================ */
-
-/* ---------------- Dashboard ---------------- */
-
-router.get(
-  "/dashboard",
-  apenasAutenticado,
-  tarefaController.exibirDashboard,
-);
-
-/* ---------------- Programas ---------------- */
-
-router.get("/programas", apenasAutenticado, (req, res) =>
-  res.render("user/programas"),
-);
-
-router.get("/programas-detalhes", apenasAutenticado, (req, res) =>
-  res.render("user/programas-detalhes"),
-);
-
-/* ---------------- Tarefas ---------------- */
-
-router.get("/tasks", apenasAutenticado, tarefaController.listarTarefas);
-
-router.post(
-  "/tasks/criar",
-  apenasAutenticado,
-  tarefaController.regrasValidacaoTarefa,
-  tarefaController.criarTarefa,
-);
-
-router.get(
-  "/tasks/concluir",
-  apenasAutenticado,
-  tarefaController.alternarConclusao,
-);
-
-router.post(
-  "/tasks/excluir/:id",
-  apenasAutenticado,
-  tarefaController.excluirTarefa,
-);
-
-/* ---------------- Profissionais ---------------- */
-
-router.post(
-  "/vincular-profissional",
-  apenasAutenticado,
-  tarefaController.solicitarVinculo,
-);
-
-/* ---------------- Saúde ---------------- */
-
-router.get("/sono", apenasAutenticado, async (req, res) => {
-  const { usuarioModel } = require("../models/Usuario");
-
-  const registros = await usuarioModel.listarSono(
-    req.session.usuario.id,
-  );
-
-  const flash = req.session.flash || null;
-  delete req.session.flash;
-
-  res.render("pages/sono", { registros, flash });
-});
-
-router.post(
-  "/sono/registrar",
-  apenasAutenticado,
-  tarefaController.registrarSono,
-);
-
-router.get("/saude-mental", apenasAutenticado, (req, res) =>
-  res.render("pages/saude-mental"),
-);
-
-router.get("/atividade-fisica", apenasAutenticado, (req, res) =>
-  res.render("pages/atividade-fisica"),
-);
-
-router.get("/alimentacao", apenasAutenticado, (req, res) =>
-  res.render("pages/alimentacao"),
-);
-
-/* ---------------- Histórico ---------------- */
-
-router.get(
-  "/historico",
-  apenasAutenticado,
-  tarefaController.exibirHistorico,
-);
-
-/* ============================================================
-   ÁREA AUTENTICADA
-============================================================ */
-
-router.get("/perfil", apenasAutenticado, async (req, res) => {
-  const { usuarioModel } = require("../models/Usuario");
-
-  const usuario =
-    (await usuarioModel.buscarPerfilCompleto(
-      req.session.usuario.id,
-    )) || req.session.usuario;
-
-  res.render("pages/perfil", { usuario });
-});
-
-router.get(
-  "/notificacoes",
-  apenasAutenticado,
-  async (req, res) => {
-    const { usuarioModel } = require("../models/Usuario");
-
-    const notificacoes =
-      await usuarioModel.listarNotificacoes(
-        req.session.usuario.id,
-      );
-
-    res.render("pages/notificacoes", { notificacoes });
-  },
-);
-
-router.post(
-  "/notificacoes/marcar-lidas",
-  apenasAutenticado,
-  async (req, res) => {
-    const { usuarioModel } = require("../models/Usuario");
-
-    await usuarioModel.marcarTodasLidas(
-      req.session.usuario.id,
-    );
-
-    res.redirect("/notificacoes");
-  },
-);
-
-router.get("/privacidade", apenasAutenticado, (req, res) =>
-  res.render("pages/privacidade"),
 );
 
 /* ============================================================
