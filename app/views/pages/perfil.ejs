@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/perfil.css" />
     <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#5BBF6A" />
   </head>
   <body>
     <%- include('../partials/header.ejs') %>
@@ -42,7 +45,8 @@
             <span>Seu perfil</span>
           </p>
           <h1 id="perfil-nome">
-            <%= usuario && usuario.nome ? usuario.nome.split(' ').slice(0,2).join(' ') : 'Usuário' %>
+            <%= usuario && usuario.nome ? usuario.nome.split('
+            ').slice(0,2).join(' ') : 'Usuário' %>
           </h1>
           <p>
             @<%= usuario && usuario.nomeusuario ? usuario.nomeusuario : '—' %>
