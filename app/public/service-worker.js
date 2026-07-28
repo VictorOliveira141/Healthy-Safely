@@ -1,57 +1,125 @@
-const CACHE_NAME = "healthy-safely-v2";
+// ===============================
+// CONFIGURAÇÕES
+// ===============================
 
-const urlsToCache = [
+const STATIC_CACHE = "hs-static-v1";
+const PAGES_CACHE = "hs-pages-v1";
+const ASSETS_CACHE = "hs-assets-v1";
+
+const STATIC_FILES = [
+  "/",
   "/offline.html",
-  "/css/global.css",
   "/manifest.json",
+
+  "/css/global.css",
+
   "/imagem/pwa/icon-192.png",
   "/imagem/pwa/icon-512.png",
 ];
 
-// Instala o Service Worker
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("Cache criado.");
-      return cache.addAll(urlsToCache);
-    }),
-  );
+// ===============================
+// INSTALAÇÃO
+// ===============================
 
+self.addEventListener("install", (event) => {
   self.skipWaiting();
+
+  event.waitUntil(
+    caches.open(STATIC_CACHE).then((cache) => cache.addAll(STATIC_FILES)),
+  );
 });
 
-// Ativa o Service Worker
+// ===============================
+// ATIVAÇÃO
+// ===============================
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (
+            key !== STATIC_CACHE &&
+            key !== PAGES_CACHE &&
+            key !== ASSETS_CACHE
+          ) {
+            return caches.delete(key);
           }
         }),
-      ),
-    ),
+      );
+    }),
   );
 
   self.clients.claim();
 });
 
+// ===============================
+// FETCH
+// ===============================
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  // Não cacheia páginas HTML
-  if (event.request.mode === "navigate") {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Ignora requisições externas
+  if (url.origin !== location.origin) return;
+
+  // ===========================
+  // HTML (Network First)
+  // ===========================
+
+  if (request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("/offline.html")),
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+
+          caches.open(PAGES_CACHE).then((cache) => {
+            cache.put(request, clone);
+          });
+
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+
+          if (cached) return cached;
+
+          return caches.match("/offline.html");
+        }),
     );
+
     return;
   }
 
-  // Cache apenas de arquivos estáticos
+  // ===========================
+  // CSS / JS / Imagens / Fontes
+  // (Stale While Revalidate)
+  // ===========================
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
+    caches.match(request).then((cached) => {
+      const networkFetch = fetch(request)
+        .then((response) => {
+          if (
+            response &&
+            response.status === 200 &&
+            response.type === "basic"
+          ) {
+            const clone = response.clone();
+
+            caches.open(ASSETS_CACHE).then((cache) => {
+              cache.put(request, clone);
+            });
+          }
+
+          return response;
+        })
+        .catch(() => cached);
+
+      return cached || networkFetch;
     }),
   );
 });

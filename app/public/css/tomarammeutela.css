@@ -33,7 +33,7 @@ body h3::after {
    APRESENTAÇÃO
 =========================== */
 .hero-container {
-  background: var(--secondary-color);
+  background: var(--primary-color);
   border-radius: var(--border-radius);
   margin: 30px auto 0;
   display: grid;
@@ -47,14 +47,14 @@ body h3::after {
   overflow: hidden;
   border-radius: var(--border-radius);
   padding: 20px;
-  box-shadow: 0 20px 45px rgba(12, 79, 67, 0.28);
+
 }
 
 /* ----- titulo e descrição ----- */
 .hero-badge,
 .hero-panel h1,
 .hero-panel p {
-  color: var(--fundoescuro);
+  color: var(--fundoclaro);
 }
 .hero-badge {
   display: inline-flex;
@@ -108,14 +108,14 @@ body h3::after {
 }
 
 .hero-btn-primary {
-  color: #0c4f43;
-  background: #f2ffd8;
+  color: var(--fundoescuro);
+  background: var(--secondary-color);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 .hero-btn-ghost {
-  color: #f5fffb;
-  border: 1px solid rgba(245, 255, 251, 0.62);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--fundoclaro);
+  border: 1px solid var(--border);
+  background: var(--surface-bg);
 }
 
 /* ----- tags ----- */
@@ -127,14 +127,14 @@ body h3::after {
 }
 
 .hero-tags span {
-  color: var(--fundoescuro);
+  color: var(--fundoclaro);
   display: inline-flex;
   align-items: center;
   padding: 7px 12px;
   border-radius: 999px;
   font-size: var(--font-text);
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: var(--surface-bg);
+  border: 1px solid var(--border);
 }
 
 .hero-insights {
@@ -145,6 +145,7 @@ body h3::after {
 
 /* ===== Carrossel ===== */
 .hero-insights {
+  background: var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -170,7 +171,7 @@ body h3::after {
 }
 .slide h3 {
   margin-bottom: 10px;
-  color: var(--fundoescuro);
+  color: var(--fundoclaro);
   font-size: var(--font-title);
 }
 .slide img {
