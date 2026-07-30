@@ -1,6 +1,6 @@
 {
-  "name": "Healthy Safely",
-  "short_name": "Healthy",
+  "name": "Healthy Safely TESTE",
+  "short_name": "Healthyy",
   "description": "Sistema para criação de hábitos, metas e tarefas saudáveis.",
   "start_url": "/",
   "scope": "/",
@@ -11,16 +11,16 @@
   "lang": "pt-BR",
   "icons": [
     {
-      "src": "/imagem/pwa/icon-192.png",
+      "src": "/imagem/pwa/icon-192-maskable.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/imagem/pwa/icon-512.png",
+      "src": "/imagem/pwa/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
