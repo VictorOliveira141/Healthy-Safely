@@ -71,7 +71,7 @@ router.get("/sono", apenasAutenticado, async (req, res) => {
   const flash = req.session.flash || null;
   delete req.session.flash;
 
-  res.render("pages/sono", { registros, flash });
+  res.render("pages/app/sono", { registros, flash });
 });
 
 router.post(
@@ -81,15 +81,15 @@ router.post(
 );
 
 router.get("/saude-mental", apenasAutenticado, (req, res) =>
-  res.render("pages/saude-mental"),
+  res.render("pages/app/saude-mental"),
 );
 
 router.get("/atividade-fisica", apenasAutenticado, (req, res) =>
-  res.render("pages/atividade-fisica"),
+  res.render("pages/app/atividade-fisica"),
 );
 
 router.get("/alimentacao", apenasAutenticado, (req, res) =>
-  res.render("pages/alimentacao"),
+  res.render("pages/app/alimentacao"),
 );
 
 /* ============================================================

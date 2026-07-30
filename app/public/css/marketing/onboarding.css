@@ -10,7 +10,7 @@ main {
 .onboarding-container {
 
   margin: auto;
-
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -136,7 +136,7 @@ main {
 
   cursor: pointer;
 
-  font-size: var(--font-small);
+  font-size: var(--font-text);
   font-weight: 600;
   color: var(--fundoclaro);
   text-align: left;
@@ -247,4 +247,3 @@ main {
 /* =======================================
    RESPONSIVO
 ======================================= */
-

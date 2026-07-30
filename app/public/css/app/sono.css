@@ -1,0 +1,518 @@
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: #014638;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* Estrutura Principal */
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  padding: 2rem 1rem 4rem;
+}
+
+/* Card Principal */
+.tarefa-container {
+  background-color: #0e3931;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 67%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+h3 {
+  text-decoration: none;
+}
+
+.tarefa-topo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.lua-img {
+  width: 70px;
+  height: 70px;
+  max-width: 100%;
+}
+
+.tarefa-container h3 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.tarefa-texto {
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Parte Inferior da Tarefa */
+.tarefa-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.tarefa-porcentagem {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.tarefa-botao-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tarefa-botao {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(145deg, #046b56, #0b4b3b);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 44px;
+}
+
+.tarefa-botao:hover {
+  background: #0b5c4a;
+  transform: scale(1.05);
+}
+
+.tarefa-botao-texto {
+  font-size: 0.95rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Seção de Tarefas */
+.tarefas-section {
+  background-color: #103b33;
+  border-radius: 18px;
+  padding: 2rem;
+  max-width: 1000px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.titulo-tarefas {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.tarefas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+}
+
+.iconestarefas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  text-decoration: none;
+}
+
+.tarefa-item {
+  text-decoration: none;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.tarefa-item img {
+  width: 100px;
+  height: auto;
+  transition: transform 0.3s ease;
+  text-decoration: none;
+  max-width: 100%;
+}
+
+.tarefa-item h3 {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.tarefa-item:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+.tarefa-item h3,
+.tarefa-item h3 a {
+  color: white;
+  text-decoration: none;
+  cursor: default;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .conteudo {
+    gap: 2.5rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .tarefa-container {
+    width: 75%;
+    padding: 1.8rem;
+  }
+  .tarefa-container h3 {
+    font-size: 1.9rem;
+  }
+  .tarefa-texto {
+    font-size: 1.15rem;
+  }
+  .tarefa-bottom {
+    gap: 1.2rem;
+  }
+  .tarefa-porcentagem {
+    font-size: 1.4rem;
+  }
+  .tarefa-botao {
+    width: 75px;
+    height: 75px;
+  }
+  .tarefas-section {
+    max-width: 900px;
+    padding: 1.8rem;
+  }
+  .titulo-tarefas {
+    font-size: 1.9rem;
+  }
+  .iconestarefas {
+    gap: 1.8rem;
+  }
+  .tarefa-item img {
+    width: 90px;
+  }
+  .tarefa-item h3 {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .conteudo {
+    gap: 2rem;
+    padding: 1.2rem 0.8rem 2.5rem;
+  }
+  .tarefa-container {
+    width: 85%;
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+  .tarefa-topo {
+    gap: 0.8rem;
+  }
+  .lua-img {
+    width: 60px;
+    height: 60px;
+  }
+  .tarefa-container h3 {
+    font-size: 1.7rem;
+  }
+  .tarefa-texto {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+  .tarefa-bottom {
+    gap: 1rem;
+  }
+  .tarefa-porcentagem {
+    font-size: 1.3rem;
+  }
+  .tarefa-botao {
+    width: 70px;
+    height: 70px;
+  }
+  .tarefas-section {
+    max-width: 800px;
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  .titulo-tarefas {
+    font-size: 1.7rem;
+    margin-bottom: 1.2rem;
+  }
+  .tarefas-container {
+    gap: 1.2rem;
+  }
+  .iconestarefas {
+    gap: 1.5rem;
+  }
+  .tarefa-item img {
+    width: 80px;
+  }
+  .tarefa-item h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .conteudo {
+    gap: 1.5rem;
+    padding: 1rem 0.5rem 2rem;
+  }
+  .tarefa-container {
+    width: 95%;
+    padding: 1.2rem;
+    border-radius: 12px;
+  }
+  .tarefa-topo {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .lua-img {
+    width: 50px;
+    height: 50px;
+  }
+  .tarefa-container h3 {
+    font-size: 1.5rem;
+  }
+  .tarefa-texto {
+    font-size: 1rem;
+  }
+  .tarefa-bottom {
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+  .tarefa-porcentagem {
+    font-size: 1.2rem;
+  }
+  .tarefa-botao-area {
+    gap: 0.4rem;
+  }
+  .tarefa-botao {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+  }
+  .tarefa-botao-texto {
+    font-size: 0.9rem;
+  }
+  .tarefas-section {
+    max-width: 95%;
+    padding: 1.2rem;
+    border-radius: 14px;
+  }
+  .titulo-tarefas {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .tarefas-container {
+    gap: 1rem;
+  }
+  .iconestarefas {
+    gap: 1rem;
+  }
+  .tarefa-item img {
+    width: 70px;
+  }
+  .tarefa-item h3 {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .conteudo {
+    gap: 1rem;
+    padding: 0.8rem 0.25rem 1.5rem;
+  }
+  .tarefa-container {
+    width: 98%;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  .tarefa-topo {
+    gap: 0.3rem;
+  }
+  .lua-img {
+    width: 40px;
+    height: 40px;
+  }
+  .tarefa-container h3 {
+    font-size: 1.3rem;
+  }
+  .tarefa-texto {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+  .tarefa-bottom {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .tarefa-porcentagem {
+    font-size: 1.1rem;
+  }
+  .tarefa-botao {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+  }
+  .tarefa-botao-texto {
+    font-size: 0.85rem;
+  }
+  .tarefas-section {
+    max-width: 98%;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  .titulo-tarefas {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+  }
+  .tarefas-container {
+    gap: 0.8rem;
+  }
+  .iconestarefas {
+    gap: 0.8rem;
+  }
+  .tarefa-item img {
+    width: 60px;
+  }
+  .tarefa-item h3 {
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+}
+
+.sono-form-card {
+  background: var(--surface-card, var(--primary-color));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin: 1.5rem auto;
+  max-width: 500px;
+}
+.sono-form-card h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--fundoclaro);
+  margin-bottom: 0.75rem;
+}
+.sono-form-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.sono-form-row label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 600;
+  min-width: 130px;
+}
+.sono-form-row input,
+.sono-form-row select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--fundoclaro);
+  background: var(--primary-color);
+  min-width: 100px;
+}
+.sono-form-row input:focus,
+.sono-form-row select:focus {
+  outline: none;
+  border-color: #1a8a75;
+}
+.btn-sono {
+  padding: 0.55rem 1.25rem;
+  background: #1a8a75;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  transition: opacity 0.15s;
+}
+.btn-sono:hover {
+  opacity: 0.85;
+}
+.sono-historico {
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+.sono-historico h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--fundoclaro);
+  margin-bottom: 0.6rem;
+}
+.sono-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-card, var(--primary-color));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+}
+.sono-item-data {
+  color: var(--muted);
+}
+.sono-item-horas {
+  font-weight: 800;
+  color: var(--fundoclaro);
+}
+.sono-item-qual {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.qual-5 {
+  background: #d1fae5;
+  color: #065f46;
+}
+.qual-4 {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.qual-3 {
+  background: #fef3c7;
+  color: #92400e;
+}
+.qual-2,
+.qual-1 {
+  background: #fee2e2;
+  color: #991b1b;
+}

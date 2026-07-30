@@ -11,29 +11,9 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Healthy Safely" />
     <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
-    <link rel="stylesheet" href="/css/user/pagina-tarefa.css" />
+    <link rel="stylesheet" href="/css/app/pagina-tarefa.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-    <style>
-      .sono-form-card { background: var(--surface-card, var(--primary-color)); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; margin: 1.5rem auto; max-width: 500px; }
-      .sono-form-card h2 { font-size: 1rem; font-weight: 800; color: var(--fundoclaro); margin-bottom: .75rem; }
-      .sono-form-row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: .6rem; }
-      .sono-form-row label { font-size: .82rem; color: var(--muted); font-weight: 600; min-width: 130px; }
-      .sono-form-row input, .sono-form-row select { flex: 1; padding: .5rem .75rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: .88rem; color: var(--fundoclaro); background: var(--primary-color); min-width: 100px; }
-      .sono-form-row input:focus, .sono-form-row select:focus { outline: none; border-color: #1a8a75; }
-      .btn-sono { padding: .55rem 1.25rem; background: #1a8a75; color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; margin-top: .25rem; transition: opacity .15s; }
-      .btn-sono:hover { opacity: .85; }
-      .sono-historico { max-width: 500px; margin: 0 auto 2rem; }
-      .sono-historico h2 { font-size: .95rem; font-weight: 800; color: var(--fundoclaro); margin-bottom: .6rem; }
-      .sono-item { display: flex; align-items: center; justify-content: space-between; padding: .5rem .75rem; background: var(--surface-card, var(--primary-color)); border: 1px solid var(--border); border-radius: 10px; margin-bottom: .4rem; font-size: .82rem; }
-      .sono-item-data { color: var(--muted); }
-      .sono-item-horas { font-weight: 800; color: var(--fundoclaro); }
-      .sono-item-qual { font-size: .72rem; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
-      .qual-5 { background: #d1fae5; color: #065f46; }
-      .qual-4 { background: #dbeafe; color: #1e40af; }
-      .qual-3 { background: #fef3c7; color: #92400e; }
-      .qual-2, .qual-1 { background: #fee2e2; color: #991b1b; }
-    </style>
-    
+
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#5BBF6A" />
   </head>
@@ -209,32 +189,8 @@
     </section>
     <% } %>
 
-    <script>
-      // Script de progresso local mantido por compatibilidade
-      const CHAVE = "hs_sono_prog";
-      let progresso = Number(localStorage.getItem(CHAVE) || 0);
-      const btn = document.getElementById("btnAcao");
-      const porcTexto = document.getElementById("porcTexto");
-      const fill = document.getElementById("barraFill");
-      const track = document.getElementById("barraTrack");
-
-      function renderProgresso() {
-        if (!fill) return;
-        fill.style.width = progresso + "%";
-        if (porcTexto) porcTexto.textContent = progresso + "% concluída";
-        if (track) track.setAttribute("aria-valuenow", progresso);
-        if (progresso >= 100 && btn) { btn.textContent = "✓ Concluída!"; btn.disabled = true; }
-      }
-
-      function registrar() {
-        if (progresso >= 100) return;
-        progresso = Math.min(progresso + 14, 100);
-        localStorage.setItem(CHAVE, progresso);
-        renderProgresso();
-        if (progresso < 100 && btn) btn.textContent = "Registrar próxima noite";
-      }
-
-      renderProgresso();
+    <script src="/js/tarefas/sono.js">
+    
     </script>
   </body>
 </html>
