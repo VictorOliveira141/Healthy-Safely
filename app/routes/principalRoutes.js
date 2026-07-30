@@ -271,6 +271,9 @@ router.get(
 router.get("/teste", (req, res) => {
   res.json({ ok: true });
 });
+router.get("/onboarding",(req, res) =>
+  res.render("pages/marketing/onboarding"),
+);
 
 /* ============================================================
    EXPORTAÇÃO

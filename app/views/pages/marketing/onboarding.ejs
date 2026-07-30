@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bem-vindo | Healthy Safely</title>
+
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/onboarding.css" />
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <%- include('../../partials/header.ejs') %>
+
+    <main>
+      <div class="onboarding-container">
+        <!-- Barra de progresso -->
+        <div class="progress-area">
+          <div class="progress">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+
+          <span id="progressText"> Passo 1 de 9 </span>
+        </div>
+
+        <!-- ===================== -->
+        <!-- ETAPA 1 -->
+        <!-- ===================== -->
+
+        <section class="step active">
+          <div class="icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+
+          <h1>Bem-vindo ao Healthy Safely</h1>
+
+          <p>
+            Antes de começar, queremos conhecer um pouco sobre você. Isso levará
+            menos de 1 minuto.
+          </p>
+
+          <button class="btn-next">Começar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 2 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Qual é seu principal objetivo?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">📚 Estudar</button>
+
+            <button class="option">💪 Exercícios</button>
+
+            <button class="option">🥗 Alimentação saudável</button>
+
+            <button class="option">😴 Dormir melhor</button>
+
+            <button class="option">🧠 Saúde mental</button>
+
+            <button class="option">📅 Criar rotina</button>
+
+            <button class="option">💼 Trabalho</button>
+
+            <button class="option">✨ Outro</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 3 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Qual é sua maior dificuldade?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">😫 Procrastinação</button>
+
+            <button class="option">⏰ Falta de tempo</button>
+
+            <button class="option">📱 Muitas distrações</button>
+
+            <button class="option">💤 Falta de energia</button>
+
+            <button class="option">🗓 Me esqueço das tarefas</button>
+
+            <button class="option">📚 Falta de organização</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 4 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Quanto tempo você pode dedicar por dia?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">15 minutos</button>
+
+            <button class="option">30 minutos</button>
+
+            <button class="option">1 hora</button>
+
+            <button class="option">2 horas</button>
+
+            <button class="option">Mais de 2 horas</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 5 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Qual período você prefere realizar suas tarefas?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">🌅 Manhã</button>
+
+            <button class="option">☀️ Tarde</button>
+
+            <button class="option">🌙 Noite</button>
+
+            <button class="option">🔄 Horários variados</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 6 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Quais dias da semana você costuma estar disponível?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option day">Seg</button>
+            <button class="option day">Ter</button>
+            <button class="option day">Qua</button>
+            <button class="option day">Qui</button>
+            <button class="option day">Sex</button>
+            <button class="option day">Sáb</button>
+            <button class="option day">Dom</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 7 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Quantas tarefas você deseja realizar por dia?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">1</button>
+            <button class="option">2</button>
+            <button class="option">3</button>
+            <button class="option">4</button>
+            <button class="option">5+</button>
+            <button class="option">🤖 Deixar a IA decidir</button>
+          </div>
+
+          <button class="btn-next">Continuar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 8 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <h2>Deseja receber lembretes?</h2>
+
+          <div class="hs-onboarding-options">
+            <button class="option">🔔 Sim</button>
+
+            <button class="option">🔕 Não</button>
+          </div>
+
+          <button class="btn-next">Finalizar</button>
+        </section>
+
+        <!-- ===================== -->
+        <!-- ETAPA 9 -->
+        <!-- ===================== -->
+
+        <section class="step">
+          <div class="loading-icon">
+            <i data-lucide="brain"></i>
+          </div>
+
+          <h2>Preparando seu plano personalizado...</h2>
+
+          <p>Estamos analisando suas respostas e criando sua experiência.</p>
+
+          <div class="loading">
+            <div class="loading-fill"></div>
+          </div>
+
+          <ul>
+            <li>✔️ Organizando categorias</li>
+            <li>✔️ Criando metas</li>
+            <li>✔️ Preparando tarefas</li>
+            <li>✔️ Personalizando recomendações</li>
+          </ul>
+        </section>
+      </div>
+
+      <script>
+        lucide.createIcons();
+      </script>
+
+      <script src="/js/onboarding.js"></script>
+    </main>
+
+    <%- include('../../partials/footer.ejs') %>
+  </body>
+</html>
