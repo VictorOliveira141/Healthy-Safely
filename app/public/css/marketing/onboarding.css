@@ -138,7 +138,7 @@ main {
 
   cursor: pointer;
 
-  font-size: var(--font-small);
+  font-size: var(--font-text);
   font-weight: 600;
   color: var(--fundoclaro);
   text-align: left;

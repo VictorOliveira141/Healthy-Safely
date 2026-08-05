@@ -224,7 +224,9 @@ const usuarioController = {
     req.session.nome = usuario.nome;
     req.session.nivel = usuario.nivel || "iniciante";
 
-    return res.redirect("/dashboard");
+    /* return res.redirect("/dashboard"); */
+    // TEMPORÁRIO PARA TESTES
+      return res.redirect("/onboarding");
   },
 
   cancelarLoginGoogle: (req, res) => {
