@@ -43,6 +43,7 @@ function mostrarEtapa(indice) {
       // window.location = "/dashboard";
 
       alert("Onboarding finalizado!");
+      window.location = "/dashboard";
     }, 3200);
   }
 }

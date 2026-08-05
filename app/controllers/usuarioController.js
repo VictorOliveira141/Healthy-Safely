@@ -357,7 +357,12 @@ const usuarioController = {
       req.session.usuario = usuario;
       req.session.nome = usuario.nome;
       req.session.nivel = usuario.nivel || "iniciante";
-      return res.redirect("/dashboard");
+
+      /* return res.redirect("/dashboard"); */
+
+      // TEMPORÁRIO PARA TESTES
+      return res.redirect("/onboarding");
+
     } catch (err) {
       console.error("Erro no login:", err);
       return res.render("pages/auth/login", {

@@ -6,6 +6,9 @@
 
 USE healthy_safely;
 
+ALTER TABLE usuarios
+  ADD COLUMN IF NOT EXISTS onboarding_concluido TINYINT(1) DEFAULT 0;
+
 ALTER TABLE tarefas
   ADD COLUMN IF NOT EXISTS concluida_em DATETIME DEFAULT NULL;
 
