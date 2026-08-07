@@ -38,9 +38,16 @@ function mostrarEtapa(indice) {
   atualizarProgresso();
 
   if (indice === 8) {
-    setTimeout(() => {
-      // Depois você troca para:
-      // window.location = "/dashboard";
+    setTimeout(async () => {
+      try {
+        await fetch("/onboarding/concluir", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+        });
+      } catch (error) {
+        console.error("Erro ao concluir onboarding:", error);
+      }
 
       alert("Onboarding finalizado!");
       window.location = "/dashboard";
@@ -76,52 +83,54 @@ document.querySelectorAll(".btn-next").forEach((botao) => {
 // OPÇÕES
 // =====================================
 
-document.querySelectorAll(".hs-onboarding-options").forEach((grupo, indiceGrupo) => {
-  const opcoes = grupo.querySelectorAll(".option");
+document
+  .querySelectorAll(".hs-onboarding-options")
+  .forEach((grupo, indiceGrupo) => {
+    const opcoes = grupo.querySelectorAll(".option");
 
-  opcoes.forEach((opcao) => {
-    if (opcao.classList.contains("day")) {
-      return;
-    }
-
-    opcao.addEventListener("click", () => {
-      opcoes.forEach((o) => o.classList.remove("selected"));
-
-      opcao.classList.add("selected");
-
-      const valor = opcao.textContent.trim();
-
-      switch (indiceGrupo) {
-        case 0:
-          respostas.objetivo = valor;
-          break;
-
-        case 1:
-          respostas.dificuldade = valor;
-          break;
-
-        case 2:
-          respostas.tempo = valor;
-          break;
-
-        case 3:
-          respostas.periodo = valor;
-          break;
-
-        case 4:
-          respostas.tarefasDia = valor;
-          break;
-
-        case 5:
-          respostas.lembretes = valor;
-          break;
+    opcoes.forEach((opcao) => {
+      if (opcao.classList.contains("day")) {
+        return;
       }
 
-      console.clear();
-      console.log(respostas);
+      opcao.addEventListener("click", () => {
+        opcoes.forEach((o) => o.classList.remove("selected"));
+
+        opcao.classList.add("selected");
+
+        const valor = opcao.textContent.trim();
+
+        switch (indiceGrupo) {
+          case 0:
+            respostas.objetivo = valor;
+            break;
+
+          case 1:
+            respostas.dificuldade = valor;
+            break;
+
+          case 2:
+            respostas.tempo = valor;
+            break;
+
+          case 3:
+            respostas.periodo = valor;
+            break;
+
+          case 4:
+            respostas.tarefasDia = valor;
+            break;
+
+          case 5:
+            respostas.lembretes = valor;
+            break;
+        }
+
+        console.clear();
+        console.log(respostas);
+      });
     });
   });
-});
 
 // =====================================
 // DIAS DA SEMANA

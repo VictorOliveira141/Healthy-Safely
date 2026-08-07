@@ -33,6 +33,7 @@
           <img
             src="<%= usuario && usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
             alt="Foto de perfil"
+            onerror="this.onerror=null;this.src='/imagem/user.webp';"
           />
           <label for="uploadFoto" class="camera-icon" title="Alterar foto">
             <i class="bi bi-camera-fill" aria-hidden="true"></i>

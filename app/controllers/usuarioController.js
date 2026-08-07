@@ -158,15 +158,17 @@ const usuarioController = {
       });
 
       req.session.usuario = { ...novoUsuario };
+      req.session.usuario.onboarding_concluido =
+        !!novoUsuario.onboarding_concluido;
       req.session.nome = novoUsuario.nome;
       req.session.nivel = novoUsuario.nivel || "iniciante";
       delete req.session.usuario.senha;
 
       if (isAjax) {
-        return res.json({ sucesso: true, redirect: "/dashboard" });
+        return res.json({ sucesso: true, redirect: "/onboarding" });
       }
 
-      res.redirect("/dashboard");
+      res.redirect("/onboarding");
     } catch (err) {
       console.error("Erro ao cadastrar cliente:", err);
       if (isAjax) {
@@ -222,12 +224,13 @@ const usuarioController = {
     const usuario = { ...dados.usuario };
     delete usuario.senha;
     req.session.usuario = usuario;
+    req.session.usuario.onboarding_concluido = !!usuario.onboarding_concluido;
     req.session.nome = usuario.nome;
     req.session.nivel = usuario.nivel || "iniciante";
 
-    /* return res.redirect("/dashboard"); */
-    // TEMPORÁRIO PARA TESTES
-    return res.redirect("/onboarding");
+    return req.session.usuario.onboarding_concluido
+      ? res.redirect("/dashboard")
+      : res.redirect("/onboarding");
   },
 
   cancelarLoginGoogle: (req, res) => {
@@ -307,11 +310,13 @@ const usuarioController = {
 
       delete req.session.googleAuth;
       req.session.usuario = { ...novoUsuario };
+      req.session.usuario.onboarding_concluido =
+        !!novoUsuario.onboarding_concluido;
       req.session.nome = novoUsuario.nome;
       req.session.nivel = novoUsuario.nivel || "iniciante";
       delete req.session.usuario.senha;
 
-      res.redirect("/dashboard");
+      res.redirect("/onboarding");
     } catch (error) {
       console.error("Erro ao concluir cadastro Google:", error);
       res.render("pages/auth/google-confirmacao", {
@@ -360,13 +365,13 @@ const usuarioController = {
       }
       delete usuario.senha;
       req.session.usuario = usuario;
+      req.session.usuario.onboarding_concluido = !!usuario.onboarding_concluido;
       req.session.nome = usuario.nome;
       req.session.nivel = usuario.nivel || "iniciante";
 
-      /* return res.redirect("/dashboard"); */
-
-      // TEMPORÁRIO PARA TESTES
-      return res.redirect("/onboarding");
+      return req.session.usuario.onboarding_concluido
+        ? res.redirect("/dashboard")
+        : res.redirect("/onboarding");
     } catch (err) {
       console.error("Erro no login:", err);
       return res.render("pages/auth/login", {

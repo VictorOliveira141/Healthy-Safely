@@ -96,6 +96,7 @@
           <img
             src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
             alt="Foto de perfil"
+            onerror="this.onerror=null;this.src='/imagem/user.webp';"
           />
         </a>
       </figure>

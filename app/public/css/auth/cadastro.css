@@ -55,6 +55,7 @@ form {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  background: var(--secondary-color);
 }
 .google-avatar--fallback {
   display: flex;

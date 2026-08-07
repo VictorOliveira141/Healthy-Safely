@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   nivel        VARCHAR(50)  DEFAULT 'iniciante',
   pontos       INT          DEFAULT 0,
   foto_perfil  VARCHAR(255) DEFAULT NULL,
+  onboarding_concluido TINYINT(1) DEFAULT 0,
   criado_em    DATETIME     DEFAULT CURRENT_TIMESTAMP
 );
 

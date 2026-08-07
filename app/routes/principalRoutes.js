@@ -164,7 +164,8 @@ router.get(
 router.get(
   "/auth/google/callback",
   (req, res, next) => {
-    const callbackURL = req.session.googleCallbackURL || buildGoogleCallbackUrl(req);
+    const callbackURL =
+      req.session.googleCallbackURL || buildGoogleCallbackUrl(req);
     req.session.googleCallbackURL = callbackURL;
 
     passport.authenticate("google", {
@@ -284,9 +285,26 @@ router.get(
 router.get("/teste", (req, res) => {
   res.json({ ok: true });
 });
-router.get("/onboarding",(req, res) =>
-  res.render("pages/marketing/onboarding"),
-);
+router.get("/onboarding", apenasAutenticado, async (req, res) => {
+  const { usuarioModel } = require("../models/Usuario");
+  const usuario = await usuarioModel.buscarPorId(req.session.usuario.id);
+
+  if (usuario?.onboarding_concluido) {
+    return res.redirect("/dashboard");
+  }
+
+  req.session.usuario.onboarding_concluido = false;
+  res.render("pages/marketing/onboarding");
+});
+
+router.post("/onboarding/concluir", apenasAutenticado, async (req, res) => {
+  const { usuarioModel } = require("../models/Usuario");
+
+  await usuarioModel.atualizarOnboardingConcluido(req.session.usuario.id, true);
+  req.session.usuario.onboarding_concluido = true;
+
+  res.json({ ok: true, redirect: "/dashboard" });
+});
 
 /* ============================================================
    EXPORTAÇÃO

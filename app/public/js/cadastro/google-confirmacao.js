@@ -15,7 +15,13 @@ $(function () {
   let debounce;
 
   function setErro($input, mensagem = "") {
-    const $msg = $input.next(".msg-erro");
+    let $msg = $input.next(".msg-erro");
+
+    if (!$msg.length && $input.closest(".campo-senha").length) {
+      $msg = $input.closest(".campo-senha").next(".msg-erro");
+    }
+
+    if (!$msg.length) return;
 
     if (mensagem) {
       $input.addClass("erro-input");

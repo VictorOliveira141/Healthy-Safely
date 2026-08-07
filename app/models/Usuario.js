@@ -173,6 +173,19 @@ const usuarioModel = {
     }
   },
 
+  atualizarOnboardingConcluido: async (usuarioId, concluido = true) => {
+    try {
+      await pool.query(
+        "UPDATE usuarios SET onboarding_concluido = ? WHERE id = ?",
+        [concluido ? 1 : 0, usuarioId],
+      );
+      return true;
+    } catch (e) {
+      console.error("Erro ao atualizar onboarding:", e);
+      return false;
+    }
+  },
+
   verificarSenha: async (senhaDigitada, senhaHash) => {
     return bcrypt.compare(senhaDigitada, senhaHash);
   },
