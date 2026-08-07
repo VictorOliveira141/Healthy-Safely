@@ -80,6 +80,10 @@ document.querySelectorAll(".hs-onboarding-options").forEach((grupo, indiceGrupo)
   const opcoes = grupo.querySelectorAll(".option");
 
   opcoes.forEach((opcao) => {
+    if (opcao.classList.contains("day")) {
+      return;
+    }
+
     opcao.addEventListener("click", () => {
       opcoes.forEach((o) => o.classList.remove("selected"));
 
@@ -123,7 +127,7 @@ document.querySelectorAll(".hs-onboarding-options").forEach((grupo, indiceGrupo)
 // DIAS DA SEMANA
 // =====================================
 
-document.querySelectorAll("option.day").forEach((botao) => {
+document.querySelectorAll(".option.day").forEach((botao) => {
   botao.addEventListener("click", () => {
     botao.classList.toggle("selected");
 

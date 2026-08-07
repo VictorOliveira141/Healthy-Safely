@@ -21,7 +21,6 @@
         background: var(--primary-color);
       }
       .container {
-        background: var(--surface-bg);
         color: var(--fundoclaro);
         width: 380px;
         padding: 45px 35px;
@@ -107,11 +106,27 @@
 
     <script src="../../js/navegacao/darkmode.js"></script>
     <script>
-      // Exemplo: redirecionar após finalizar carregamento
-      // ajuste a rota conforme seu fluxo
-      setTimeout(() => {
-        window.location.href = "/google/confirmacao";
-      }, 3000);
+      const redirectUrl = "/google/confirmacao";
+      const fallbackUrl = "/login";
+
+      const goToNextStep = () => {
+        window.location.replace(redirectUrl);
+      };
+
+      window.addEventListener("pageshow", () => {
+        setTimeout(() => {
+          if (document.visibilityState === "hidden") {
+            window.location.assign(redirectUrl);
+            return;
+          }
+
+          goToNextStep();
+        }, 1500);
+      });
+
+      window.addEventListener("error", () => {
+        window.location.assign(fallbackUrl);
+      });
     </script>
   </body>
 </html>

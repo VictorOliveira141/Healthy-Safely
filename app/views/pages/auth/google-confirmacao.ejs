@@ -22,6 +22,7 @@
    <main class="main">
     <section class="card">
         <section class="form-area">
+            <% const avatarGoogle = dados.foto_perfil || (usuario && usuario.foto_perfil) || '/imagem/user.webp'; %>
             <!-- VINDO PELA PAGINA DE login-->
             <% if (dados.possuiConta) { %>
                 <h1 class="form-title">
@@ -33,16 +34,12 @@
                 </p>
                 
                 <div class="google-card">
-                    <% if (dados.foto_perfil) { %>
-                        <img
-                    src="<%= dados.foto_perfil %>"
-                    class="google-avatar"
-                    alt="Foto do Google">
-                        <% } else { %>
-                            <div class="google-avatar google-avatar--fallback">
-                                <i class="bi bi-person-fill"></i>
-                            </div>
-                        <% } %>
+                    <img
+                        src="<%= avatarGoogle %>"
+                        class="google-avatar"
+                        alt="Foto do Google"
+                        onerror="this.onerror=null;this.src='/imagem/user.webp';"
+                    />
                         
                         <div class="google-user-info">
                             <h2>
@@ -86,12 +83,12 @@
                     Agora basta completar seu cadastro.
                 </p>
                 
-                <% if (dados.foto_perfil) { %>
-                    <img
-                    src="<%= dados.foto_perfil %>"
+                <img
+                    src="<%= avatarGoogle %>"
                     class="google-avatar"
-                    alt="Foto do Google">
-                    <% } %>
+                    alt="Foto do Google"
+                    onerror="this.onerror=null;this.src='/imagem/user.webp';"
+                >
                     
                     <form
                     class="form-multistep"

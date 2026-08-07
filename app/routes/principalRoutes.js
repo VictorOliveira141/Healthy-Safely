@@ -6,6 +6,7 @@ const iaRoutes = require("./ia-routes");
 
 const usuarioController = require("../controllers/usuarioController");
 const tarefaController = require("../controllers/tarefaController");
+const { buildGoogleCallbackUrl } = require("../config/googleAuth");
 
 /* ============================================================
    MIDDLEWARES
@@ -149,16 +150,28 @@ router.get(
 
     next();
   },
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-  }),
+  (req, res, next) => {
+    const callbackURL = buildGoogleCallbackUrl(req);
+    req.session.googleCallbackURL = callbackURL;
+
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      callbackURL,
+    })(req, res, next);
+  },
 );
 
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login?erro=google",
-  }),
+  (req, res, next) => {
+    const callbackURL = req.session.googleCallbackURL || buildGoogleCallbackUrl(req);
+    req.session.googleCallbackURL = callbackURL;
+
+    passport.authenticate("google", {
+      callbackURL,
+      failureRedirect: "/login?erro=google",
+    })(req, res, next);
+  },
   (req, res) => {
     const dadosGoogle = req.user || {};
 

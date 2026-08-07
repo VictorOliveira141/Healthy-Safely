@@ -202,6 +202,7 @@ const usuarioController = {
 
     res.render("pages/auth/google-confirmacao", {
       dados,
+      usuario: req.session.usuario || null,
       valores: {
         nome: dados.nome || "",
         email: dados.email || "",
@@ -226,7 +227,7 @@ const usuarioController = {
 
     /* return res.redirect("/dashboard"); */
     // TEMPORÁRIO PARA TESTES
-      return res.redirect("/onboarding");
+    return res.redirect("/onboarding");
   },
 
   cancelarLoginGoogle: (req, res) => {
@@ -288,6 +289,7 @@ const usuarioController = {
     if (Object.keys(erroValidacao).length > 0) {
       return res.render("pages/auth/google-confirmacao", {
         dados,
+        usuario: req.session.usuario || null,
         valores: { nome, email: dados.email, nomeusuario },
         erroValidacao,
         msgErro,
@@ -314,6 +316,7 @@ const usuarioController = {
       console.error("Erro ao concluir cadastro Google:", error);
       res.render("pages/auth/google-confirmacao", {
         dados,
+        usuario: req.session.usuario || null,
         valores: { nome, email: dados.email, nomeusuario },
         erroValidacao: {},
         msgErro: { geral: "Erro interno ao criar a conta." },
@@ -364,7 +367,6 @@ const usuarioController = {
 
       // TEMPORÁRIO PARA TESTES
       return res.redirect("/onboarding");
-
     } catch (err) {
       console.error("Erro no login:", err);
       return res.render("pages/auth/login", {

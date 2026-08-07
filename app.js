@@ -8,8 +8,11 @@ const session = require("express-session");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const { usuarioModel } = require("./app/models/Usuario");
+const { buildGoogleCallbackUrl } = require("./app/config/googleAuth");
 const app = express();
 const porta = process.env.PORT || 3000;
+
+app.set("trust proxy", 1);
 
 /* ============================================================
    SESSÃO
@@ -19,6 +22,13 @@ app.use(
     secret: process.env.SESSION_SECRET || "hs-segredo-dev",
     resave: false,
     saveUninitialized: false,
+    proxy: true,
+    cookie: {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   }),
 );
 
@@ -50,13 +60,14 @@ if (googleConfigured) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL:
-          process.env.GOOGLE_CALLBACK_URL ||
-          "http://localhost:3000/auth/google/callback",
         passReqToCallback: true,
+        proxy: true,
       },
       async (req, accessToken, refreshToken, params, profile, done) => {
         try {
+          const callbackURL = buildGoogleCallbackUrl(req);
+          req.session.googleCallbackURL = callbackURL;
+
           const email = profile.emails?.[0]?.value;
           if (!email) {
             return done(new Error("Google não retornou um e-mail válido."));
