@@ -19,12 +19,44 @@ const tarefaModel = {
     } catch (e) { return null; }
   },
 
-  criar: async ({ usuarioId, titulo, descricao, pontos, categoria, criadoPor }) => {
+  criar: async ({ usuarioId, titulo, descricao, pontos, categoria, criadoPor, data, horario, repeticao, diaSemana }) => {
     try {
       const [r] = await pool.query(
-        `INSERT INTO tarefas (usuario_id, criado_por, titulo, descricao, pontos, categoria)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [usuarioId, criadoPor || null, titulo, descricao || null, pontos || 10, categoria || "geral"]);
+        `INSERT INTO tarefas (usuario_id, criado_por, titulo, descricao, pontos, categoria, data, horario, repeticao, dia_semana)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          usuarioId,
+          criadoPor || null,
+          titulo,
+          descricao || null,
+          pontos || 10,
+          categoria || "geral",
+          data || null,
+          horario || null,
+          repeticao || "once",
+          diaSemana || null,
+        ]);
+      return r;
+    } catch (e) { console.log(e); return null; }
+  },
+
+  atualizar: async (id, usuarioId, { titulo, descricao, categoria, data, horario, repeticao, diaSemana }) => {
+    try {
+      const [r] = await pool.query(
+        `UPDATE tarefas
+         SET titulo = ?, descricao = ?, categoria = ?, data = ?, horario = ?, repeticao = ?, dia_semana = ?
+         WHERE id = ? AND usuario_id = ?`,
+        [
+          titulo,
+          descricao || null,
+          categoria || "geral",
+          data || null,
+          horario || null,
+          repeticao || "once",
+          diaSemana || null,
+          id,
+          usuarioId,
+        ]);
       return r;
     } catch (e) { console.log(e); return null; }
   },

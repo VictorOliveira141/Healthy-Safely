@@ -2,6 +2,19 @@ const { tarefaModel } = require("../models/Tarefa");
 const { usuarioModel } = require("../models/Usuario");
 const { body, validationResult } = require("express-validator");
 
+const mapearTarefa = (t) => ({
+  _id: t.id,
+  title: t.titulo,
+  completed: !!t.concluida,
+  categoria: t.categoria,
+  pontos: t.pontos,
+  data: t.data || null,
+  horario: t.horario || null,
+  repeticao: t.repeticao || "once",
+  dia_semana: t.dia_semana || null,
+  descricao: t.descricao || "",
+});
+
 const tarefaController = {
   // Regras de validação para criar tarefa (express-validator)
   regrasValidacaoTarefa: [
@@ -19,6 +32,22 @@ const tarefaController = {
       .optional()
       .isInt({ min: 1, max: 100 })
       .withMessage("Pontos devem ser entre 1 e 100."),
+    body("data")
+      .optional({ nullable: true })
+      .isISO8601()
+      .withMessage("Data inválida."),
+    body("horario")
+      .optional({ nullable: true })
+      .matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .withMessage("Horário inválido."),
+    body("repeticao")
+      .optional({ nullable: true })
+      .isIn(["once", "daily", "weekly"])
+      .withMessage("Repetição inválida."),
+    body("dia_semana")
+      .optional({ nullable: true })
+      .isIn(["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"])
+      .withMessage("Dia da semana inválido."),
   ],
 
   exibirDashboard: async (req, res) => {
@@ -45,13 +74,7 @@ const tarefaController = {
         req.session.usuario.nivel = usuAtual.nivel;
         req.session.nivel = usuAtual.nivel;
       }
-      const tasks = tarefas.map((t) => ({
-        _id: t.id,
-        title: t.titulo,
-        completed: !!t.concluida,
-        categoria: t.categoria,
-        pontos: t.pontos,
-      }));
+      const tasks = tarefas.map(mapearTarefa);
       // Feedback flash
       const flash = req.session.flash || null;
       delete req.session.flash;
@@ -64,6 +87,7 @@ const tarefaController = {
         vinculo,
         profissionais,
         flash,
+        usuario: req.session.usuario,
       });
     } catch (err) {
       console.error("Erro dashboard:", err);
@@ -85,18 +109,51 @@ const tarefaController = {
       const tarefas = await tarefaModel.listarPorUsuario(
         req.session.usuario.id,
       );
-      const tasks = tarefas.map((t) => ({
-        _id: t.id,
-        title: t.titulo,
-        completed: !!t.concluida,
-        categoria: t.categoria,
-        pontos: t.pontos,
-      }));
+      const tasks = tarefas.map(mapearTarefa);
       const flash = req.session.flash || null;
       delete req.session.flash;
-      res.render("pages/app/tasks", { tasks, flash });
+      res.render("pages/app/tasks", {
+        tasks,
+        flash,
+        usuario: req.session.usuario,
+        taskToEdit: null,
+        modoEdicao: false,
+      });
     } catch (err) {
-      res.render("pages/app/tasks", { tasks: [], flash: null });
+      res.render("pages/app/tasks", {
+        tasks: [],
+        flash: null,
+        usuario: req.session.usuario,
+        taskToEdit: null,
+        modoEdicao: false,
+      });
+    }
+  },
+
+  buscarTarefaParaEdicao: async (req, res) => {
+    try {
+      const tarefa = await tarefaModel.buscarPorId(req.params.id, req.session.usuario.id);
+
+      if (!tarefa) {
+        req.session.flash = { tipo: "erro", msg: "Tarefa não encontrada." };
+        return res.redirect("/tasks");
+      }
+
+      const tarefas = await tarefaModel.listarPorUsuario(req.session.usuario.id);
+      const flash = req.session.flash || null;
+      delete req.session.flash;
+
+      return res.render("pages/app/tasks", {
+        tasks: tarefas.map(mapearTarefa),
+        flash,
+        usuario: req.session.usuario,
+        taskToEdit: mapearTarefa(tarefa),
+        modoEdicao: true,
+      });
+    } catch (err) {
+      console.error("Erro ao carregar tarefa para edição:", err);
+      req.session.flash = { tipo: "erro", msg: "Erro ao carregar tarefa." };
+      return res.redirect("/tasks");
     }
   },
 
@@ -107,7 +164,7 @@ const tarefaController = {
       req.session.flash = { tipo: "erro", msg: errors.array()[0].msg };
       return res.redirect("/tasks");
     }
-    const { titulo, descricao, pontos, categoria } = req.body;
+    const { titulo, descricao, pontos, categoria, data, horario, repeticao, dia_semana } = req.body;
     try {
       await tarefaModel.criar({
         usuarioId: req.session.usuario.id,
@@ -115,6 +172,10 @@ const tarefaController = {
         descricao: descricao || null,
         pontos: Number(pontos) || 10,
         categoria: categoria || "geral",
+        data: data || null,
+        horario: horario || null,
+        repeticao: repeticao || "once",
+        diaSemana: dia_semana || null,
       });
       req.session.flash = {
         tipo: "sucesso",
@@ -124,6 +185,45 @@ const tarefaController = {
       console.error(e);
       req.session.flash = { tipo: "erro", msg: "Erro ao criar tarefa." };
     }
+    res.redirect("/tasks");
+  },
+
+  atualizarTarefa: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      req.session.flash = { tipo: "erro", msg: errors.array()[0].msg };
+      return res.redirect("/tasks");
+    }
+
+    const { id } = req.params;
+    const { titulo, descricao, categoria, data, horario, repeticao, dia_semana } = req.body;
+
+    try {
+      const tarefaAtual = await tarefaModel.buscarPorId(id, req.session.usuario.id);
+      if (!tarefaAtual) {
+        req.session.flash = { tipo: "erro", msg: "Tarefa não encontrada." };
+        return res.redirect("/tasks");
+      }
+
+      await tarefaModel.atualizar(id, req.session.usuario.id, {
+        titulo: titulo.trim(),
+        descricao: descricao || null,
+        categoria: categoria || "geral",
+        data: data || null,
+        horario: horario || null,
+        repeticao: repeticao || "once",
+        diaSemana: dia_semana || null,
+      });
+
+      req.session.flash = {
+        tipo: "sucesso",
+        msg: "✅ Tarefa atualizada com sucesso!",
+      };
+    } catch (e) {
+      console.error(e);
+      req.session.flash = { tipo: "erro", msg: "Erro ao atualizar tarefa." };
+    }
+
     res.redirect("/tasks");
   },
 

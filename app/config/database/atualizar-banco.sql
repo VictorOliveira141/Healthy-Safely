@@ -15,6 +15,18 @@ ALTER TABLE tarefas
 ALTER TABLE tarefas
   ADD COLUMN IF NOT EXISTS criado_por INT DEFAULT NULL;
 
+ALTER TABLE tarefas
+  ADD COLUMN IF NOT EXISTS data DATE DEFAULT NULL;
+
+ALTER TABLE tarefas
+  ADD COLUMN IF NOT EXISTS horario TIME DEFAULT NULL;
+
+ALTER TABLE tarefas
+  ADD COLUMN IF NOT EXISTS repeticao ENUM('once','daily','weekly') DEFAULT 'once';
+
+ALTER TABLE tarefas
+  ADD COLUMN IF NOT EXISTS dia_semana ENUM('domingo','segunda','terca','quarta','quinta','sexta','sabado') DEFAULT NULL;
+
 ALTER TABLE profissionais
   ADD COLUMN IF NOT EXISTS disponivel TINYINT(1) DEFAULT 1;
 

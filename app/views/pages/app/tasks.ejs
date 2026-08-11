@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="/css/app/tasksmodal.css" />
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
 </head>
-<body>
+<body data-edit-mode="<%= modoEdicao ? 'true' : 'false' %>" data-edit-task-id="<%= taskToEdit ? taskToEdit._id : '' %>">
 <%- include('../../partials/header.ejs') %>
 
 <main class="hs-tasks-main">
@@ -166,7 +166,15 @@
                 .filter(t => !t.completed)
                 .forEach(tarefa => { %>
                 <li>
-                    <article class="hs-user-task-card">
+                    <article
+                        class="hs-user-task-card"
+                        data-title="<%= tarefa.title %>"
+                        data-category="<%= tarefa.categoria %>"
+                        data-data="<%= tarefa.data || '' %>"
+                        data-horario="<%= tarefa.horario || '' %>"
+                        data-repeticao="<%= tarefa.repeticao || 'once' %>"
+                        data-dia-semana="<%= tarefa.dia_semana || '' %>"
+                    >
                         <section class="hs-task-main">
 
                           <a
@@ -214,6 +222,23 @@
                                         <span>
                                             <i class="bi bi-clock"></i>
                                             <%= tarefa.horario %>
+                                        </span>
+                                    <% } %>
+
+                                    <% if(tarefa.repeticao === 'daily'){ %>
+                                        <span>
+                                            <i class="bi bi-arrow-repeat"></i>
+                                            Diária
+                                        </span>
+                                    <% } else if(tarefa.repeticao === 'weekly'){ %>
+                                        <span>
+                                            <i class="bi bi-arrow-repeat"></i>
+                                            Semanal · <%= tarefa.dia_semana || 'dia específico' %>
+                                        </span>
+                                    <% } else { %>
+                                        <span>
+                                            <i class="bi bi-calendar-check"></i>
+                                            Única
                                         </span>
                                     <% } %>
                                 </section>
@@ -365,7 +390,7 @@
 
             <section class="hs-form-group">
                 <label>Repetição</label>
-                <select name="repeticao">
+                <select name="repeticao" id="repeticaoTarefa">
                     <option value="once">
                         Apenas uma vez
                     </option>
@@ -375,8 +400,22 @@
                     </option>
 
                     <option value="weekly">
-                        Dias da semana
+                        Dia específico da semana
                     </option>
+                </select>
+            </section>
+
+            <section class="hs-form-group" id="diaSemanaGroup" style="display:none;">
+                <label>Dia da semana</label>
+                <select name="dia_semana">
+                    <option value="">Selecione</option>
+                    <option value="segunda">Segunda-feira</option>
+                    <option value="terca">Terça-feira</option>
+                    <option value="quarta">Quarta-feira</option>
+                    <option value="quinta">Quinta-feira</option>
+                    <option value="sexta">Sexta-feira</option>
+                    <option value="sabado">Sábado</option>
+                    <option value="domingo">Domingo</option>
                 </select>
             </section>
 
@@ -392,10 +431,10 @@
                 <button
                     type="submit"
                     class="hs-btn-save"
+                    id="saveTaskButton"
                 >
                     <i class="bi bi-plus-circle-fill"></i>
-
-                    Salvar tarefa
+                    <span id="saveTaskText">Salvar tarefa</span>
                 </button>
             </footer>
         </form>
@@ -405,7 +444,125 @@
 </main>
 
 <%- include('../../partials/footer.ejs') %>
+<script>
+  window.taskToEdit = <%- JSON.stringify(taskToEdit || null) %>;
+</script>
 <script src="/js/tarefas/tarefalocal.js"></script>
 <script src="/js/tarefas/criartarefa.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchTask');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterCategory = document.getElementById('filterCategory');
+    const repeatSelect = document.getElementById('repeticaoTarefa');
+    const diaSemanaGroup = document.getElementById('diaSemanaGroup');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const taskItems = Array.from(document.querySelectorAll('.hs-user-tasks > li'));
+    const countBadge = document.querySelector('.hs-section-count');
+    const dayNames = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+    const form = document.querySelector('.hs-drawer-form');
+    const taskToEdit = window.taskToEdit || null;
+
+    if (form && taskToEdit) {
+      form.action = `/tasks/atualizar/${taskToEdit._id}`;
+      form.querySelector('input[name="titulo"]').value = taskToEdit.title || '';
+      form.querySelector('textarea[name="descricao"]').value = taskToEdit.descricao || '';
+      form.querySelector('select[name="categoria"]').value = taskToEdit.categoria || 'geral';
+      form.querySelector('input[name="data"]').value = taskToEdit.data || '';
+      form.querySelector('input[name="horario"]').value = taskToEdit.horario || '';
+      form.querySelector('select[name="repeticao"]').value = taskToEdit.repeticao || 'once';
+      form.querySelector('select[name="dia_semana"]').value = taskToEdit.dia_semana || '';
+      const saveTaskText = document.getElementById('saveTaskText');
+      if (saveTaskText) saveTaskText.textContent = 'Atualizar tarefa';
+      const saveTaskIcon = document.querySelector('#saveTaskButton i');
+      if (saveTaskIcon) saveTaskIcon.className = 'bi bi-pencil-square';
+      if (drawerOverlay) {
+        drawerOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    if (repeatSelect && diaSemanaGroup) {
+      const toggleDiaSemana = () => {
+        const show = repeatSelect.value === 'weekly';
+        diaSemanaGroup.style.display = show ? 'block' : 'none';
+        if (!show) {
+          const select = diaSemanaGroup.querySelector('select');
+          if (select) select.value = '';
+        }
+      };
+
+      repeatSelect.addEventListener('change', toggleDiaSemana);
+      toggleDiaSemana();
+    }
+
+    function matchesStatus(taskCard) {
+      const status = filterStatus?.value || 'today';
+      const repeticao = (taskCard.dataset.repeticao || 'once').toLowerCase();
+      const diaSemana = (taskCard.dataset.diaSemana || '').toLowerCase();
+      const dataRaw = taskCard.dataset.data;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (status === 'today') {
+        if (repeticao === 'daily') return true;
+        if (repeticao === 'weekly' && diaSemana) {
+          return diaSemana === dayNames[today.getDay()];
+        }
+        if (!dataRaw) return true;
+        const taskDate = new Date(`${dataRaw}T00:00:00`);
+        return taskDate.getTime() === today.getTime();
+      }
+
+      if (status === 'nextweek') {
+        if (repeticao === 'daily') return true;
+        if (repeticao === 'weekly' && diaSemana) {
+          const hoje = today.getDay();
+          const proximosDias = new Set();
+          for (let i = 0; i <= 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+            proximosDias.add(dayNames[d.getDay()]);
+          }
+          return proximosDias.has(diaSemana);
+        }
+        if (!dataRaw) return true;
+        const taskDate = new Date(`${dataRaw}T00:00:00`);
+        const diff = Math.round((taskDate.getTime() - today.getTime()) / 86400000);
+        return diff >= 0 && diff <= 7;
+      }
+
+      return true;
+    }
+
+    function aplicarFiltros() {
+      const termoBusca = (searchInput?.value || '').trim().toLowerCase();
+      const categoria = filterCategory?.value || '';
+      let visible = 0;
+
+      taskItems.forEach((item) => {
+        const taskCard = item.querySelector('.hs-user-task-card');
+        const title = (taskCard?.dataset.title || '').toLowerCase();
+        const categoriaTask = (taskCard?.dataset.category || '').toLowerCase();
+        const matchesSearch = !termoBusca || title.includes(termoBusca) || categoriaTask.includes(termoBusca);
+        const matchesCategory = !categoria || categoriaTask === categoria;
+        const matchesStatusValue = matchesStatus(taskCard);
+        const shouldShow = matchesSearch && matchesCategory && matchesStatusValue;
+
+        item.style.display = shouldShow ? '' : 'none';
+        if (shouldShow) visible += 1;
+      });
+
+      if (countBadge) {
+        countBadge.textContent = String(visible);
+      }
+    }
+
+    searchInput?.addEventListener('input', aplicarFiltros);
+    filterStatus?.addEventListener('change', aplicarFiltros);
+    filterCategory?.addEventListener('change', aplicarFiltros);
+    aplicarFiltros();
+  });
+</script>
 </body>
 </html>

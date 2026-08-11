@@ -43,11 +43,24 @@ router.get("/historico", apenasAutenticado, tarefaController.exibirHistorico);
 
 router.get("/tasks", apenasAutenticado, tarefaController.listarTarefas);
 
+router.get(
+  "/tasks/editar/:id",
+  apenasAutenticado,
+  tarefaController.buscarTarefaParaEdicao,
+);
+
 router.post(
   "/tasks/criar",
   apenasAutenticado,
   tarefaController.regrasValidacaoTarefa,
   tarefaController.criarTarefa,
+);
+
+router.post(
+  "/tasks/atualizar/:id",
+  apenasAutenticado,
+  tarefaController.regrasValidacaoTarefa,
+  tarefaController.atualizarTarefa,
 );
 
 router.get(
