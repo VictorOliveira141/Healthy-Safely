@@ -85,6 +85,13 @@
         </article>
     </section>
 
+    <!-- FLASH MESSAGE 
+    <% if (flash) { %>
+    <section class="hs-flash-message hs-flash-<%= flash.tipo %>">
+      <p><%= flash.msg %></p>
+    </section>
+    <% } %>-->
+
     <!-- PESQUISA,FILTROS e + NOVA TAREFA -->
     <section class="hs-task-toolbar">
         <!-- barra de pesquisa -->
@@ -96,6 +103,10 @@
 
         <!-- filtro -->
         <select id="filterStatus">
+            <option value="all">
+                Todas
+            </option>
+
             <option value="today">
                 Hoje
             </option>
@@ -176,14 +187,13 @@
                         data-dia-semana="<%= tarefa.dia_semana || '' %>"
                     >
                         <section class="hs-task-main">
-
-                          <a
-                                href="/tasks/concluir?id=<%= tarefa._id %>"
-                                class="hs-task-btn"
+                          <div class="hs-task-top">
+                            <a
+                              href="/tasks/concluir?id=<%= tarefa._id %>"
+                              class="hs-task-btn"
                             >
-                                <i class="bi bi-check-lg"></i>
-                                
-                          </a>
+                              <i class="bi bi-check-lg"></i>
+                            </a>
 
                             <section class="hs-task-icon">
                                 <% if(tarefa.categoria === "saude"){ %>
@@ -199,24 +209,22 @@
                                 <% } %>
                             </section>
 
-                            <section class="hs-task-info">
-                                <h3>
-                                    <%= tarefa.title %>
-                                </h3>
+                            <h3>
+                                <%= tarefa.title %>
+                            </h3>
+                          </div>
 
-                                <section class="hs-task-meta">
+                          <section class="hs-task-meta">
                                     <span class="hs-task-cat">
                                       <h4>Categoria:
                                         <%= tarefa.categoria %>
                                       </h4>
                                     </span>
 
-                                    <% if(tarefa.data){ %>
-                                        <span>
-                                            <i class="bi bi-calendar3"></i>
-                                            <%= tarefa.data %>
-                                        </span>
-                                    <% } %>
+                                    <span>
+                                        <i class="bi bi-calendar3"></i>
+                                        <%= tarefa.data ? new Date(tarefa.data).toLocaleDateString('pt-BR') : '--/--/--' %>
+                                    </span>
 
                                     <% if(tarefa.horario){ %>
                                         <span>
@@ -243,8 +251,6 @@
                                     <% } %>
                                 </section>
                             </section>
-                        </section>
-
                         <section class="hs-task-actions">
                             <a
                                 href="/tasks/editar/<%= tarefa._id %>"
@@ -498,6 +504,7 @@
 
     function matchesStatus(taskCard) {
       const status = filterStatus?.value || 'today';
+      if (status === 'all') return true;
       const repeticao = (taskCard.dataset.repeticao || 'once').toLowerCase();
       const diaSemana = (taskCard.dataset.diaSemana || '').toLowerCase();
       const dataRaw = taskCard.dataset.data;

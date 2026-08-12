@@ -44,10 +44,28 @@ const tarefaController = {
       .optional({ nullable: true })
       .isIn(["once", "daily", "weekly"])
       .withMessage("Repetição inválida."),
-    body("dia_semana")
-      .optional({ nullable: true })
-      .isIn(["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"])
-      .withMessage("Dia da semana inválido."),
+    body("dia_semana").custom((value, { req }) => {
+      if (req.body.repeticao === "weekly") {
+        if (!value) {
+          throw new Error(
+            "Dia da semana é obrigatório para repetição semanal.",
+          );
+        }
+        const diasValidos = [
+          "domingo",
+          "segunda",
+          "terca",
+          "quarta",
+          "quinta",
+          "sexta",
+          "sabado",
+        ];
+        if (!diasValidos.includes(value)) {
+          throw new Error("Dia da semana inválido.");
+        }
+      }
+      return true;
+    }),
   ],
 
   exibirDashboard: async (req, res) => {
@@ -132,14 +150,19 @@ const tarefaController = {
 
   buscarTarefaParaEdicao: async (req, res) => {
     try {
-      const tarefa = await tarefaModel.buscarPorId(req.params.id, req.session.usuario.id);
+      const tarefa = await tarefaModel.buscarPorId(
+        req.params.id,
+        req.session.usuario.id,
+      );
 
       if (!tarefa) {
         req.session.flash = { tipo: "erro", msg: "Tarefa não encontrada." };
         return res.redirect("/tasks");
       }
 
-      const tarefas = await tarefaModel.listarPorUsuario(req.session.usuario.id);
+      const tarefas = await tarefaModel.listarPorUsuario(
+        req.session.usuario.id,
+      );
       const flash = req.session.flash || null;
       delete req.session.flash;
 
@@ -164,7 +187,16 @@ const tarefaController = {
       req.session.flash = { tipo: "erro", msg: errors.array()[0].msg };
       return res.redirect("/tasks");
     }
-    const { titulo, descricao, pontos, categoria, data, horario, repeticao, dia_semana } = req.body;
+    const {
+      titulo,
+      descricao,
+      pontos,
+      categoria,
+      data,
+      horario,
+      repeticao,
+      dia_semana,
+    } = req.body;
     try {
       await tarefaModel.criar({
         usuarioId: req.session.usuario.id,
@@ -196,10 +228,21 @@ const tarefaController = {
     }
 
     const { id } = req.params;
-    const { titulo, descricao, categoria, data, horario, repeticao, dia_semana } = req.body;
+    const {
+      titulo,
+      descricao,
+      categoria,
+      data,
+      horario,
+      repeticao,
+      dia_semana,
+    } = req.body;
 
     try {
-      const tarefaAtual = await tarefaModel.buscarPorId(id, req.session.usuario.id);
+      const tarefaAtual = await tarefaModel.buscarPorId(
+        id,
+        req.session.usuario.id,
+      );
       if (!tarefaAtual) {
         req.session.flash = { tipo: "erro", msg: "Tarefa não encontrada." };
         return res.redirect("/tasks");
@@ -454,7 +497,11 @@ const tarefaController = {
         tarefaModel.percentualSemanal(uid),
         tarefaModel.totalConcluidas(uid),
       ]);
-      res.render("pages/app/historico", { historico, pctSemanal, totalConcluidas });
+      res.render("pages/app/historico", {
+        historico,
+        pctSemanal,
+        totalConcluidas,
+      });
     } catch (e) {
       res.render("pages/app/historico", {
         historico: [],
