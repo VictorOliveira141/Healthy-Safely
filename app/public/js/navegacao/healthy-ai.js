@@ -22,7 +22,6 @@ function initHealthyAi() {
     healthyAiSidebar.setAttribute("aria-hidden", String(!isOpen));
 
     if (isOpen) {
-      healthyAiInput.focus();
       requestAnimationFrame(() => {
         healthyAiBody.scrollTop = healthyAiBody.scrollHeight;
       });
@@ -89,7 +88,6 @@ function initHealthyAi() {
     addMessage(text, "user");
 
     healthyAiInput.value = "";
-    healthyAiInput.focus();
 
     renderReply(text);
   });

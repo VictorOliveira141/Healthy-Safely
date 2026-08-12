@@ -107,6 +107,10 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+.hs-form-group select option {
+    background-color: var(--primary-color);
+    color: var(--fundoclaro);
+}
 
 .hs-form-group label {
   font-weight: 600;

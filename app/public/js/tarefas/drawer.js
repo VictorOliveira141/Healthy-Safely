@@ -18,9 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.style.overflow = "hidden";
 
-    setTimeout(() => {
-      primeiroInput.focus();
-    }, 250);
   }
 
   /* ============================

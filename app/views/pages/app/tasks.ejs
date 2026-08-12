@@ -17,12 +17,13 @@
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
 </head>
 <body data-edit-mode="<%= modoEdicao ? 'true' : 'false' %>" data-edit-task-id="<%= taskToEdit ? taskToEdit._id : '' %>">
+
 <%- include('../../partials/header.ejs') %>
 
 <main class="hs-tasks-main">
     <!-- HERO -->
-    <section class="hs-page-head card-base">
-        <section class="hs-page-head">
+    <section class="hs-page-head">
+        <section class="hs-page-head-content">
             <span class="hs-page-kicker">
                 Tarefas
             </span>
@@ -85,12 +86,6 @@
         </article>
     </section>
 
-    <!-- FLASH MESSAGE 
-    <% if (flash) { %>
-    <section class="hs-flash-message hs-flash-<%= flash.tipo %>">
-      <p><%= flash.msg %></p>
-    </section>
-    <% } %>-->
 
     <!-- PESQUISA,FILTROS e + NOVA TAREFA -->
     <section class="hs-task-toolbar">
@@ -172,116 +167,96 @@
                 </p>
             </section>
         <% } else { %>
-        <ul class="hs-user-tasks">
-            <% tasks
-                .filter(t => !t.completed)
-                .forEach(tarefa => { %>
-                <li>
-                    <article
-                        class="hs-user-task-card"
-                        data-title="<%= tarefa.title %>"
-                        data-category="<%= tarefa.categoria %>"
-                        data-data="<%= tarefa.data || '' %>"
-                        data-horario="<%= tarefa.horario || '' %>"
-                        data-repeticao="<%= tarefa.repeticao || 'once' %>"
-                        data-dia-semana="<%= tarefa.dia_semana || '' %>"
-                    >
-                        <section class="hs-task-main">
-                          <div class="hs-task-top">
-                            <a
-                              href="/tasks/concluir?id=<%= tarefa._id %>"
-                              class="hs-task-btn"
+                <ul class="hs-user-tasks">
+                    <% tasks
+                        .filter(t => !t.completed)
+                        .forEach(tarefa => { %>
+                        <li>
+                            <article
+                                class="hs-user-task-card"
+                                data-title="<%= tarefa.title %>"
+                                data-category="<%= tarefa.categoria %>"
+                                data-data="<%= tarefa.data || '' %>"
+                                data-horario="<%= tarefa.horario || '' %>"
+                                data-repeticao="<%= tarefa.repeticao || 'once' %>"
+                                data-dia-semana="<%= tarefa.dia_semana || '' %>"
                             >
-                              <i class="bi bi-check-lg"></i>
-                            </a>
+                                <section class="hs-task-main">
+                                    <div class="hs-task-top">
+                                        <div class="hs-task-left">
+                                            <a href="/tasks/concluir?id=<%= tarefa._id %>" class="hs-task-btn">
+                                                <i class="bi bi-check-lg"></i>
+                                            </a>
 
-                            <section class="hs-task-icon">
-                                <% if(tarefa.categoria === "saude"){ %>
-                                    💊
-                                <% } else if(tarefa.categoria === "sono"){ %>
-                                    🌙
-                                <% } else if(tarefa.categoria === "alimentacao"){ %>
-                                    🥗
-                                <% } else if(tarefa.categoria === "exercicio"){ %>
-                                    💪
-                                <% } else { %>
-                                    📋
-                                <% } %>
-                            </section>
+                                            <section class="hs-task-icon">
+                                                <% if (tarefa.categoria === 'saude') { %>💊<% } else if (tarefa.categoria === 'sono') { %>🌙<% } else if (tarefa.categoria === 'alimentacao') { %>🥗<% } else if (tarefa.categoria === 'exercicio') { %>💪<% } else { %>📋<% } %>
+                                            </section>
 
-                            <h3>
-                                <%= tarefa.title %>
-                            </h3>
-                          </div>
+                                            <h3><%= tarefa.title %></h3>
+                                        </div>
 
-                          <section class="hs-task-meta">
-                                    <span class="hs-task-cat">
-                                      <h4>Categoria:
-                                        <%= tarefa.categoria %>
-                                      </h4>
-                                    </span>
+                                        <div class="hs-top-actions">
+                                            <button type="button" class="hs-toggle-details" aria-expanded="false" title="Mostrar detalhes">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
 
-                                    <span>
-                                        <i class="bi bi-calendar3"></i>
-                                        <%= tarefa.data ? new Date(tarefa.data).toLocaleDateString('pt-BR') : '--/--/--' %>
-                                    </span>
+                                    <section class="hs-task-details">
+                                        <% if (tarefa.descricao) { %>
+                                            <p class="hs-task-desc"><%= tarefa.descricao %></p>
+                                        <% } %>
 
-                                    <% if(tarefa.horario){ %>
-                                        <span>
-                                            <i class="bi bi-clock"></i>
-                                            <%= tarefa.horario %>
-                                        </span>
-                                    <% } %>
+                                        <section class="hs-task-meta">
+                                            <span class="hs-task-cat">
+                                                <h4>Categoria: <%= tarefa.categoria %></h4>
+                                            </span>
 
-                                    <% if(tarefa.repeticao === 'daily'){ %>
-                                        <span>
-                                            <i class="bi bi-arrow-repeat"></i>
-                                            Diária
-                                        </span>
-                                    <% } else if(tarefa.repeticao === 'weekly'){ %>
-                                        <span>
-                                            <i class="bi bi-arrow-repeat"></i>
-                                            Semanal · <%= tarefa.dia_semana || 'dia específico' %>
-                                        </span>
-                                    <% } else { %>
-                                        <span>
-                                            <i class="bi bi-calendar-check"></i>
-                                            Única
-                                        </span>
-                                    <% } %>
+                                            <span>
+                                                <i class="bi bi-calendar3"></i>
+                                                <%= tarefa.data ? new Date(tarefa.data).toLocaleDateString('pt-BR') : '--/--/--' %>
+                                            </span>
+
+                                            <% if (tarefa.horario) { %>
+                                                <span>
+                                                    <i class="bi bi-clock"></i>
+                                                    <%= tarefa.horario %>
+                                                </span>
+                                            <% } %>
+
+                                            <% if (tarefa.repeticao === 'daily') { %>
+                                                <span><i class="bi bi-arrow-repeat"></i> Diária</span>
+                                            <% } else if (tarefa.repeticao === 'weekly') { %>
+                                                <span><i class="bi bi-arrow-repeat"></i> Semanal · <%= tarefa.dia_semana || 'dia específico' %></span>
+                                            <% } else { %>
+                                                <span><i class="bi bi-calendar-check"></i> Única</span>
+                                            <% } %>
+                                        </section>
+
+                                        <section class="hs-detail-actions">
+                                            <a href="/tasks/editar/<%= tarefa._id %>" class="hs-task-edit">
+                                                <i class="bi bi-pencil"></i>
+                                                <span>Editar</span>
+                                            </a>
+
+                                            <form action="/tasks/excluir/<%= tarefa._id %>" method="POST" onsubmit="return confirm('Excluir esta tarefa?')">
+                                                <button type="submit" class="hs-btn-excluir">
+                                                    <i class="bi bi-trash3"></i>
+                                                    <span>Excluir</span>
+                                                </button>
+                                            </form>
+                                        </section>
+                                    </section>
                                 </section>
-                            </section>
-                        <section class="hs-task-actions">
-                            <a
-                                href="/tasks/editar/<%= tarefa._id %>"
-                                class="hs-task-edit"
-                            >
-                                <i class="bi bi-pencil"></i>
-
-                            </a>
-
-                            <form
-                                action="/tasks/excluir/<%= tarefa._id %>"
-                                method="POST"
-                                onsubmit="return confirm('Excluir esta tarefa?')"
-                            >
-                                <button
-                                    type="submit"
-                                    class="hs-btn-excluir"
-                                >
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </form>
-                        </section>
-                    </article>
-                </li>
-            <% }) %>
-        </ul>
+                            </article>
+                        </li>
+                    <% }) %>
+                </ul>
         <% } %>
     </section>
     </section>
 
-    <!-- CATEGORIAS -->
+    <!-- CATEGORIAS 
     <section class="hs-tasks-section">
     <header class="hs-section-header">
             <h2>
@@ -316,9 +291,9 @@
         </a>
     </nav>
 </section>
+-->
 
 <%- include('../../partials/voltar-topo.ejs') %>
-
 
 <!-- OVERLAY -->
 <div class="hs-drawer-overlay" id="drawerOverlay">
@@ -450,126 +425,13 @@
 </main>
 
 <%- include('../../partials/footer.ejs') %>
+
 <script>
   window.taskToEdit = <%- JSON.stringify(taskToEdit || null) %>;
 </script>
-<script src="/js/tarefas/tarefalocal.js"></script>
-<script src="/js/tarefas/criartarefa.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchTask');
-    const filterStatus = document.getElementById('filterStatus');
-    const filterCategory = document.getElementById('filterCategory');
-    const repeatSelect = document.getElementById('repeticaoTarefa');
-    const diaSemanaGroup = document.getElementById('diaSemanaGroup');
-    const drawerOverlay = document.getElementById('drawerOverlay');
-    const taskItems = Array.from(document.querySelectorAll('.hs-user-tasks > li'));
-    const countBadge = document.querySelector('.hs-section-count');
-    const dayNames = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
-    const form = document.querySelector('.hs-drawer-form');
-    const taskToEdit = window.taskToEdit || null;
+<script src="/js/tarefas/tarefa-local.js"></script>
+<script src="/js/tarefas/drawer.js"></script>
+<script src="/js/tarefas/gerenciar-tarefa.js"></script>
 
-    if (form && taskToEdit) {
-      form.action = `/tasks/atualizar/${taskToEdit._id}`;
-      form.querySelector('input[name="titulo"]').value = taskToEdit.title || '';
-      form.querySelector('textarea[name="descricao"]').value = taskToEdit.descricao || '';
-      form.querySelector('select[name="categoria"]').value = taskToEdit.categoria || 'geral';
-      form.querySelector('input[name="data"]').value = taskToEdit.data || '';
-      form.querySelector('input[name="horario"]').value = taskToEdit.horario || '';
-      form.querySelector('select[name="repeticao"]').value = taskToEdit.repeticao || 'once';
-      form.querySelector('select[name="dia_semana"]').value = taskToEdit.dia_semana || '';
-      const saveTaskText = document.getElementById('saveTaskText');
-      if (saveTaskText) saveTaskText.textContent = 'Atualizar tarefa';
-      const saveTaskIcon = document.querySelector('#saveTaskButton i');
-      if (saveTaskIcon) saveTaskIcon.className = 'bi bi-pencil-square';
-      if (drawerOverlay) {
-        drawerOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    if (repeatSelect && diaSemanaGroup) {
-      const toggleDiaSemana = () => {
-        const show = repeatSelect.value === 'weekly';
-        diaSemanaGroup.style.display = show ? 'block' : 'none';
-        if (!show) {
-          const select = diaSemanaGroup.querySelector('select');
-          if (select) select.value = '';
-        }
-      };
-
-      repeatSelect.addEventListener('change', toggleDiaSemana);
-      toggleDiaSemana();
-    }
-
-    function matchesStatus(taskCard) {
-      const status = filterStatus?.value || 'today';
-      if (status === 'all') return true;
-      const repeticao = (taskCard.dataset.repeticao || 'once').toLowerCase();
-      const diaSemana = (taskCard.dataset.diaSemana || '').toLowerCase();
-      const dataRaw = taskCard.dataset.data;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (status === 'today') {
-        if (repeticao === 'daily') return true;
-        if (repeticao === 'weekly' && diaSemana) {
-          return diaSemana === dayNames[today.getDay()];
-        }
-        if (!dataRaw) return true;
-        const taskDate = new Date(`${dataRaw}T00:00:00`);
-        return taskDate.getTime() === today.getTime();
-      }
-
-      if (status === 'nextweek') {
-        if (repeticao === 'daily') return true;
-        if (repeticao === 'weekly' && diaSemana) {
-          const hoje = today.getDay();
-          const proximosDias = new Set();
-          for (let i = 0; i <= 7; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() + i);
-            proximosDias.add(dayNames[d.getDay()]);
-          }
-          return proximosDias.has(diaSemana);
-        }
-        if (!dataRaw) return true;
-        const taskDate = new Date(`${dataRaw}T00:00:00`);
-        const diff = Math.round((taskDate.getTime() - today.getTime()) / 86400000);
-        return diff >= 0 && diff <= 7;
-      }
-
-      return true;
-    }
-
-    function aplicarFiltros() {
-      const termoBusca = (searchInput?.value || '').trim().toLowerCase();
-      const categoria = filterCategory?.value || '';
-      let visible = 0;
-
-      taskItems.forEach((item) => {
-        const taskCard = item.querySelector('.hs-user-task-card');
-        const title = (taskCard?.dataset.title || '').toLowerCase();
-        const categoriaTask = (taskCard?.dataset.category || '').toLowerCase();
-        const matchesSearch = !termoBusca || title.includes(termoBusca) || categoriaTask.includes(termoBusca);
-        const matchesCategory = !categoria || categoriaTask === categoria;
-        const matchesStatusValue = matchesStatus(taskCard);
-        const shouldShow = matchesSearch && matchesCategory && matchesStatusValue;
-
-        item.style.display = shouldShow ? '' : 'none';
-        if (shouldShow) visible += 1;
-      });
-
-      if (countBadge) {
-        countBadge.textContent = String(visible);
-      }
-    }
-
-    searchInput?.addEventListener('input', aplicarFiltros);
-    filterStatus?.addEventListener('change', aplicarFiltros);
-    filterCategory?.addEventListener('change', aplicarFiltros);
-    aplicarFiltros();
-  });
-</script>
 </body>
 </html>

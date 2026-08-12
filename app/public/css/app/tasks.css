@@ -16,6 +16,11 @@
   padding: 1rem;
   border: 1px solid var(--border);
 }
+.hs-page-head-content{
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
 
 .hs-page-kicker {
   display: inline-flex;
@@ -223,6 +228,51 @@
   overflow: hidden;
 }
 
+/* Collapsible details */
+.hs-toggle-details {
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+.hs-toggle-details:hover {
+  background: var(--surface-muted);
+}
+
+.hs-task-details {
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.28s ease,
+    padding 0.2s ease;
+  padding-top: 0;
+}
+.hs-task-desc {
+  margin: 0 0 0.6rem 0;
+  color: var(--text-secondary);
+}
+
+.hs-user-task-card.open .hs-task-details {
+  max-height: 600px; /* large enough to reveal contents */
+  padding-top: 0.6rem;
+}
+
+.hs-user-task-card .hs-toggle-details i {
+  transition: transform 0.25s ease;
+}
+.hs-user-task-card.open .hs-toggle-details i {
+  transform: rotate(180deg);
+}
+
 .hs-user-task-card::before {
   content: "";
   position: absolute;
@@ -251,55 +301,39 @@
 .hs-task-top {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
   width: 100%;
 }
 
-.hs-task-btn {
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
+.hs-task-left {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: transform 0.25s ease, background-color 0.25s ease;
-  flex-shrink: 0;
+  gap: 0.6rem;
+  min-width: 0;
 }
+/* .hs-task-btn is defined later once to avoid duplication */
 
 .hs-task-icon {
-  width: 44px;
-  height: 44px;
+  width: 25px;
+  height: 25px;
 
-  border-radius: 16px;
-  background: var(--accent-color);
 
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: var(--font-icon);
   color: var(--fundoescuro);
   flex-shrink: 0;
 }
 
 .hs-task-top h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--font-text);
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--fundoclaro);
   line-height: 1.2;
   min-width: 0;
-}
-
-.hs-task-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.35rem;
 }
 
 /* ==========================================================
@@ -337,14 +371,39 @@
 .hs-task-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+}
+
+.hs-top-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hs-detail-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.hs-detail-actions .hs-task-edit,
+.hs-detail-actions .hs-btn-excluir {
+  padding: 0.45rem 0.8rem;
+  height: auto;
+  width: auto;
+  border-radius: 8px;
+}
+.hs-detail-actions .hs-task-edit span,
+.hs-detail-actions .hs-btn-excluir span {
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .hs-task-btn,
 .hs-task-edit,
 .hs-btn-excluir {
-  width: 36px;
-  height: 36px;
+  width: 25px;
+  height: 25px;
 
   display: flex;
   align-items: center;
@@ -359,8 +418,8 @@
 }
 
 .hs-task-btn {
-  width: 38px;
-  height: 38px;
+  width: 25px;
+  height: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -386,7 +445,7 @@
 .hs-task-edit {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 8px;
   background: var(--surface-muted);
   color: var(--fundoclaro);
   display: inline-flex;
@@ -400,17 +459,12 @@
 .hs-btn-excluir {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 8px;
   background: rgba(220, 38, 38, 0.08);
   color: #dc2626;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.hs-btn-excluir:hover,
-.hs-task-edit {
-  transform: scale(1.08);
 }
 
 /* ==========================================================
@@ -488,6 +542,13 @@
 /* ==========================================================
    RESPONSIVO
 ========================================================== */
+@media (max-width: 500px) {
+  .hs-task-top {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
 @media (max-width: 900px) {
   .hs-user-task-card {
     display: grid;
@@ -508,27 +569,7 @@
 
 @media (max-width: 650px) {
   .hs-task-main {
-    gap: 0.75rem;
-  }
-
-  .hs-task-top {
-    justify-content: flex-start;
-  }
-
-  .hs-task-actions {
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 650px) {
-  .hs-task-main {
     flex-direction: column;
-  }
-
-  .hs-task-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
   }
 
   .hs-task-meta {
