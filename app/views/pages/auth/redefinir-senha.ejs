@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redefinir senha | Healthy Safely</title>
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/auth/cadastro.css" />
+  </head>
+  <body>
+    <%- include('../../partials/header.ejs') %>
+    <main>
+      <article class="card" aria-labelledby="titulo-reset">
+        <section class="form-area">
+          <% if (typeof invalido !== 'undefined' && invalido) { %>
+            <form action="/recuperar-senha" method="GET">
+              <%- include('../../partials/botao-voltar.ejs') %>
+              <h1 id="titulo-reset" class="form-title">Link inválido</h1>
+              <p class="small" style="margin-bottom: 18px;">
+                <%= mensagem || 'Este link de recuperação expirou ou é inválido.' %>
+              </p>
+              <section class="actions">
+                <button class="btn-primary" type="submit">Solicitar novo link</button>
+              </section>
+            </form>
+          <% } else { %>
+            <form action="/redefinir-senha/<%= token %>" method="POST" novalidate>
+              <%- include('../../partials/botao-voltar.ejs') %>
+              <h1 id="titulo-reset" class="form-title">Crie sua nova senha</h1>
+
+              <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+                <section style="color:#1d8f4d; font-size:13px; background:rgba(91,191,106,0.08); padding:10px; border-radius:6px; margin-bottom:12px; border-left:3px solid #1d8f4d;">
+                  Sua senha foi redefinida com sucesso. Você já pode fazer login.
+                </section>
+                <section class="actions">
+                  <a href="/login" class="btn-primary" style="display:inline-block; text-decoration:none; text-align:center;">Ir para o login</a>
+                </section>
+              <% } else { %>
+                <% if (typeof erro !== 'undefined' && erro) { %>
+                  <section style="color:#ff6b6b; font-size:13px; background:rgba(255,107,107,0.05); padding:10px; border-radius:6px; margin-bottom:12px; border-left:3px solid #ff6b6b;">
+                    <%= erro %>
+                  </section>
+                <% } %>
+
+                <section class="espaco-campo">
+                  <label class="inputs" for="novaSenha">Nova senha</label>
+                  <section class="campo-senha">
+                    <input
+                      id="novaSenha"
+                      name="novaSenha"
+                      type="password"
+                      placeholder="Crie uma nova senha"
+                      autocomplete="new-password"
+                      required
+                    />
+                    <button type="button" class="btn-olho" onclick="toggleSenha('novaSenha')" aria-label="Mostrar senha">
+                      <i class="bi bi-eye-slash-fill"></i>
+                    </button>
+                  </section>
+                </section>
+
+                <section class="espaco-campo">
+                  <label class="inputs" for="confirmarSenha">Confirmar senha</label>
+                  <section class="campo-senha">
+                    <input
+                      id="confirmarSenha"
+                      name="confirmarSenha"
+                      type="password"
+                      placeholder="Repita a nova senha"
+                      autocomplete="new-password"
+                      required
+                    />
+                    <button type="button" class="btn-olho" onclick="toggleSenha('confirmarSenha')" aria-label="Mostrar senha">
+                      <i class="bi bi-eye-slash-fill"></i>
+                    </button>
+                  </section>
+                </section>
+
+                <section class="actions">
+                  <button class="btn-primary" type="submit">Salvar nova senha</button>
+                </section>
+              <% } %>
+            </form>
+          <% } %>
+        </section>
+      </article>
+    </main>
+    <%- include('../../partials/footer.ejs') %>
+    <script src="/js/cadastro/ver-senha.js"></script>
+  </body>
+</html>

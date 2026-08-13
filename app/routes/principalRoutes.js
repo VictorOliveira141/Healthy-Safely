@@ -126,6 +126,12 @@ router.get("/login", (req, res) => {
 });
 router.post("/login", usuarioController.login);
 
+/* ---------------- Recuperação de senha ---------------- */
+router.get("/recuperar-senha", usuarioController.exibirRecuperacaoSenha);
+router.post("/recuperar-senha", usuarioController.solicitarRecuperacaoSenha);
+router.get("/redefinir-senha/:token", usuarioController.exibirRedefinicaoSenha);
+router.post("/redefinir-senha/:token", usuarioController.processarRedefinicaoSenha);
+
 /* ---------------- Cadastro ---------------- */
 router.get("/cadastro", (req, res) => {
   if (req.session?.usuario) {

@@ -1,5 +1,6 @@
 const { usuarioModel } = require("../models/Usuario");
 const { body, validationResult } = require("express-validator");
+const { enviarEmailResetSenha } = require("../config/email");
 
 const usuarioController = {
   regrasValidacaoCliente: [
@@ -193,6 +194,133 @@ const usuarioController = {
       msgErro: {},
       sucesso: false,
     });
+  },
+
+  exibirRecuperacaoSenha: (req, res) => {
+    res.render("pages/auth/recuperar-senha", {
+      erro: null,
+      email: "",
+      sucesso: false,
+      mensagemSucesso: "",
+    });
+  },
+
+  solicitarRecuperacaoSenha: async (req, res) => {
+    const email = String(req.body.email || "").trim().toLowerCase();
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return res.render("pages/auth/recuperar-senha", {
+        erro: "Informe um e-mail válido.",
+        email,
+        sucesso: false,
+        mensagemSucesso: "",
+      });
+    }
+
+    try {
+      const usuario = await usuarioModel.buscarPorEmail(email);
+      if (usuario) {
+        const tokenInfo = await usuarioModel.gerarTokenRecuperacao(email);
+        if (tokenInfo?.token) {
+          await enviarEmailResetSenha(email, tokenInfo.token, req);
+        }
+      }
+
+      return res.render("pages/auth/recuperar-senha", {
+        erro: null,
+        email,
+        sucesso: true,
+        mensagemSucesso:
+          "Se esse e-mail estiver cadastrado, enviamos um link para redefinir sua senha.",
+      });
+    } catch (error) {
+      console.error("Erro ao solicitar recuperação de senha:", error);
+      return res.render("pages/auth/recuperar-senha", {
+        erro: "Não foi possível enviar o link de recuperação. Tente novamente.",
+        email,
+        sucesso: false,
+        mensagemSucesso: "",
+      });
+    }
+  },
+
+  exibirRedefinicaoSenha: async (req, res) => {
+    const token = String(req.params.token || "").trim();
+    const tokenValido = await usuarioModel.buscarPorTokenRecuperacao(token);
+
+    if (!tokenValido) {
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: true,
+        mensagem: "Este link de redefinição expirou ou é inválido.",
+      });
+    }
+
+    return res.render("pages/auth/redefinir-senha", {
+      token,
+      invalido: false,
+      erro: null,
+      sucesso: false,
+    });
+  },
+
+  processarRedefinicaoSenha: async (req, res) => {
+    const token = String(req.params.token || "").trim();
+    const novaSenha = String(req.body.novaSenha || "");
+    const confirmarSenha = String(req.body.confirmarSenha || "");
+
+    const tokenValido = await usuarioModel.buscarPorTokenRecuperacao(token);
+    if (!tokenValido) {
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: true,
+        mensagem: "Este link de redefinição expirou ou é inválido.",
+      });
+    }
+
+    if (!novaSenha || !/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(novaSenha)) {
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: false,
+        erro: "Use 8+ caracteres, incluindo letra maiúscula, número e símbolo.",
+        sucesso: false,
+      });
+    }
+
+    if (novaSenha !== confirmarSenha) {
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: false,
+        erro: "As senhas não coincidem.",
+        sucesso: false,
+      });
+    }
+
+    try {
+      const ok = await usuarioModel.alterarSenhaComToken(token, novaSenha);
+      if (!ok) {
+        return res.render("pages/auth/redefinir-senha", {
+          token,
+          invalido: true,
+          mensagem: "Não foi possível redefinir a senha com este link.",
+        });
+      }
+
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: false,
+        erro: null,
+        sucesso: true,
+      });
+    } catch (error) {
+      console.error("Erro ao processar redefinição de senha:", error);
+      return res.render("pages/auth/redefinir-senha", {
+        token,
+        invalido: false,
+        erro: "Ocorreu um erro ao salvar a nova senha.",
+        sucesso: false,
+      });
+    }
   },
 
   exibirConfirmacaoGoogle: (req, res) => {

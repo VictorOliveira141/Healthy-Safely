@@ -1,3 +1,4 @@
+var crypto = require("crypto");
 var pool = require("../../app/config/pool_conexoes");
 var bcrypt = require("bcryptjs");
 
@@ -34,6 +35,81 @@ const usuarioModel = {
       return linhas[0] || null;
     } catch (e) {
       return null;
+    }
+  },
+
+  gerarTokenRecuperacao: async (email) => {
+    try {
+      const emailNormalizado = String(email || "").trim().toLowerCase();
+      const usuario = await usuarioModel.buscarPorEmail(emailNormalizado);
+      if (!usuario) return null;
+
+      const token = crypto.randomBytes(32).toString("hex");
+      await pool.query(
+        `DELETE FROM password_reset_tokens WHERE email = ?`,
+        [emailNormalizado],
+      );
+      await pool.query(
+        `INSERT INTO password_reset_tokens (email, token, expira_em)
+         VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))`,
+        [emailNormalizado, token],
+      );
+
+      return { token, email: emailNormalizado };
+    } catch (e) {
+      console.error("Erro ao gerar token de recuperação:", e);
+      return null;
+    }
+  },
+
+  buscarPorTokenRecuperacao: async (token) => {
+    try {
+      const valor = String(token || "").trim();
+      if (!valor) return null;
+
+      const [linhas] = await pool.query(
+        `SELECT prt.*, u.id AS usuario_id, u.nome, u.email AS usuario_email
+         FROM password_reset_tokens prt
+         JOIN usuarios u ON u.email = prt.email
+         WHERE prt.token = ? AND prt.expira_em > NOW()
+         LIMIT 1`,
+        [valor],
+      );
+
+      return linhas[0] || null;
+    } catch (e) {
+      console.error("Erro ao buscar token de recuperação:", e);
+      return null;
+    }
+  },
+
+  alterarSenhaComToken: async (token, novaSenha) => {
+    try {
+      const tokenValido = await usuarioModel.buscarPorTokenRecuperacao(token);
+      if (!tokenValido) return false;
+
+      const senhaHash = await bcrypt.hash(novaSenha, 10);
+      const conn = await pool.getConnection();
+      try {
+        await conn.beginTransaction();
+        await conn.query("UPDATE usuarios SET senha = ? WHERE email = ?", [
+          senhaHash,
+          tokenValido.email,
+        ]);
+        await conn.query("DELETE FROM password_reset_tokens WHERE token = ?", [
+          token,
+        ]);
+        await conn.commit();
+        return true;
+      } catch (error) {
+        await conn.rollback();
+        throw error;
+      } finally {
+        conn.release();
+      }
+    } catch (e) {
+      console.error("Erro ao redefinir senha por token:", e);
+      return false;
     }
   },
 

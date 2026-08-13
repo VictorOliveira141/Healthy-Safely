@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recuperar senha | Healthy Safely</title>
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/auth/cadastro.css" />
+  </head>
+  <body>
+    <%- include('../../partials/header.ejs') %>
+    <main>
+      <article class="card" aria-labelledby="titulo-recuperar">
+        <section class="form-area">
+          <form action="/recuperar-senha" method="POST" novalidate>
+            <%- include('../../partials/botao-voltar.ejs') %>
+            <h1 id="titulo-recuperar" class="form-title">Recuperar senha</h1>
+
+            <p class="small" style="margin-bottom: 18px;">
+              Digite o e-mail associado à sua conta para receber um link de redefinição.
+            </p>
+
+            <% if (typeof erro !== 'undefined' && erro) { %>
+              <section style="color:#ff6b6b; font-size:13px; background:rgba(255,107,107,0.05); padding:10px; border-radius:6px; margin-bottom:12px; border-left:3px solid #ff6b6b;">
+                <%= erro %>
+              </section>
+            <% } %>
+
+            <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+              <section style="color:#1d8f4d; font-size:13px; background:rgba(91,191,106,0.08); padding:10px; border-radius:6px; margin-bottom:12px; border-left:3px solid #1d8f4d;">
+                <%= mensagemSucesso || 'Se esse e-mail estiver cadastrado, enviamos um link para redefinir sua senha.' %>
+              </section>
+            <% } %>
+
+            <section>
+              <label class="inputs" for="email">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="seu@exemplo.com"
+                value="<%= typeof email !== 'undefined' ? email : '' %>"
+                autocomplete="email"
+                required
+              />
+            </section>
+
+            <section class="actions">
+              <button class="btn-primary" type="submit">Enviar link</button>
+            </section>
+
+            <p class="small">
+              Lembrou da senha?
+              <a href="/login" class="link-cadastro">Fazer login</a>
+            </p>
+          </form>
+        </section>
+      </article>
+    </main>
+    <%- include('../../partials/footer.ejs') %>
+  </body>
+</html>

@@ -15,6 +15,17 @@ CREATE TABLE IF NOT EXISTS usuarios (
   criado_em    DATETIME     DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ── TOKENS DE RECUPERAÇÃO DE SENHA ──────────────────────────
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  email      VARCHAR(150) NOT NULL,
+  token      VARCHAR(255) NOT NULL UNIQUE,
+  expira_em  DATETIME NOT NULL,
+  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_reset_email (email),
+  INDEX idx_reset_expira (expira_em)
+);
+
 -- ── PROFISSIONAIS (dados extras) ─────────────────────────────
 CREATE TABLE IF NOT EXISTS profissionais (
   id                INT  AUTO_INCREMENT PRIMARY KEY,
