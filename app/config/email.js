@@ -28,14 +28,19 @@ async function enviarEmailResetSenha(email, token, req) {
             pass: process.env.SMTP_PASS,
           }
         : undefined,
+    // Timeouts to avoid hanging requests in environments that block SMTP
+    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT || 10000),
+    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT || 5000),
+    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT || 10000),
   });
 
-  await transporter.sendMail({
-    from: remetente,
-    to: email,
-    subject: "Recuperação de senha | Healthy Safely",
-    text: `Use o link abaixo para redefinir sua senha:\n\n${url}\n\nSe você não solicitou isso, ignore este e-mail.`,
-    html: `
+  try {
+    await transporter.sendMail({
+      from: remetente,
+      to: email,
+      subject: "Recuperação de senha | Healthy Safely",
+      text: `Use o link abaixo para redefinir sua senha:\n\n${url}\n\nSe você não solicitou isso, ignore este e-mail.`,
+      html: `
       <div style="font-family: Arial, sans-serif; color: #1f2937;">
         <h2>Recuperação de senha</h2>
         <p>Recebemos uma solicitação para redefinir sua senha.</p>
@@ -47,9 +52,15 @@ async function enviarEmailResetSenha(email, token, req) {
         <p>${url}</p>
       </div>
     `,
-  });
+    });
 
-  return { ok: true, simulated: false };
+    return { ok: true, simulated: false };
+  } catch (err) {
+    console.error('[EMAIL] Erro ao enviar e-mail de recuperação:', err && err.message ? err.message : err);
+    console.log('[EMAIL] Link de recuperação (fallback):', url);
+    // Não deixar a requisição travar indefinidamente — retorne sucesso parcial para o fluxo
+    return { ok: false, simulated: false, error: err && err.message };
+  }
 }
 
 module.exports = { enviarEmailResetSenha, gerarUrlRecuperacao };
