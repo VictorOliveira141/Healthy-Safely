@@ -1,66 +1,147 @@
-const nodemailer = require("nodemailer");
-
 function gerarUrlRecuperacao(token, req) {
   const host = req.get("host");
   const protocol = req.protocol || "http";
   const baseURL = process.env.APP_URL || `${protocol}://${host}`;
+
   return `${baseURL}/redefinir-senha/${token}`;
 }
 
 async function enviarEmailResetSenha(email, token, req) {
-  const remetente = process.env.SMTP_FROM || "Healthy Safely <noreply@healthysafely.com>";
+  console.log("[EMAIL] FUNÇÃO DE RECUPERAÇÃO EXECUTADA");
+  console.log("[EMAIL] Brevo configurado:", !!process.env.BREVO_API_KEY);
+
   const url = gerarUrlRecuperacao(token, req);
 
-  if (!process.env.SMTP_HOST) {
-    console.log("[EMAIL] Simulação de envio de e-mail para recuperação de senha:");
-    console.log(url);
-    return { ok: true, simulated: true };
+  if (!process.env.BREVO_API_KEY) {
+    console.log("[EMAIL] API do Brevo não configurada.");
+    console.log("[EMAIL] Link de recuperação:", url);
+
+    return {
+      ok: true,
+      simulated: true,
+      provider: "simulated",
+    };
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT || 587) === 465,
-    auth:
-      process.env.SMTP_USER && process.env.SMTP_PASS
-        ? {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          }
-        : undefined,
-    // Timeouts to avoid hanging requests in environments that block SMTP
-    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT || 10000),
-    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT || 5000),
-    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT || 10000),
-  });
+  const remetente =
+    process.env.BREVO_FROM_EMAIL || "healthysafely2026@gmail.com";
+
+  const timeoutMs = Number(process.env.EMAIL_TIMEOUT_MS || 20000);
+
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
 
   try {
-    await transporter.sendMail({
-      from: remetente,
-      to: email,
-      subject: "Recuperação de senha | Healthy Safely",
-      text: `Use o link abaixo para redefinir sua senha:\n\n${url}\n\nSe você não solicitou isso, ignore este e-mail.`,
-      html: `
-      <div style="font-family: Arial, sans-serif; color: #1f2937;">
-        <h2>Recuperação de senha</h2>
-        <p>Recebemos uma solicitação para redefinir sua senha.</p>
-        <p>Clique no botão abaixo para continuar:</p>
-        <p>
-          <a href="${url}" style="display:inline-block; padding:12px 20px; background:#5BBF6A; color:#fff; border-radius:8px; text-decoration:none;">Redefinir senha</a>
-        </p>
-        <p>Se o botão não funcionar, copie e cole este link no navegador:</p>
-        <p>${url}</p>
-      </div>
-    `,
+    const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+      },
+
+      body: JSON.stringify({
+        sender: {
+          name: "Healthy Safely",
+          email: remetente,
+        },
+
+        to: [
+          {
+            email,
+          },
+        ],
+
+        subject: "Recuperação de senha | Healthy Safely",
+
+        text: `Use o link abaixo para redefinir sua senha:
+
+${url}
+
+Se você não solicitou isso, ignore este e-mail.`,
+
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; color: #1f2937;">
+            <h2>Recuperação de senha</h2>
+
+            <p>Recebemos uma solicitação para redefinir sua senha.</p>
+
+            <p>Clique no botão abaixo para continuar:</p>
+
+            <p>
+              <a
+                href="${url}"
+                style="
+                  display:inline-block;
+                  padding:12px 20px;
+                  background:#5BBF6A;
+                  color:#fff;
+                  border-radius:8px;
+                  text-decoration:none;
+                "
+              >
+                Redefinir senha
+              </a>
+            </p>
+
+            <p>
+              Se o botão não funcionar, copie e cole este link no navegador:
+            </p>
+
+            <p>${url}</p>
+          </div>
+        `,
+      }),
+
+      signal: controller.signal,
     });
 
-    return { ok: true, simulated: false };
+    const dados = await resposta.json().catch(() => ({}));
+
+    if (!resposta.ok) {
+      throw new Error(
+        dados.message ||
+        `Brevo retornou erro HTTP ${resposta.status}.`
+      );
+    }
+
+    console.log("[EMAIL] E-mail enviado pelo Brevo.");
+    console.log("[EMAIL] messageId:", dados.messageId);
+
+    return {
+      ok: true,
+      simulated: false,
+      provider: "brevo",
+      messageId: dados.messageId,
+    };
   } catch (err) {
-    console.error('[EMAIL] Erro ao enviar e-mail de recuperação:', err && err.message ? err.message : err);
-    console.log('[EMAIL] Link de recuperação (fallback):', url);
-    // Não deixar a requisição travar indefinidamente — retorne sucesso parcial para o fluxo
-    return { ok: false, simulated: false, error: err && err.message };
+    const mensagem =
+      err?.name === "AbortError"
+        ? `Timeout ao enviar e-mail após ${timeoutMs}ms.`
+        : err?.message || String(err);
+
+    console.error(
+      "[EMAIL] Erro ao enviar e-mail de recuperação:",
+      mensagem
+    );
+
+    console.log("[EMAIL] Link de recuperação (fallback):", url);
+
+    return {
+      ok: false,
+      simulated: false,
+      provider: "brevo",
+      error: mensagem,
+    };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-module.exports = { enviarEmailResetSenha, gerarUrlRecuperacao };
+module.exports = {
+  enviarEmailResetSenha,
+  gerarUrlRecuperacao,
+};
