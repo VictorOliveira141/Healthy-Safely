@@ -14,7 +14,7 @@
         <section class="form-area">
           <% if (typeof invalido !== 'undefined' && invalido) { %>
             <form action="/recuperar-senha" method="GET">
-              <%- include('../../partials/botao-voltar.ejs') %>
+              <%- include('../../partials/botao-voltar.ejs', { voltarPara: '/recuperar-senha' }) %>
               <h1 id="titulo-reset" class="form-title">Link inválido</h1>
               <p class="small" style="margin-bottom: 18px;">
                 <%= mensagem || 'Este link de recuperação expirou ou é inválido.' %>
@@ -25,7 +25,7 @@
             </form>
           <% } else { %>
             <form action="/redefinir-senha/<%= token %>" method="POST" novalidate>
-              <%- include('../../partials/botao-voltar.ejs') %>
+              <%- include('../../partials/botao-voltar.ejs', { voltarPara: typeof usuario !== 'undefined' && usuario ? '/configuracoes' : '/recuperar-senha' }) %>
               <h1 id="titulo-reset" class="form-title">Crie sua nova senha</h1>
 
               <% if (typeof sucesso !== 'undefined' && sucesso) { %>

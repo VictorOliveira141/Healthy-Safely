@@ -1,4 +1,10 @@
-<button onclick="voltarPagina()" class="btn-voltar">
+<button
+  type="button"
+  onclick="voltarPagina(this)"
+  class="btn-voltar"
+  data-voltar-para="<%= typeof voltarPara !== 'undefined' ? voltarPara : '' %>"
+  aria-label="Voltar"
+>
   <i class="bi bi-chevron-left"></i>
 </button>
 
@@ -20,8 +26,12 @@
   }
 </style>
 <script>
- function voltarPagina() {
-  if (window.history.length > 1) {
+ function voltarPagina(botao) {
+  const voltarPara = botao?.dataset.voltarPara;
+
+  if (voltarPara) {
+    window.location.replace(voltarPara);
+  } else if (window.history.length > 1) {
     window.history.back();
   } else {
     window.location.href = "/";

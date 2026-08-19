@@ -18,6 +18,23 @@ const respostas = {
   lembretes: "",
 };
 
+function etapaPodeAvancar(indice) {
+  if (indice === 0 || indice === etapas.length - 1) {
+    return true;
+  }
+
+  return Boolean(etapas[indice].querySelector(".option.selected"));
+}
+
+function atualizarBotoes() {
+  document.querySelectorAll(".btn-next").forEach((botao) => {
+    const etapa = botao.closest(".step");
+    const indice = Array.from(etapas).indexOf(etapa);
+
+    botao.disabled = !etapaPodeAvancar(indice);
+  });
+}
+
 // =====================================
 // INICIAR
 // =====================================
@@ -36,6 +53,7 @@ function mostrarEtapa(indice) {
   etapaAtual = indice;
 
   atualizarProgresso();
+  atualizarBotoes();
 
   if (indice === 8) {
     setTimeout(async () => {
@@ -48,8 +66,7 @@ function mostrarEtapa(indice) {
       } catch (error) {
         console.error("Erro ao concluir onboarding:", error);
       }
-
-      alert("Onboarding finalizado!");
+      
       window.location = "/dashboard";
     }, 3200);
   }
@@ -73,7 +90,7 @@ function atualizarProgresso() {
 
 document.querySelectorAll(".btn-next").forEach((botao) => {
   botao.addEventListener("click", () => {
-    if (etapaAtual < etapas.length - 1) {
+    if (etapaAtual < etapas.length - 1 && etapaPodeAvancar(etapaAtual)) {
       mostrarEtapa(etapaAtual + 1);
     }
   });
@@ -128,6 +145,7 @@ document
 
         console.clear();
         console.log(respostas);
+        atualizarBotoes();
       });
     });
   });
@@ -150,5 +168,6 @@ document.querySelectorAll(".option.day").forEach((botao) => {
 
     console.clear();
     console.log(respostas);
+    atualizarBotoes();
   });
 });

@@ -205,6 +205,17 @@ const usuarioController = {
     });
   },
 
+  exibirAlteracaoSenha: async (req, res) => {
+    const email = req.session?.usuario?.email;
+    const tokenInfo = await usuarioModel.gerarTokenRecuperacao(email);
+
+    if (!tokenInfo?.token) {
+      return res.redirect("/configuracoes");
+    }
+
+    return res.redirect(`/redefinir-senha/${tokenInfo.token}`);
+  },
+
   solicitarRecuperacaoSenha: async (req, res) => {
     const email = String(req.body.email || "").trim().toLowerCase();
 

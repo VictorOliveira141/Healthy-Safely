@@ -129,6 +129,11 @@ router.post("/login", usuarioController.login);
 /* ---------------- Recuperação de senha ---------------- */
 router.get("/recuperar-senha", usuarioController.exibirRecuperacaoSenha);
 router.post("/recuperar-senha", usuarioController.solicitarRecuperacaoSenha);
+router.get(
+  "/alterar-senha",
+  apenasAutenticado,
+  usuarioController.exibirAlteracaoSenha,
+);
 router.get("/redefinir-senha/:token", usuarioController.exibirRedefinicaoSenha);
 router.post("/redefinir-senha/:token", usuarioController.processarRedefinicaoSenha);
 

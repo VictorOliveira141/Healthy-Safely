@@ -23,7 +23,7 @@
    <%- include('../../partials/header.ejs') %>
 
     <main class="config-main" aria-labelledby="titulo-config">
-      <%- include('../../partials/botao-voltar.ejs') %>
+      <%- include('../../partials/botao-voltar.ejs', { voltarPara: '/dashboard' }) %>
       <h1 class="config-titulo" id="titulo-config">Configurações</h1>
       <p class="config-subtitulo">Personalize sua experiência na plataforma</p>
 
@@ -53,8 +53,10 @@
               <i class="bi bi-shield-lock-fill"></i>
             </figure>
             <section>
-              <span class="config-nome">Alterar senha</span>
-              <span class="config-desc">Redefina sua senha de acesso</span>
+              <a href="/alterar-senha" aria-label="Ir para alterar senha">
+                <span class="config-nome">Alterar senha</span>
+                <span class="config-desc">Redefina sua senha de acesso</span>
+              </a>
             </section>
           </section>
           <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
