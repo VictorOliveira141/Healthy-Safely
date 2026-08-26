@@ -5,6 +5,7 @@ const passport = require("passport");
 const iaRoutes = require("./ia-routes");
 
 const usuarioController = require("../controllers/usuarioController");
+const webauthnController = require("../controllers/webauthnController");
 const tarefaController = require("../controllers/tarefaController");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
 
@@ -300,6 +301,26 @@ router.get("/privacidade", apenasAutenticado, (req, res) =>
 router.get(
   "/api/cadastro/disponibilidade",
   usuarioController.verificarDisponibilidade,
+);
+
+router.post(
+  "/webauthn/register/options",
+  webauthnController.gerarOpcoesCadastro,
+);
+
+router.post(
+  "/webauthn/register/verify",
+  webauthnController.verificarCadastro,
+);
+
+router.post(
+  "/webauthn/login/options",
+  webauthnController.gerarOpcoesLogin,
+);
+
+router.post(
+  "/webauthn/login/verify",
+  webauthnController.verificarLogin,
 );
 
 /* ============================================================

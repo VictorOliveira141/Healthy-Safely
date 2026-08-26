@@ -63,6 +63,27 @@
         </article>
 
         <article class="config-item">
+  <section class="config-item-esquerda">
+    <figure class="config-icone" aria-hidden="true">
+      <i class="bi bi-fingerprint"></i>
+    </figure>
+
+    <section>
+      <span class="config-nome">Biometria</span>
+      <span class="config-desc">Entre usando a biometria do seu dispositivo</span>
+    </section>
+  </section>
+
+  <button
+    type="button"
+    id="btn-cadastrar-biometria"
+    class="config-acao"
+  >
+    Cadastrar
+  </button>
+</article>
+
+        <article class="config-item">
           <section class="config-item-esquerda">
             <figure class="config-icone" aria-hidden="true">
               <i class="bi bi-envelope-fill"></i>
@@ -191,5 +212,7 @@
     <%- include('../../partials/voltar-topo.ejs') %>
     <%- include('../../partials/footer.ejs') %>
 
+    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.3/dist/bundle/index.umd.min.js"></script>
+    <script src="/js/user/biometria-cadastro.js"></script>
   </body>
 </html>

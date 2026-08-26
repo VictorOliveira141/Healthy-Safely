@@ -41,6 +41,19 @@ CREATE TABLE IF NOT EXISTS vinculos (
   FOREIGN KEY (profissional_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+CREATE TABLE webauthn_credentials (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    credential_id VARCHAR(255) NOT NULL UNIQUE,
+    public_key TEXT NOT NULL,
+    counter INT DEFAULT 0,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS solicitacoes (
   id               INT  AUTO_INCREMENT PRIMARY KEY,
   paciente_id      INT  NOT NULL,

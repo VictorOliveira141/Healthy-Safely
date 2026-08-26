@@ -112,6 +112,15 @@
             <section class="actions">
               <button class="btn-primary" type="submit">Entrar</button>
             </section>
+<button
+  type="button"
+  class="btn-primary"
+  id="btn-biometria"
+  style="display: none;"
+>
+  <i class="bi bi-fingerprint"></i>
+  Entrar com biometria
+</button>
 
             <p class="small">
               <a href="/recuperar-senha" class="link-cadastro">Esqueceu sua senha?</a>
@@ -129,8 +138,10 @@
 
     <%- include('../../partials/footer.ejs') %>
 
+    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/cadastro/validacao-front-end.js"></script>
     <script src="/js/cadastro/ver-senha.js"></script>
+    <script src="/js/auth/biometria-login.js"></script>
   </body>
 </html>
