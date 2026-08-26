@@ -10,8 +10,8 @@ const webauthnModel = require("../models/webauthnModel");
 const { usuarioModel } = require("../models/Usuario");
 
 const RP_NAME = "Healthy Safely";
-const RP_ID = "healthysafely.com";
-const ORIGIN = "https://healthysafely.com";
+const RP_ID = "healthy-safely.onrender.com";
+const ORIGIN = "https://healthy-safely.onrender.com";
 
 const webauthnController = {
   gerarOpcoesCadastro: async (req, res) => {
