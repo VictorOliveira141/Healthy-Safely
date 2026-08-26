@@ -89,6 +89,7 @@ form {
 .btn-google {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   width: 100%;
   padding: 0.75rem 1rem;
@@ -401,6 +402,12 @@ input.erro-input:focus {
 }
 
 /* ── Responsividade ──────────────────────────────────────── */
+@media (max-width: 768px) {
+    .btn-biometrics {
+        display: block;
+    }
+}
+
 @media (max-width: 600px) {
   main.main,
   main {
@@ -413,6 +420,7 @@ input.erro-input:focus {
     flex-direction: column;
   }
 }
+
 
 /* Remove o botão nativo de mostrar senha do Edge */
 input::-ms-reveal,

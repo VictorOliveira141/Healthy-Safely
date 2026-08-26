@@ -1,9 +1,15 @@
 const btnBiometria = document.getElementById("btn-biometria");
 
 if (btnBiometria && window.PublicKeyCredential) {
-  btnBiometria.style.display = "block";
-
   btnBiometria.addEventListener("click", async () => {
+    // Impede o uso da biometria em computadores
+    if (window.innerWidth > 768) {
+      alert(
+        "A autenticação por biometria está disponível apenas em dispositivos móveis.",
+      );
+      return;
+    }
+
     try {
       btnBiometria.disabled = true;
       btnBiometria.innerHTML =
@@ -20,9 +26,7 @@ if (btnBiometria && window.PublicKeyCredential) {
 
       const options = await respostaOpcoes.json();
 
-      const { startAuthentication } = SimpleWebAuthnBrowser;
-
-      const resultado = await startAuthentication({
+      const resultado = await window.SimpleWebAuthnBrowser.startAuthentication({
         optionsJSON: options,
       });
 
@@ -44,9 +48,11 @@ if (btnBiometria && window.PublicKeyCredential) {
       window.location.href = dados.redirect;
     } catch (error) {
       console.error("Erro no login biométrico:", error);
+
       alert(error.message || "Não foi possível entrar com a biometria.");
     } finally {
       btnBiometria.disabled = false;
+
       btnBiometria.innerHTML =
         '<i class="bi bi-fingerprint"></i> Entrar com biometria';
     }

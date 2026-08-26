@@ -47,41 +47,49 @@
           </a>
         </article>
 
+        <a href="/alterar-senha" aria-label="Ir para alterar senha">
         <article class="config-item">
+          
           <section class="config-item-esquerda">
             <figure class="config-icone" aria-hidden="true">
               <i class="bi bi-shield-lock-fill"></i>
             </figure>
             <section>
-              <a href="/alterar-senha" aria-label="Ir para alterar senha">
                 <span class="config-nome">Alterar senha</span>
                 <span class="config-desc">Redefina sua senha de acesso</span>
-              </a>
             </section>
           </section>
           <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
         </article>
+        </a>
 
         <article class="config-item">
-  <section class="config-item-esquerda">
-    <figure class="config-icone" aria-hidden="true">
-      <i class="bi bi-fingerprint"></i>
-    </figure>
+        <section class="config-item-esquerda">
+        <figure class="config-icone" aria-hidden="true">
+        <i class="bi bi-fingerprint"></i>
+        </figure>
 
-    <section>
-      <span class="config-nome">Biometria</span>
-      <span class="config-desc">Entre usando a biometria do seu dispositivo</span>
-    </section>
-  </section>
+        <section>
+        <span class="config-nome">Biometria</span>
+        <span class="config-desc">Entre usando a biometria do seu dispositivo</span>
+        </section>
+        </section>
 
-  <button
-    type="button"
-    id="btn-cadastrar-biometria"
-    class="config-acao"
-  >
-    Cadastrar
-  </button>
-</article>
+        <section class="biometria-status">
+        <span id="status-biometria" class="status-biometria nao-ativada">
+         Não ativada
+        </span>
+
+        <button
+        type="button"
+        id="btn-cadastrar-biometria"
+        class="config-acao"
+         >
+        Cadastrar
+        </button>
+        </section>
+        
+        </article>
 
         <article class="config-item">
           <section class="config-item-esquerda">
@@ -212,7 +220,7 @@
     <%- include('../../partials/voltar-topo.ejs') %>
     <%- include('../../partials/footer.ejs') %>
 
-    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.3/dist/bundle/index.umd.min.js"></script>
+    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
     <script src="/js/user/biometria-cadastro.js"></script>
   </body>
 </html>
