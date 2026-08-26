@@ -54,8 +54,7 @@
 
           <!---------     CONECTAR AO BANCO FUTURAMENTE     ------>
           <h2>
-            Membro desde <%= usuario && usuario.data_cadastro ? new
-            Date(usuario.data_cadastro).toLocaleDateString('pt-BR') : '—' %>
+            Membro desde <%= usuario && usuario.criado_em ? new Date(usuario.criado_em).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : '—' %>
           </h2>
           <!---------                             ------>
         </section>

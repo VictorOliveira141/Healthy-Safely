@@ -172,3 +172,92 @@
   font-weight: 600;
   margin-top: 0.75rem;
 }
+
+
+/* ── Biometria ───────────────────────────────────── */
+
+.biometria-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Status */
+
+.status-biometria {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: var(--font-small);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Não ativada */
+
+.status-biometria.nao-ativada {
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.12);
+}
+
+/* Ativada */
+
+.status-biometria.ativada {
+    color: #15803d;
+    background: rgba(34, 197, 94, 0.12);
+}
+
+/* Botão */
+
+#btn-cadastrar-biometria {
+    min-width: 100px;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    background: var(--botao);
+    color: var(--fundoescuro);
+    font-family: "Outfit", sans-serif;
+    font-size: var(--font-small);
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+#btn-cadastrar-biometria:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(12, 79, 67, 0.15);
+}
+
+#btn-cadastrar-biometria:active {
+    transform: scale(0.98);
+}
+
+/* Quando a biometria estiver ativada,
+   o botão pode assumir aparência de remoção */
+
+#btn-cadastrar-biometria.remover {
+    color: #dc2626;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    .biometria-status {
+        gap: 0.5rem;
+    }
+
+    .status-biometria {
+        padding: 0.35rem 0.6rem;
+    }
+
+    #btn-cadastrar-biometria {
+        min-width: auto;
+        padding: 0.5rem 0.75rem;
+    }
+}

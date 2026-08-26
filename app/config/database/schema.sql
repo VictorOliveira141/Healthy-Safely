@@ -28,6 +28,19 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   INDEX idx_reset_expira (expira_em)
 );
 
+CREATE TABLE webauthn_credentials (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    credential_id VARCHAR(255) NOT NULL UNIQUE,
+    public_key TEXT NOT NULL,
+    counter INT DEFAULT 0,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
+);
+
 -- ── PROFISSIONAIS (dados extras) ─────────────────────────────
 CREATE TABLE IF NOT EXISTS profissionais (
   id                INT  AUTO_INCREMENT PRIMARY KEY,

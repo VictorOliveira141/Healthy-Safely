@@ -46,6 +46,19 @@
               <p>Entrar com Google</p>
             </a>
 
+           
+            <button
+            type="button"
+            class="btn-primary"
+            id="btn-biometria"
+            >
+            <i class="bi bi-fingerprint"></i>
+            
+            Entrar com biometria
+            </button>
+          
+          
+
             <section class="or" aria-hidden="true">ou</section>
 
             <section>
@@ -129,8 +142,10 @@
 
     <%- include('../../partials/footer.ejs') %>
 
+    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/cadastro/validacao-front-end.js"></script>
     <script src="/js/cadastro/ver-senha.js"></script>
+    <script src="/js/auth/biometria-login.js"></script>
   </body>
 </html>

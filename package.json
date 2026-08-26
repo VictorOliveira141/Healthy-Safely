@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@google/genai": "^2.19.0",
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.3",
     "bcryptjs": "^2.4.3",
     "boxicons": "^2.1.4",
     "dotenv": "^16.4.5",
