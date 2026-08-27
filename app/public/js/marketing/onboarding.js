@@ -62,6 +62,7 @@ function mostrarEtapa(indice) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
+          body: JSON.stringify(respostas),
         });
       } catch (error) {
         console.error("Erro ao concluir onboarding:", error);

@@ -249,6 +249,19 @@ const usuarioModel = {
     }
   },
 
+  salvarPerfilPesquisa: async (usuarioId, perfil) => {
+    try {
+      await pool.query(
+        "UPDATE usuarios SET perfil_pesquisa = ? WHERE id = ?",
+        [JSON.stringify(perfil || {}), usuarioId],
+      );
+      return true;
+    } catch (e) {
+      console.error("Erro ao salvar perfil da pesquisa:", e);
+      return false;
+    }
+  },
+
   atualizarOnboardingConcluido: async (usuarioId, concluido = true) => {
     try {
       await pool.query(

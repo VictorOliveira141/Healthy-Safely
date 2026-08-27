@@ -355,8 +355,29 @@ router.get("/onboarding", apenasAutenticado, async (req, res) => {
 
 router.post("/onboarding/concluir", apenasAutenticado, async (req, res) => {
   const { usuarioModel } = require("../models/Usuario");
+  const { tarefaModel } = require("../models/Tarefa");
+  const { gerarTarefasPersonalizadas } = require("../services/iaService");
 
-  await usuarioModel.atualizarOnboardingConcluido(req.session.usuario.id, true);
+  const usuarioId = req.session.usuario.id;
+  const respostas = req.body || {};
+
+  await usuarioModel.salvarPerfilPesquisa(usuarioId, respostas);
+
+  try {
+    const tarefas = await gerarTarefasPersonalizadas(respostas);
+    for (const tarefa of tarefas) {
+      await tarefaModel.criar({
+        usuarioId,
+        titulo: tarefa.titulo,
+        categoria: tarefa.categoria,
+        pontos: tarefa.pontos,
+      });
+    }
+  } catch (err) {
+    console.error("Erro ao gerar tarefas personalizadas:", err);
+  }
+
+  await usuarioModel.atualizarOnboardingConcluido(usuarioId, true);
   req.session.usuario.onboarding_concluido = true;
 
   res.json({ ok: true, redirect: "/dashboard" });

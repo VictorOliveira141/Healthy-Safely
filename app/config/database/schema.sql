@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   pontos       INT          DEFAULT 0,
   foto_perfil  VARCHAR(255) DEFAULT NULL,
   onboarding_concluido TINYINT(1) DEFAULT 0,
+  perfil_pesquisa JSON DEFAULT NULL,
   criado_em    DATETIME     DEFAULT CURRENT_TIMESTAMP
 );
 
