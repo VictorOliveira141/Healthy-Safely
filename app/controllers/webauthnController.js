@@ -211,6 +211,53 @@ const webauthnController = {
       });
     }
   },
+  verificarStatus: async (req, res) => {
+    try {
+      if (!req.session?.usuario) {
+        return res.status(401).json({
+          erro: "Usuário não autenticado.",
+        });
+      }
+
+      const credenciais = await webauthnModel.buscarPorUsuario(
+        req.session.usuario.id,
+      );
+
+      const status = credenciais.length > 0;
+
+      return res.json({ status });
+    } catch (error) {
+      console.error("Erro ao verificar status WebAuthn:", error);
+
+      res.status(500).json({
+        erro: "Erro ao verificar status da biometria.",
+      });
+    }
+  },
+
+  removerBiometria: async (req, res) => {
+    try {
+      if (!req.session?.usuario) {
+        return res.status(401).json({
+          erro: "Usuário não autenticado.",
+        });
+      }
+
+      const usuarioId = req.session.usuario.id;
+
+      await webauthnModel.removerPorUsuario(usuarioId);
+
+      return res.json({
+        sucesso: true,
+      });
+    } catch (error) {
+      console.error("Erro ao remover biometria:", error);
+
+      return res.status(500).json({
+        erro: "Erro ao remover a biometria.",
+      });
+    }
+  },
 };
 
 module.exports = webauthnController;

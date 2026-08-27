@@ -298,6 +298,7 @@ router.get("/privacidade", apenasAutenticado, (req, res) =>
    APIs
 ============================================================ */
 
+
 router.get(
   "/api/cadastro/disponibilidade",
   usuarioController.verificarDisponibilidade,
@@ -321,6 +322,16 @@ router.post(
 router.post(
   "/webauthn/login/verify",
   webauthnController.verificarLogin,
+);
+
+router.get(
+  "/webauthn/status",
+  webauthnController.verificarStatus,
+);
+
+router.delete(
+  "/webauthn/remove",
+  webauthnController.removerBiometria,
 );
 
 /* ============================================================

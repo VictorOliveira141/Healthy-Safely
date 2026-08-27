@@ -47,6 +47,16 @@ const webauthnModel = {
       [counter, credential_id],
     );
   },
+
+  async removerPorUsuario(usuario_id) {
+    const [result] = await db.execute(
+      `DELETE FROM webauthn_credentials
+       WHERE usuario_id = ?`,
+      [usuario_id],
+    );
+
+    return result;
+  },
 };
 
 module.exports = webauthnModel;
