@@ -238,10 +238,10 @@ router.get("/", (req, res) => {
   if (req.session?.usuario) {
     return res.redirect("/dashboard");
   }
-  res.render("pages/marketing/tomarammeutela");
+  res.render("pages/public/tomarammeutela");
 });
 
-router.get("/ajuda", (req, res) => res.render("pages/marketing/ajuda"));
+router.get("/ajuda", (req, res) => res.render("pages/public/ajuda"));
 
 /* ============================================================
    User (configurações, notificações, perfil, privacidade)
@@ -350,7 +350,7 @@ router.get("/onboarding", apenasAutenticado, async (req, res) => {
   }
 
   req.session.usuario.onboarding_concluido = false;
-  res.render("pages/marketing/onboarding");
+  res.render("pages/user/onboarding");
 });
 
 router.post("/onboarding/concluir", apenasAutenticado, async (req, res) => {

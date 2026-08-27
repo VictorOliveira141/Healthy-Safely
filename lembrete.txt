@@ -1,0 +1,3 @@
+precisa ajustar o botao de "acessibilidade" no perfil.ejs;
+precisa ter o botao de delete da conta com envio de e-mail para confirmar o delete;
+

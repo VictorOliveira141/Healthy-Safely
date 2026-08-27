@@ -11,6 +11,9 @@ main {
   padding: 2.5rem 1.5rem 5rem;
   min-height: calc(100vh - 120px);
 }
+main.google-confirmacao{
+  align-items: center;
+}
 
 /* ── Card formulário ─────────────────────────────────────── */
 .card {
@@ -22,6 +25,7 @@ main {
   border: 1px solid var(--border);
   overflow: hidden;
 }
+
 
 .form-area {
   padding: 2.5rem 2.5rem 2rem;

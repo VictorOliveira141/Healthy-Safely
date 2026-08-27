@@ -52,11 +52,9 @@
             @<%= usuario && usuario.nomeusuario ? usuario.nomeusuario : '—' %>
           </p>
 
-          <!---------     CONECTAR AO BANCO FUTURAMENTE     ------>
           <h2>
             Membro desde <%= usuario && usuario.criado_em ? new Date(usuario.criado_em).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : '—' %>
           </h2>
-          <!---------                             ------>
         </section>
       </section>
 
@@ -120,10 +118,11 @@
             ><i data-lucide="clipboard-check" aria-hidden="true"></i> Minhas
             Tarefas</a
           >
-          <a href="/assistente"
-            ><i data-lucide="sparkles" aria-hidden="true"></i> Assistente
-            IA(andamento)</a
-          >
+
+          <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
+          <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i> Healthy AI
+          </button>
+
           <a href="/historico"
             ><i data-lucide="bar-chart-3" aria-hidden="true"></i>
             Histórico(andamento)</a
