@@ -5,8 +5,6 @@ const STATIC_CACHE = "hs-static-v2";
 const PAGES_CACHE = "hs-pages-v1";
 const ASSETS_CACHE = "hs-assets-v1";
 
-const STATIC_CACHE = "hs-static-v2";
-
 const STATIC_FILES = [
   "/",
   "/offline.html",
