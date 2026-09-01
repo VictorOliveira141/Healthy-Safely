@@ -121,3 +121,56 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+// ===============================
+// WEB PUSH — recebimento
+// ===============================
+
+self.addEventListener("push", (event) => {
+  let dados = {};
+  try {
+    dados = event.data ? event.data.json() : {};
+  } catch (e) {
+    dados = { title: "Healthy Safely", horario: "" };
+  }
+
+  const titulo = dados.title || "Lembrete de tarefa";
+  const opcoes = {
+    body: dados.horario ? `Horário: ${dados.horario}` : "Sua tarefa está no horário.",
+    icon: "/imagem/pwa/icon-192.png",
+    badge: "/imagem/pwa/icon-192.png",
+    tag: dados.tag || `tarefa-${dados.tarefaId || "geral"}`,
+    renotify: false,
+    data: { tarefaId: dados.tarefaId || null },
+    actions: [{ action: "ok", title: "OK" }],
+  };
+
+  event.waitUntil(self.registration.showNotification(titulo, opcoes));
+});
+
+// ===============================
+// WEB PUSH — clique na notificação
+// ===============================
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  // Clique em "OK" apenas dispensa a notificação.
+  if (event.action === "ok") return;
+
+  // Clique no corpo da notificação: foca/abre o app na tela de tarefas.
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((janelas) => {
+        for (const janela of janelas) {
+          if (janela.url.includes(self.registration.scope) && "focus" in janela) {
+            return janela.focus();
+          }
+        }
+        if (self.clients.openWindow) {
+          return self.clients.openWindow("/tasks");
+        }
+      }),
+  );
+});

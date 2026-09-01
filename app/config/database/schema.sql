@@ -147,3 +147,28 @@ CREATE TABLE IF NOT EXISTS amizades (
   FOREIGN KEY (solicitante_id) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY (receptor_id)    REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+-- ── WEB PUSH: assinaturas dos dispositivos ────────────────────
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  endpoint   VARCHAR(500) NOT NULL,
+  p256dh     VARCHAR(255) NOT NULL,
+  auth       VARCHAR(255) NOT NULL,
+  user_agent VARCHAR(255) DEFAULT NULL,
+  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_push_endpoint (endpoint(191)),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- ── WEB PUSH: controle de envios (evita duplicados) ───────────
+CREATE TABLE IF NOT EXISTS push_notificacoes_enviadas (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  tarefa_id  INT NOT NULL,
+  usuario_id INT NOT NULL,
+  referencia DATE NOT NULL,  -- data da ocorrência da tarefa que gerou o envio
+  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_envio_ocorrencia (tarefa_id, referencia),
+  FOREIGN KEY (tarefa_id)  REFERENCES tarefas(id)  ON DELETE CASCADE,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);

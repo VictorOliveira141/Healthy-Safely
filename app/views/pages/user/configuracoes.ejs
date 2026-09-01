@@ -167,12 +167,12 @@
             <section>
               <span class="config-nome">Lembretes de tarefas</span>
               <span class="config-desc"
-                >Receba avisos sobre tarefas pendentes</span
+                >Receba um push no celular quando uma tarefa chegar no horário</span
               >
             </section>
           </section>
           <label class="toggle" aria-label="Ativar lembretes de tarefas">
-            <input type="checkbox" checked id="toggleLembrete" />
+            <input type="checkbox" id="toggleLembrete" />
             <span class="slider-toggle"></span>
           </label>
         </article>
@@ -221,5 +221,9 @@
 
     <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
     <script src="/js/user/biometria-cadastro.js"></script>
+    <script>
+      window.VAPID_PUBLIC_KEY = "<%= vapidPublicKey %>";
+    </script>
+    <script src="/js/features/push-notificacoes.js"></script>
   </body>
 </html>

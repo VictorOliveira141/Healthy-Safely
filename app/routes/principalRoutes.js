@@ -7,6 +7,7 @@ const iaRoutes = require("./ia-routes");
 const usuarioController = require("../controllers/usuarioController");
 const webauthnController = require("../controllers/webauthnController");
 const tarefaController = require("../controllers/tarefaController");
+const pushController = require("../controllers/pushController");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
 
 /* ============================================================
@@ -286,7 +287,9 @@ router.post(
 
 /* ---------------- Configurações ---------------- */
 router.get("/configuracoes", apenasAutenticado, (req, res) =>
-  res.render("pages/user/configuracoes"),
+  res.render("pages/user/configuracoes", {
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
+  }),
 );
 
 /* ---------------- Privacidade ---------------- */
@@ -333,6 +336,29 @@ router.delete(
   "/webauthn/remove",
   webauthnController.removerBiometria,
 );
+
+/* ---------------- Web Push ---------------- */
+router.get(
+  "/api/push/vapid-public-key",
+  apenasAutenticado,
+  pushController.chavePublica,
+);
+
+router.post(
+  "/api/push/inscrever",
+  apenasAutenticado,
+  pushController.inscrever,
+);
+
+router.post(
+  "/api/push/desinscrever",
+  apenasAutenticado,
+  pushController.desinscrever,
+);
+
+// Rota chamada pelo cron externo (cron-job.org). Protegida por
+// header X-Cron-Secret — NÃO usa sessão/autenticação de usuário.
+router.get("/api/push/cron", pushController.executarCron);
 
 /* ============================================================
    TESTES
