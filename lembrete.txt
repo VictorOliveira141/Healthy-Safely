@@ -1,3 +1,7 @@
 precisa ajustar o botao de "acessibilidade" no perfil.ejs;
-precisa ter o botao de delete da conta com envio de e-mail para confirmar o delete;
+precisa ter o botao de delete nas confinguracoes.ejs com envio de e-mail para confirmar o delete;
+precisa arrumar o css da web-push da notificação da tarefa;
+precisar arrumar css do dashboard e tarefas no mobile;
+
+
 
