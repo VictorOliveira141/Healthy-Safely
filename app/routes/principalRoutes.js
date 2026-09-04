@@ -137,7 +137,10 @@ router.get(
   usuarioController.exibirAlteracaoSenha,
 );
 router.get("/redefinir-senha/:token", usuarioController.exibirRedefinicaoSenha);
-router.post("/redefinir-senha/:token", usuarioController.processarRedefinicaoSenha);
+router.post(
+  "/redefinir-senha/:token",
+  usuarioController.processarRedefinicaoSenha,
+);
 
 /* ---------------- Cadastro ---------------- */
 router.get("/cadastro", (req, res) => {
@@ -211,7 +214,14 @@ router.get(
       possuiConta: !!dadosGoogle.usuario,
     };
 
-    return res.redirect("/google/loading");
+    return req.session.save((error) => {
+      if (error) {
+        console.error("Erro ao salvar sessão do Google:", error);
+        return res.redirect("/login?erro=sessao");
+      }
+
+      return res.redirect("/google/loading");
+    });
   },
 );
 
@@ -301,7 +311,6 @@ router.get("/privacidade", apenasAutenticado, (req, res) =>
    APIs
 ============================================================ */
 
-
 router.get(
   "/api/cadastro/disponibilidade",
   usuarioController.verificarDisponibilidade,
@@ -312,30 +321,15 @@ router.post(
   webauthnController.gerarOpcoesCadastro,
 );
 
-router.post(
-  "/webauthn/register/verify",
-  webauthnController.verificarCadastro,
-);
+router.post("/webauthn/register/verify", webauthnController.verificarCadastro);
 
-router.post(
-  "/webauthn/login/options",
-  webauthnController.gerarOpcoesLogin,
-);
+router.post("/webauthn/login/options", webauthnController.gerarOpcoesLogin);
 
-router.post(
-  "/webauthn/login/verify",
-  webauthnController.verificarLogin,
-);
+router.post("/webauthn/login/verify", webauthnController.verificarLogin);
 
-router.get(
-  "/webauthn/status",
-  webauthnController.verificarStatus,
-);
+router.get("/webauthn/status", webauthnController.verificarStatus);
 
-router.delete(
-  "/webauthn/remove",
-  webauthnController.removerBiometria,
-);
+router.delete("/webauthn/remove", webauthnController.removerBiometria);
 
 /* ---------------- Web Push ---------------- */
 router.get(
@@ -344,11 +338,7 @@ router.get(
   pushController.chavePublica,
 );
 
-router.post(
-  "/api/push/inscrever",
-  apenasAutenticado,
-  pushController.inscrever,
-);
+router.post("/api/push/inscrever", apenasAutenticado, pushController.inscrever);
 
 router.post(
   "/api/push/desinscrever",
@@ -396,7 +386,6 @@ router.post("/onboarding/concluir", apenasAutenticado, async (req, res) => {
         usuarioId,
         titulo: tarefa.titulo,
         categoria: tarefa.categoria,
-        pontos: tarefa.pontos,
       });
     }
   } catch (err) {

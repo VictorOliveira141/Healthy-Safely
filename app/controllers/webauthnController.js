@@ -195,7 +195,6 @@ const webauthnController = {
       req.session.usuario.onboarding_concluido = !!usuario.onboarding_concluido;
 
       req.session.nome = usuario.nome;
-      req.session.nivel = usuario.nivel || "iniciante";
 
       delete req.session.webauthnChallenge;
 

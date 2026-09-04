@@ -22,11 +22,6 @@
   <!-- KPIs -->
   <section class="kpis">
     <article class="kpi"><figure class="kpi-ic g"><i class="bi bi-people-fill"></i></figure><section><p class="kpi-lbl">Usuários</p><p class="kpi-val"><%= stats.total_usuarios||0 %></p></section></article>
-    <article class="kpi"><figure class="kpi-ic b"><i class="bi bi-person-fill"></i></figure><section><p class="kpi-lbl">Clientes</p><p class="kpi-val"><%= stats.total_clientes||0 %></p></section></article>
-    <article class="kpi"><figure class="kpi-ic a"><i class="bi bi-briefcase-fill"></i></figure><section><p class="kpi-lbl">Profissionais</p><p class="kpi-val"><%= stats.total_profissionais||0 %></p></section></article>
-    <% if(stats.total_solicitacoes>0){ %>
-    <article class="kpi"><figure class="kpi-ic r"><i class="bi bi-bell-fill"></i></figure><section><p class="kpi-lbl">Solicitações pend.</p><p class="kpi-val" style="color:#dc2626"><%= stats.total_solicitacoes %></p></section></article>
-    <% } %>
   </section>
 
   <!-- Gráficos + Ranking -->
@@ -70,7 +65,7 @@
       <section class="rank-info">
         <strong><%= u.nome %></strong>
         <small>
-          <%= u.tipo %> · <%= dt %>
+          <%= dt %>
         </small>
       </section>
     </li>
@@ -88,9 +83,6 @@
       <section style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
         <input type="text" class="busca-input" id="busca" placeholder="Buscar..." oninput="filtrar()" />
         <section style="display:flex;gap:.4rem">
-          <button class="filtro-btn ativo" onclick="filtrarTipo('todos',this)">Todos</button>
-          <button class="filtro-btn" onclick="filtrarTipo('cliente',this)">Clientes</button>
-          <button class="filtro-btn" onclick="filtrarTipo('profissional',this)">Profissionais</button>
         </section>
       </section>
     </header>
@@ -98,7 +90,7 @@
       <table id="tblU">
         <thead>
           <tr>
-            <th>º</th><th>ID</th><th>Usuário</th><th>E-mail</th><th>Tipo</th>
+            <th>º</th><th>ID</th><th>Usuário</th><th>E-mail</th>
             <th>Entrou em</th><th></th>
           </tr>
         </thead>
@@ -114,8 +106,7 @@
   ? new Date(u.criado_em).toLocaleString('pt-BR')
   : '—';
              %>
-          <tr data-tipo="<%= u.tipo %>"
-              data-busca="<%= u.nome.toLowerCase() %> <%= (u.nomeusuario||'').toLowerCase() %> <%= u.email.toLowerCase() %>">
+            <tr data-busca="<%= u.nome.toLowerCase() %> <%= (u.nomeusuario||'').toLowerCase() %> <%= u.email.toLowerCase() %>">
             <td style="color:#94a3b8;font-size:.75rem"><%= i+1 %></td>
             <td>#<%= u.id %></td>
             <td>
@@ -130,10 +121,6 @@
               </section>
             </td>
             <td style="font-size:.78rem;color:#5a7a70"><%= u.email %></td>
-            <td><span class="badge-tipo <%= u.tipo %>"><%= u.tipo==='profissional'?'🩺 Prof':'🧑 Cliente' %></span></td>
-            
-           
-            
             <td style="font-size:.72rem;color:#94a3b8"><%= dt %></td>
             <td>
               <form action="/admin/usuario/deletar/<%= u.id %>" method="POST"
@@ -155,22 +142,15 @@
 </main>
 
 <script>
-let tipoAtivo = "todos";
 function filtrar() {
   const q = document.getElementById('busca').value.toLowerCase();
   let v = 0;
-  document.querySelectorAll('#tblBody tr[data-tipo]').forEach(r => {
-    const ok = (r.dataset.busca||'').includes(q) && (tipoAtivo==='todos'||r.dataset.tipo===tipoAtivo);
+  document.querySelectorAll('#tblBody tr[data-busca]').forEach(r => {
+    const ok = (r.dataset.busca||'').includes(q);
     r.style.display = ok ? '' : 'none';
     if(ok) v++;
   });
   document.getElementById('rodape').innerHTML = `Exibindo: <strong>${v}</strong> usuário(s)`;
-}
-function filtrarTipo(t, btn) {
-  tipoAtivo = t;
-  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
-  btn.classList.add('ativo');
-  filtrar();
 }
 </script>
 </body>

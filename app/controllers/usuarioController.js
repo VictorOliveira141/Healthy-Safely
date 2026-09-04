@@ -162,7 +162,6 @@ const usuarioController = {
       req.session.usuario.onboarding_concluido =
         !!novoUsuario.onboarding_concluido;
       req.session.nome = novoUsuario.nome;
-      req.session.nivel = novoUsuario.nivel || "iniciante";
       delete req.session.usuario.senha;
 
       if (isAjax) {
@@ -217,7 +216,9 @@ const usuarioController = {
   },
 
   solicitarRecuperacaoSenha: async (req, res) => {
-    const email = String(req.body.email || "").trim().toLowerCase();
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
 
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       return res.render("pages/auth/recuperar-senha", {
@@ -289,7 +290,10 @@ const usuarioController = {
       });
     }
 
-    if (!novaSenha || !/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(novaSenha)) {
+    if (
+      !novaSenha ||
+      !/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(novaSenha)
+    ) {
       return res.render("pages/auth/redefinir-senha", {
         token,
         invalido: false,
@@ -365,11 +369,20 @@ const usuarioController = {
     req.session.usuario = usuario;
     req.session.usuario.onboarding_concluido = !!usuario.onboarding_concluido;
     req.session.nome = usuario.nome;
-    req.session.nivel = usuario.nivel || "iniciante";
+    delete req.session.googleAuth;
 
-    return req.session.usuario.onboarding_concluido
-      ? res.redirect("/dashboard")
-      : res.redirect("/onboarding");
+    const redirectUrl = req.session.usuario.onboarding_concluido
+      ? "/dashboard"
+      : "/onboarding";
+
+    return req.session.save((error) => {
+      if (error) {
+        console.error("Erro ao salvar sessão após login Google:", error);
+        return res.redirect("/login?erro=sessao");
+      }
+
+      return res.redirect(redirectUrl);
+    });
   },
 
   cancelarLoginGoogle: (req, res) => {
@@ -452,10 +465,16 @@ const usuarioController = {
       req.session.usuario.onboarding_concluido =
         !!novoUsuario.onboarding_concluido;
       req.session.nome = novoUsuario.nome;
-      req.session.nivel = novoUsuario.nivel || "iniciante";
       delete req.session.usuario.senha;
 
-      res.redirect("/onboarding");
+      req.session.save((error) => {
+        if (error) {
+          console.error("Erro ao salvar sessão após cadastro Google:", error);
+          return res.redirect("/login?erro=sessao");
+        }
+
+        return res.redirect("/onboarding");
+      });
     } catch (error) {
       console.error("Erro ao concluir cadastro Google:", error);
       res.render("pages/auth/google-confirmacao", {
@@ -506,7 +525,6 @@ const usuarioController = {
       req.session.usuario = usuario;
       req.session.usuario.onboarding_concluido = !!usuario.onboarding_concluido;
       req.session.nome = usuario.nome;
-      req.session.nivel = usuario.nivel || "iniciante";
 
       return req.session.usuario.onboarding_concluido
         ? res.redirect("/dashboard")

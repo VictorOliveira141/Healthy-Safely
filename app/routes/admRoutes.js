@@ -17,8 +17,4 @@ router.get("/sair",   verificarAdmin, adminController.sair);
 /*Gerenciamento de usuários*/
 router.post("/usuario/deletar/:id", verificarAdmin, adminController.deletarUsuario);
 
-/*Solicitações*/
-router.post("/solicitacao/aprovar/:id",  verificarAdmin, adminController.aprovarSolicitacao);
-router.post("/solicitacao/rejeitar/:id", verificarAdmin, adminController.rejeitarSolicitacao);
-
 module.exports = router;

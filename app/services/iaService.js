@@ -34,8 +34,6 @@ function montarContextoUsuario({ usuario, tarefas, perfil }) {
 
   const linhas = [
     `Nome: ${usuario.nome || "não informado"}`,
-    `Nível: ${usuario.nivel || "iniciante"}`,
-    `Pontos: ${usuario.pontos ?? 0}`,
   ];
 
   if (perfil) {
@@ -84,35 +82,35 @@ function tarefasFallback(respostas = {}) {
 
   if (objetivo.includes("exerc")) {
     return [
-      { titulo: "Caminhar 20 minutos", categoria: "exercicio", pontos: 15 },
-      { titulo: "Fazer alongamento matinal", categoria: "exercicio", pontos: 10 },
-      { titulo: "Beber 2L de água", categoria: "saude", pontos: 10 },
+      { titulo: "Caminhar 20 minutos", categoria: "exercicio" },
+      { titulo: "Fazer alongamento matinal", categoria: "exercicio" },
+      { titulo: "Beber 2L de água", categoria: "saude" },
     ];
   }
   if (objetivo.includes("alimenta")) {
     return [
-      { titulo: "Comer frutas e vegetais", categoria: "alimentacao", pontos: 10 },
-      { titulo: "Planejar as refeições do dia", categoria: "alimentacao", pontos: 10 },
-      { titulo: "Beber 2L de água", categoria: "saude", pontos: 10 },
+      { titulo: "Comer frutas e vegetais", categoria: "alimentacao" },
+      { titulo: "Planejar as refeições do dia", categoria: "alimentacao" },
+      { titulo: "Beber 2L de água", categoria: "saude" },
     ];
   }
   if (objetivo.includes("dormir")) {
     return [
-      { titulo: "Evitar telas 1h antes de dormir", categoria: "sono", pontos: 10 },
-      { titulo: "Definir horário fixo para dormir", categoria: "sono", pontos: 15 },
+      { titulo: "Evitar telas 1h antes de dormir", categoria: "sono" },
+      { titulo: "Definir horário fixo para dormir", categoria: "sono" },
     ];
   }
   if (objetivo.includes("mental")) {
     return [
-      { titulo: "Meditar por 10 minutos", categoria: "saude", pontos: 15 },
-      { titulo: "Escrever 3 coisas boas do dia", categoria: "saude", pontos: 10 },
+      { titulo: "Meditar por 10 minutos", categoria: "saude" },
+      { titulo: "Escrever 3 coisas boas do dia", categoria: "saude" },
     ];
   }
 
   return [
-    { titulo: "Organizar as tarefas do dia", categoria: "geral", pontos: 10 },
-    { titulo: "Beber 2L de água", categoria: "saude", pontos: 10 },
-    { titulo: "Fazer uma pausa de 10 minutos sem tela", categoria: "geral", pontos: 10 },
+    { titulo: "Organizar as tarefas do dia", categoria: "geral" },
+    { titulo: "Beber 2L de água", categoria: "saude" },
+    { titulo: "Fazer uma pausa de 10 minutos sem tela", categoria: "geral" },
   ];
 }
 
@@ -125,9 +123,6 @@ function sanitizarTarefas(lista) {
     .map((t) => ({
       titulo: t.titulo.trim().slice(0, 200),
       categoria: CATEGORIAS_VALIDAS.includes(t.categoria) ? t.categoria : "geral",
-      pontos: Number.isFinite(Number(t.pontos))
-        ? Math.min(Math.max(Number(t.pontos), 5), 50)
-        : 10,
     }));
 
   return limpas.length > 0 ? limpas : null;
@@ -151,7 +146,7 @@ Respostas do usuário:
 - Dias disponíveis: ${(respostas.dias || []).join(", ") || "não informado"}
 - Quantidade de tarefas desejadas por dia: ${respostas.tarefasDia || "não informado"}
 
-Cada tarefa deve ter: titulo (curto, em português, prático), categoria (uma de: saude, sono, alimentacao, exercicio, geral), pontos (número entre 5 e 30).
+Cada tarefa deve ter: titulo (curto, em português, prático) e categoria (uma de: saude, sono, alimentacao, exercicio, geral).
 `;
 
   try {
@@ -168,9 +163,8 @@ Cada tarefa deve ter: titulo (curto, em português, prático), categoria (uma de
             properties: {
               titulo: { type: "string" },
               categoria: { type: "string" },
-              pontos: { type: "number" },
             },
-            required: ["titulo", "categoria", "pontos"],
+            required: ["titulo", "categoria"],
           },
         },
       },

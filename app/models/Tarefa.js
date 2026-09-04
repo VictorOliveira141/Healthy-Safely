@@ -29,23 +29,19 @@ const tarefaModel = {
     usuarioId,
     titulo,
     descricao,
-    pontos,
     categoria,
-    criadoPor,
     data,
     horario,
     repeticao,
     diaSemana,
   }) => {
     const [r] = await pool.query(
-      `INSERT INTO tarefas (usuario_id, criado_por, titulo, descricao, pontos, categoria, data, horario, repeticao, dia_semana)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO tarefas (usuario_id, titulo, descricao, categoria, data, horario, repeticao, dia_semana)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         usuarioId,
-        criadoPor || null,
         titulo,
         descricao || null,
-        pontos || 10,
         categoria || "geral",
         data || null,
         horario || null,
@@ -155,7 +151,6 @@ const tarefaModel = {
       const [linhas] = await pool.query(
         `SELECT DATE(concluida_em) AS data,
                 COUNT(*) AS total_concluidas,
-                SUM(pontos) AS pontos_do_dia,
                 GROUP_CONCAT(titulo ORDER BY concluida_em SEPARATOR ', ') AS tarefas
          FROM tarefas
          WHERE usuario_id = ? AND concluida = 1 AND concluida_em IS NOT NULL

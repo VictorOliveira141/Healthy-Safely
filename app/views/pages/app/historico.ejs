@@ -25,7 +25,6 @@
     .hist-dia { background: var(--surface-card, var(--primary-color)); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; }
     .hist-dia-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
     .hist-dia-data { font-size: .9rem; font-weight: 800; color: var(--fundoclaro); }
-    .hist-dia-pts { font-size: .75rem; font-weight: 700; color: #34d399; background: #d1fae5; padding: 2px 8px; border-radius: 20px; }
     .hist-dia-tarefas { font-size: .8rem; color: var(--muted); line-height: 1.5; }
     .hist-dia-concl { font-size: .75rem; color: var(--muted); margin-top: .35rem; }
     .pct-bar { width: 100%; height: 5px; background: var(--border); border-radius: 5px; overflow: hidden; margin-top: .35rem; }
@@ -92,7 +91,6 @@
               <i class="bi bi-calendar3" style="margin-right:.3rem"></i>
               <%= new Date(dia.data + 'T12:00:00').toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'}) %>
             </span>
-            <span class="hist-dia-pts">+<%= dia.pontos_do_dia || 0 %> pts</span>
           </header>
           <p class="hist-dia-concl">
             <i class="bi bi-check-circle-fill" style="color:#34d399"></i>

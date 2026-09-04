@@ -5,15 +5,13 @@ const { responderChat } = require("../services/iaService");
 const { usuarioModel } = require("../models/Usuario");
 const { tarefaModel } = require("../models/Tarefa");
 
-function apenasCliente(req, res, next) {
+function apenasAutenticado(req, res, next) {
   if (!req.session?.usuario)
     return res.status(401).json({ erro: "Não autenticado" });
-  if (req.session.usuario.tipo !== "cliente")
-    return res.status(403).json({ erro: "Acesso negado" });
   next();
 }
 
-router.post("/chat", apenasCliente, async (req, res) => {
+router.post("/chat", apenasAutenticado, async (req, res) => {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ erro: "GEMINI_API_KEY não configurada." });

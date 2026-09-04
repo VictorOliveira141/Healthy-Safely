@@ -26,8 +26,6 @@ const adminController = {
       adminModel.estatisticasGerais(),       // 1
       adminModel.cadastrosPorDia(),          // 2
       adminModel.tarefasConcluidasPorDia(),  // 3
-      adminModel.rankingUsuarios(),          // 4
-      adminModel.listarSolicitacoes(),       // 5
     ]);
 
     const pegar = (i, fallback) =>
@@ -35,29 +33,15 @@ const adminController = {
 
     const usuarios       = pegar(0, []);
     const stats          = pegar(1, {
-      total_usuarios: 0, total_clientes: 0, total_profissionais: 0,
-      pontos_totais: 0,  total_tarefas: 0,  tarefas_concluidas: 0,
-      total_solicitacoes: 0,
+      total_usuarios: 0, total_tarefas: 0, tarefas_concluidas: 0,
     });
     const cadastrosPorDia  = pegar(2, []);
     const tarefasPorDia    = pegar(3, []);
-    const ranking          = pegar(4, []);
-    const solicitacoes     = pegar(5, []);
-
-    // Loga o que foi carregado para facilitar debug no servidor
-    console.log(`[Admin] Painel carregado: ${usuarios.length} usuários, stats:`, {
-      total: stats.total_usuarios,
-      clientes: stats.total_clientes,
-      profissionais: stats.total_profissionais,
-    });
-
     res.render("pages/admin/painel", {
       usuarios,
       stats,
       cadastrosPorDia,
       tarefasPorDia,
-      ranking,
-      solicitacoes,
     });
   },
 
@@ -97,26 +81,6 @@ const adminController = {
       await adminModel.deletarUsuario(req.params.id);
     } catch (e) {
       console.error("[Admin.deletarUsuario]", e.message);
-    }
-    res.redirect("/admin/painel");
-  },
-
-  // ── Aprovar solicitação ─────────────────────────────────────
-  aprovarSolicitacao: async (req, res) => {
-    try {
-      await adminModel.aprovarSolicitacao(req.params.id);
-    } catch (e) {
-      console.error("[Admin.aprovarSolicitacao]", e.message);
-    }
-    res.redirect("/admin/painel");
-  },
-
-  // ── Rejeitar solicitação ────────────────────────────────────
-  rejeitarSolicitacao: async (req, res) => {
-    try {
-      await adminModel.rejeitarSolicitacao(req.params.id);
-    } catch (e) {
-      console.error("[Admin.rejeitarSolicitacao]", e.message);
     }
     res.redirect("/admin/painel");
   },
