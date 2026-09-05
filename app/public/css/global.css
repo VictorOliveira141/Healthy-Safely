@@ -20,8 +20,8 @@
   /* Alias semânticos (compatibilidade) */
   --primary-color: #ffffff;
   --secondary-color: var(--c-verde-800);
-  --accent-color: #166d58; /* slightly darker for contrast */
-  --fundoclaro: #0b3f35; /* darker title color for contrast */
+  --accent-color: #166d58; 
+  --fundoclaro: #0b3f35;
   --fundoescuro: #e2e8f0;
   --botao: var(--c-verde-800);
   --muted: #6f8198;
@@ -31,25 +31,9 @@
   --surface-card: #ffffff;
   --surface-muted: #fbfcfd;
 
-  /* Texto */
-  --text-primary: #06231d; /* stronger contrast on white */
-  --text-secondary: #35524a; /* medium contrast for secondary text */
-  --text-muted: #6b8880; /* muted but legible */
-
   /* Bordas & sombras */
   --border: rgba(12, 79, 67, 0.08);
   --border-radius: 14px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  --shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 18px 42px rgba(15, 23, 42, 0.1);
-  --shadow-xl: 0 24px 64px rgba(15, 23, 42, 0.14);
 
   /* Tipografia */
   --font-family: "Outfit", system-ui, sans-serif;
@@ -60,24 +44,12 @@
 
   /* Transições */
   --transition: 0.2s ease;
-  --transition-md: 0.3s ease;
+  --animacao: translateY(-2px);
 
   /* Layout */
   --container: 1100px;
-  --animacao: translateY(-2px);
   --botao-opacity: 0.92;
 
-  /* Small text alias */
-  --small-text: 13px;
-
-  /* Pro panel variables */
-  --pro-font: "Outfit", system-ui, sans-serif;
-  --pro-green: #0c4f43;
-  --pro-green2: #1a8a75;
-  --pro-green3: #34d399;
-  --pro-accent: #e6f7f2;
-  --pro-shadow: 0 2px 8px rgba(12, 79, 67, 0.08);
-  --pro-shadow-lg: 0 6px 20px rgba(12, 79, 67, 0.14);
 }
 
 /* Dark mode */
@@ -85,21 +57,18 @@ html.dark body {
   --primary-color: #12261f;
   --secondary-color: #1e3a30;
   --accent-color: #1a8a75;
+
   --surface-bg: #141f1a;
   --surface-card: #1a2820;
   --surface-muted: #1e2e26;
-  --text-primary: #e2f0ea;
-  --text-secondary: #8fada8;
-  --text-muted: #6a908a;
+
   --border: rgba(255, 255, 255, 0.09);
   --fundoclaro: #c8e6dc;
   --fundoescuro: #c8e6dc;
+
   --muted: #8fada8;
   --botao: #2a4a3c;
-  --pro-accent: rgba(52, 211, 153, 0.1);
-  --pro-green2: #34d399;
-  --pro-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --pro-shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.3);
+  
   background:
     radial-gradient(
       circle at top,
