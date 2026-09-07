@@ -1,35 +1,24 @@
-/* ==========================================
-   BOTÃO
-========================================== */
 .hs-floating-add {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 1rem 1.4rem;
   border: none;
-  border-radius: 14px;
-  background: var(--primary-color);
-  color: #fff;
-  font-weight: 700;
   cursor: pointer;
-  transition: 0.25s;
-}
-
-.hs-floating-add:hover {
-  transform: translateY(-2px);
 }
 
 /* ==========================================
-   OVERLAY
+   OVERLAY (fundo escurecido)
 ========================================== */
 .hs-drawer-overlay {
   position: fixed;
   inset: 0;
   display: flex;
   justify-content: flex-end;
+  background: rgba(6, 35, 29, 0.45);
+  backdrop-filter: blur(2px);
   opacity: 0;
   visibility: hidden;
-  transition: 0.3s;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
   z-index: 9999;
 }
 
@@ -38,30 +27,35 @@
   visibility: visible;
 }
 
+
 /* ==========================================
    DRAWER
 ========================================== */
 .hs-task-drawer {
-  width: 380px;
+  width: 420px;
+  max-width: 100%;
   height: 100%;
-  background: var(--primary-color);
+  background: var(--surface-card);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: 0.35s;
-  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.35s ease;
 }
+
 .hs-drawer-overlay.active .hs-task-drawer {
   transform: translateX(0);
 }
+
 @media (max-width: 768px) {
   .hs-task-drawer {
     width: 100%;
     max-width: 100%;
-    height: calc(100dvh - 55px);
+    height: 100dvh;
     margin-top: 0;
   }
 }
+
+
 /* ==========================================
    HEADER
 ========================================== */
@@ -69,11 +63,12 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 2rem;
+  padding: 1.75rem 1.75rem 1.4rem;
   border-bottom: 1px solid var(--border);
 }
 .hs-drawer-header h2 {
   font-size: var(--font-title);
+  font-weight: 800;
   color: var(--fundoclaro);
   margin-bottom: 0.3rem;
 }
@@ -84,10 +79,26 @@
 
 .hs-close-drawer {
   border: none;
-  background: none;
+  background: var(--surface-muted);
   color: var(--fundoclaro);
-  font-size: var(--font-title);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.hs-close-drawer:hover {
+  background: var(--c-verde-50);
+  color: var(--c-verde-700);
+}
+html.dark .hs-close-drawer:hover {
+  background: rgba(52, 211, 153, 0.14);
+  color: var(--c-verde-400);
 }
 
 /* ==========================================
@@ -96,41 +107,59 @@
 .hs-drawer-form {
   flex: 1;
   overflow: auto;
-  padding: 2rem;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
+  gap: 1.25rem;
 }
+
 
 .hs-form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 .hs-form-group select option {
-    background-color: var(--primary-color);
-    color: var(--fundoclaro);
+  background-color: var(--surface-card);
+  color: var(--fundoclaro);
 }
 
+
 .hs-form-group label {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--fundoclaro);
 }
+
 
 .hs-form-group input,
 .hs-form-group textarea,
 .hs-form-group select {
-  padding: 0.9rem 1rem;
+  padding: 0.85rem 1rem;
   border-radius: var(--border-radius);
   border: 1px solid var(--border);
-  background: transparent;
+  background: var(--surface-muted);
   color: var(--fundoclaro);
   font-size: 0.95rem;
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+
+.hs-form-group input:focus,
+.hs-form-group textarea:focus,
+.hs-form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(26, 138, 117, 0.14);
+}
+
 
 .hs-form-group textarea {
   resize: vertical;
   min-height: 110px;
 }
+
 
 .hs-inline {
   display: grid;
@@ -138,35 +167,50 @@
   gap: 1rem;
 }
 
+
 /* ==========================================
    FOOTER
 ========================================== */
 .hs-drawer-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: auto;
   padding-top: 1rem;
 }
 
 .hs-btn-cancel {
-  padding: 0.9rem 1.3rem;
+  padding: 0.85rem 1.3rem;
   border-radius: var(--border-radius);
   border: 1px solid var(--border);
   color: #dc2626;
-  background: var(--surface-bg);
+  background: var(--surface-card);
   cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+.hs-btn-cancel:hover {
+  background: #fef2f2;
+}
+html.dark .hs-btn-cancel:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .hs-btn-save {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.9rem 1.4rem;
+  padding: 0.85rem 1.4rem;
   border: none;
   border-radius: var(--border-radius);
-  background: var(--accent-color);
-  color: var(--fundoescuro);
+  background: var(--botao);
+  color: #fff;
   cursor: pointer;
   font-weight: 700;
+  font-size: 0.9rem;
+  transition: opacity 0.2s ease;
+}
+.hs-btn-save:hover {
+  opacity: 0.92;
 }

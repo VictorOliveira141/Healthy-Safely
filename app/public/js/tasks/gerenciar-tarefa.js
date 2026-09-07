@@ -147,4 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
   filterStatus?.addEventListener("change", aplicarFiltros);
   filterCategory?.addEventListener("change", aplicarFiltros);
   aplicarFiltros();
+
+  // ── Aviso de feedback (flash) ──────────────────────────────
+  const flashMessage = document.getElementById("flash-msg");
+  if (flashMessage) {
+    setTimeout(() => {
+      flashMessage.classList.add("hs-flash--saindo");
+      setTimeout(() => flashMessage.remove(), 300);
+    }, 3500);
+  }
 });
