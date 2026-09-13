@@ -5,39 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Healthy Safely</title>
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
-  <link rel="manifest" href="/manifest.json" />
-   <link rel="stylesheet" href="/css/admin/login.css" />
-  <meta name="theme-color" content="#5BBF6A" />
+  <link rel="stylesheet" href="/css/admin/login.css" />
+  <link rel="stylesheet" href="/css/global.css" />
 </head>
-<body>
 
-  <div class="admin-login-card">
-    <img src="/imagem/Logo repaginado 2.webp" alt="Logo Healthy Safely" class="logo" />
-    <span class="badge-admin">🔒 Área Restrita</span>
-    <h1>Painel Administrativo</h1>
-    <p>Digite a senha de acesso para continuar</p>
+<body>
+  <main class="admin-login">
+    <div class="logo-wrap">
+      <img src="/imagem/Logo repaginado 2.webp" alt="Healthy Safely" />
+    </div>
+
+    <span class="badge-admin">Área administrativa</span>
+    <h1>Acesso restrito</h1>
+    <p class="description">
+      Entre com a credencial administrativa para acessar o painel do Healthy Safely.
+    </p>
 
     <% if (erro) { %>
-      <div class="erro-msg">⚠️ <%= erro %></div>
+      <div class="erro-msg" role="alert"><%= erro %></div>
     <% } %>
 
-    <form method="POST" action="/admin">
+    <form action="/admin" method="POST">
       <div class="campo">
-        <label for="senha">Senha de Administrador</label>
+        <label for="senha">Senha administrativa</label>
         <input
-          type="password"
           id="senha"
           name="senha"
-          placeholder="••••••••••••"
+          type="password"
+          autocomplete="current-password"
           required
           autofocus
         />
       </div>
-      <button type="submit" class="btn-entrar">Acessar Painel</button>
+
+      <button class="btn-entrar" type="submit">Entrar no painel</button>
     </form>
 
-    <a href="/" class="voltar-link">← Voltar ao site</a>
-  </div>
+    <a class="voltar-link" href="/">Voltar para o Healthy Safely</a>
+  </main>
 
 </body>
 </html>

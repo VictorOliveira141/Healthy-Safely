@@ -1,157 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel Admin — Healthy Safely</title>
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="/css/admin/painel.css" />
-
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#5BBF6A" />
+  <link rel="stylesheet" href="/css/global.css"> 
 </head>
+
 <body>
-<%- include('../../partials/adm/admin-header.ejs') %>
+  <%- include('../../partials/admin-header.ejs', { activePage: 'painel' }) %>
 
-<main class="adm">
-  <h1 class="adm-h1">Painel Administrativo</h1>
-  <p class="adm-sub">
-  Controle administrativo geral da plataforma Healthy Safely
-</p>
-
-  <!-- KPIs -->
-  <section class="kpis">
-    <article class="kpi"><figure class="kpi-ic g"><i class="bi bi-people-fill"></i></figure><section><p class="kpi-lbl">Usuários</p><p class="kpi-val"><%= stats.total_usuarios||0 %></p></section></article>
-  </section>
-
-  <!-- Gráficos + Ranking -->
-  <section class="g2">
-    <!-- Cadastros por dia -->
-    <article class="card">
-      <header class="card-h"><h2><i class="bi bi-person-plus-fill"></i> Cadastros (7 dias)</h2></header>
-      <% const mc = cadastrosPorDia.length ? Math.max(...cadastrosPorDia.map(d=>d.quantidade)) : 1; %>
-      <section class="chart">
-        <% if(!cadastrosPorDia.length){ %><p class="no-data">Sem cadastros nos últimos 7 dias.</p>
-        <% } else { cadastrosPorDia.forEach(d => { %>
-        <section class="cr">
-          <span class="cr-dia"><%= new Date(d.dia).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) %></span>
-          <section class="cr-track"><section class="cr-fill b" style="width:<%= Math.round((d.quantidade/mc)*100) %>%"></section></section>
-          <span class="cr-val"><%= d.quantidade %></span>
-        </section>
-        <% }) } %>
-      </section>
+  <main class="admin-main">
+    <article class="page-heading">
+      <div>
+        <span class="eyebrow">Visão geral</span>
+        <h1>Painel administrativo</h1>
+        <p>Acompanhe o estado atual da plataforma sem informações desnecessárias.</p>
+      </div>
     </article>
-  </section>
 
-  <section class="card" style="margin-bottom:18px;">
-  <header class="card-h">
-    <h2>
-      <i class="bi bi-clock-history"></i>
-      Usuários recentes
-    </h2>
-  </header>
+    <section class="metrics" aria-label="Resumo da plataforma">
+      <article class="metric-card">
+        <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <span class="metric-label">Usuários</span>
+          <strong><%= stats.total_usuarios %></strong>
+        </div>
+      </article>
 
-  <ul class="rank-list">
-    <% usuarios.slice(0,5).forEach(u => { 
-      const ini = u.nome ? u.nome.charAt(0).toUpperCase() : '?';
-      const dt = u.criado_em
-        ? new Date(u.criado_em).toLocaleString('pt-BR')
-        : '—';
-    %>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="bi bi-person-plus-fill"></i></div>
+        <div>
+          <span class="metric-label">Novos em 7 dias</span>
+          <strong><%= stats.novos_7_dias %></strong>
+        </div>
+      </article>
 
-    <li class="rank-item">
-      <figure class="rank-av"><%= ini %></figure>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="bi bi-check2-square"></i></div>
+        <div>
+          <span class="metric-label">Tarefas cadastradas</span>
+          <strong><%= stats.total_tarefas %></strong>
+        </div>
+      </article>
 
-      <section class="rank-info">
-        <strong><%= u.nome %></strong>
-        <small>
-          <%= dt %>
-        </small>
-      </section>
-    </li>
-
-    <% }) %>
-  </ul>
-</section>
-
-  
-
-  <!-- Tabela usuários -->
-  <article class="card" style="margin-bottom:2rem">
-    <header class="card-h">
-      <h2><i class="bi bi-table"></i> Todos os usuários</h2>
-      <section style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-        <input type="text" class="busca-input" id="busca" placeholder="Buscar..." oninput="filtrar()" />
-        <section style="display:flex;gap:.4rem">
-        </section>
-      </section>
-    </header>
-    <section class="tbl-wrap">
-      <table id="tblU">
-        <thead>
-          <tr>
-            <th>º</th><th>ID</th><th>Usuário</th><th>E-mail</th>
-            <th>Entrou em</th><th></th>
-          </tr>
-        </thead>
-        <tbody id="tblBody">
-          <% if(!usuarios||!usuarios.length){ %>
-          <tr><td colspan="9" style="text-align:center;padding:2rem;color:#5a7a70">Nenhum usuário cadastrado.</td></tr>
-          <% } else { usuarios.forEach((u,i) => {
-               const ini = u.nome ? u.nome.charAt(0).toUpperCase() : '?';
-               const c = parseInt(u.tarefas_concluidas)||0;
-               const t = parseInt(u.total_tarefas)||0;
-               const pct = t>0 ? Math.round((c/t)*100) : 0;
-               const dt = u.criado_em
-  ? new Date(u.criado_em).toLocaleString('pt-BR')
-  : '—';
-             %>
-            <tr data-busca="<%= u.nome.toLowerCase() %> <%= (u.nomeusuario||'').toLowerCase() %> <%= u.email.toLowerCase() %>">
-            <td style="color:#94a3b8;font-size:.75rem"><%= i+1 %></td>
-            <td>#<%= u.id %></td>
-            <td>
-              <section class="u-info">
-                
-                <figure class="av"><%= ini %></figure>
-              
-                <section>
-                  <p class="u-nome"><%= u.nome %></p>
-                  <p class="u-user">@<%= u.nomeusuario||'—' %></p>
-                </section>
-              </section>
-            </td>
-            <td style="font-size:.78rem;color:#5a7a70"><%= u.email %></td>
-            <td style="font-size:.72rem;color:#94a3b8"><%= dt %></td>
-            <td>
-              <form action="/admin/usuario/deletar/<%= u.id %>" method="POST"
-                onsubmit="return confirm('Deletar <%= u.nome %>? Esta ação não pode ser desfeita.')">
-                <button type="submit" class="del-btn" title="Deletar usuário">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </form>
-            </td>
-          </tr>
-          <% }) } %>
-        </tbody>
-      </table>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="bi bi-bar-chart-fill"></i></div>
+        <div>
+          <span class="metric-label">Conclusão de tarefas</span>
+          <strong><%= stats.taxa_conclusao %>%</strong>
+        </div>
+      </article>
     </section>
-    <section class="tbl-footer" id="rodape">
-      Total: <strong><%= usuarios?usuarios.length:0 %></strong> usuário(s)
-    </section>
-  </article>
-</main>
 
-<script>
-function filtrar() {
-  const q = document.getElementById('busca').value.toLowerCase();
-  let v = 0;
-  document.querySelectorAll('#tblBody tr[data-busca]').forEach(r => {
-    const ok = (r.dataset.busca||'').includes(q);
-    r.style.display = ok ? '' : 'none';
-    if(ok) v++;
-  });
-  document.getElementById('rodape').innerHTML = `Exibindo: <strong>${v}</strong> usuário(s)`;
-}
-</script>
+    <section class="dashboard-grid">
+      <article class="panel-card">
+        <header class="panel-header">
+          <div>
+            <h2>Usuários recentes</h2>
+            <p>Últimas contas criadas na plataforma.</p>
+          </div>
+          <a class="text-link" href="/admin/usuarios">Ver todos <i class="bi bi-arrow-right"></i></a>
+        </header>
+
+        <% if (!usuariosRecentes.length) { %>
+          <div class="empty-state">
+            <i class="bi bi-people"></i>
+            <strong>Nenhum usuário cadastrado</strong>
+            <span>Quando novas contas forem criadas, elas aparecerão aqui.</span>
+          </div>
+        <% } else { %>
+          <div class="user-list">
+            <% usuariosRecentes.forEach((usuario) => {
+              const inicial = usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "?";
+              const data = usuario.criado_em
+                ? new Date(usuario.criado_em).toLocaleDateString("pt-BR")
+                : "—";
+            %>
+              <a class="user-row" href="/admin/usuario/<%= usuario.id %>">
+                <% if (usuario.foto_perfil) { %>
+                  <img class="avatar" src="<%= usuario.foto_perfil %>" alt="" />
+                <% } else { %>
+                  <span class="avatar avatar-inicial"><%= inicial %></span>
+                <% } %>
+
+                <span class="user-row-info">
+                  <strong><%= usuario.nome %></strong>
+                  <small>@<%= usuario.nomeusuario || "sem usuário" %></small>
+                </span>
+
+                <time datetime="<%= usuario.criado_em ? new Date(usuario.criado_em).toISOString() : '' %>">
+                  <%= data %>
+                </time>
+
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            <% }) %>
+          </div>
+        <% } %>
+      </article>
+
+      <aside class="panel-card support-summary">
+        <header class="panel-header">
+          <div>
+            <h2>Suporte</h2>
+            <p>Solicitações que precisam de atenção.</p>
+          </div>
+          <a class="icon-link" href="/admin/suporte" aria-label="Abrir suporte">
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </header>
+
+        <div class="support-main">
+          <span class="support-number"><%= suporteStats.pendentes %></span>
+          <span>solicitações pendentes</span>
+        </div>
+
+        <div class="support-status">
+          <div>
+            <span class="status-dot pendente"></span>
+            <span>Pendentes</span>
+            <strong><%= suporteStats.pendentes %></strong>
+          </div>
+          <div>
+            <span class="status-dot respondido"></span>
+            <span>Respondidos</span>
+            <strong><%= suporteStats.respondidos %></strong>
+          </div>
+          <div>
+            <span class="status-dot resolvido"></span>
+            <span>Resolvidos</span>
+            <strong><%= suporteStats.resolvidos %></strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <%- include('../../partials/footer.ejs') %>
 </body>
 </html>

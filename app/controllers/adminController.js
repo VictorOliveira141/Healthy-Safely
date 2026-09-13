@@ -1,94 +1,174 @@
 const { adminModel } = require("../models/Admin");
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const adminController = {
-
-  // ── Exibir formulário de login ─────────────────────────────
   exibirLogin: (req, res) => {
-    if (req.session.adminAutenticado) return res.redirect("/admin/painel");
+    if (req.session.adminAutenticado) {
+      return res.redirect("/admin/painel");
+    }
+
     res.render("pages/admin/login", { erro: null });
   },
 
-  // ── Processar login (senha do .env) ───────────────────────
   processarLogin: (req, res) => {
-    if (req.body.senha === ADMIN_PASSWORD) {
-      req.session.adminAutenticado = true;
-      return res.redirect("/admin/painel");
+    if (!ADMIN_PASSWORD) {
+      console.error("[Admin] ADMIN_PASSWORD não configurada.");
+      return res.status(500).render("pages/admin/login", {
+        erro: "O acesso administrativo não está configurado.",
+      });
     }
-    res.render("pages/admin/login", { erro: "Senha incorreta. Tente novamente." });
+
+    if (String(req.body.senha || "") !== ADMIN_PASSWORD) {
+      return res.status(401).render("pages/admin/login", {
+        erro: "Senha incorreta. Tente novamente.",
+      });
+    }
+
+    req.session.adminAutenticado = true;
+
+    req.session.save((erro) => {
+      if (erro) {
+        console.error("[Admin.login] Erro ao salvar sessão:", erro);
+        return res.status(500).render("pages/admin/login", {
+          erro: "Não foi possível iniciar a sessão administrativa.",
+        });
+      }
+
+      return res.redirect("/admin/painel");
+    });
   },
 
-  // ── Painel principal ───────────────────────────────────────
   exibirPainel: async (req, res) => {
-    const resultados = await Promise.allSettled([
-      adminModel.listarTodosUsuarios(),      // 0
-      adminModel.estatisticasGerais(),       // 1
-      adminModel.cadastrosPorDia(),          // 2
-      adminModel.tarefasConcluidasPorDia(),  // 3
-    ]);
+    try {
+      const [stats, usuariosRecentes, suporteStats] = await Promise.all([
+        adminModel.estatisticasGerais(),
+        adminModel.listarUsuariosRecentes(8),
+        adminModel.estatisticasSuporte(),
+      ]);
 
-    const pegar = (i, fallback) =>
-      resultados[i].status === "fulfilled" ? resultados[i].value : fallback;
+      res.render("pages/admin/painel", {
+        stats,
+        usuariosRecentes,
+        suporteStats,
+      });
+    } catch (erro) {
+      console.error("[Admin.painel]", erro);
+      res.status(500).render("errors/404");
+    }
+  },
 
-    const usuarios       = pegar(0, []);
-    const stats          = pegar(1, {
-      total_usuarios: 0, total_tarefas: 0, tarefas_concluidas: 0,
-    });
-    const cadastrosPorDia  = pegar(2, []);
-    const tarefasPorDia    = pegar(3, []);
-    res.render("pages/admin/painel", {
-      usuarios,
-      stats,
-      cadastrosPorDia,
-      tarefasPorDia,
-    });
+  exibirUsuarios: async (req, res) => {
+    try {
+      const resultado = await adminModel.listarUsuarios({
+        busca: req.query.busca,
+        pagina: req.query.pagina,
+        porPagina: req.query.porPagina,
+      });
+
+      res.render("pages/admin/usuarios", resultado);
+    } catch (erro) {
+      console.error("[Admin.usuarios]", erro);
+      res.status(500).send("Não foi possível carregar os usuários.");
+    }
+  },
+
+  exibirUsuario: async (req, res) => {
+    try {
+      const usuario = await adminModel.buscarUsuarioPorId(req.params.id);
+
+      if (!usuario) {
+        return res.status(404).render("errors/404");
+      }
+
+      const tarefas = await adminModel.listarAtividadeUsuario(req.params.id);
+
+      res.render("pages/admin/usuario", {
+        usuario,
+        tarefas,
+      });
+    } catch (erro) {
+      console.error("[Admin.usuario]", erro);
+      res.status(500).send("Não foi possível carregar o usuário.");
+    }
+  },
+
+  deletarUsuario: async (req, res) => {
+    try {
+      const sucesso = await adminModel.deletarUsuario(req.params.id);
+
+      if (!sucesso) {
+        return res.status(404).send("Usuário não encontrado.");
+      }
+
+      return res.redirect("/admin/usuarios");
+    } catch (erro) {
+      console.error("[Admin.deletarUsuario]", erro);
+      return res.status(500).send("Não foi possível excluir o usuário.");
+    }
   },
 
   exibirSuporte: async (req, res) => {
-
-  // TEMPORÁRIO (sem banco)
-  const suporte = [
-    {
-      id: 1,
-      nome: "Victor Hugo",
-      email: "victor@email.com",
-      tipo: "Problema com login",
-      mensagem: "Não consigo acessar minha conta.",
-      status: "pendente",
-      criado_em: new Date(),
-    },
-
-    {
-      id: 2,
-      nome: "Maria Clara",
-      email: "maria@email.com",
-      tipo: "Erro no sistema",
-      mensagem: "As tarefas não estão aparecendo.",
-      status: "respondido",
-      criado_em: new Date(),
-    }
-  ];
-
-  res.render("pages/admin/suporte", {
-    suporte
-  });
-},
-
-  // ── Deletar usuário ─────────────────────────────────────────
-  deletarUsuario: async (req, res) => {
     try {
-      await adminModel.deletarUsuario(req.params.id);
-    } catch (e) {
-      console.error("[Admin.deletarUsuario]", e.message);
+      const status = String(req.query.status || "");
+      const [suporte, stats] = await Promise.all([
+        adminModel.listarSuporte({ status }),
+        adminModel.estatisticasSuporte(),
+      ]);
+
+      res.render("pages/admin/suporte", {
+        suporte,
+        stats,
+        filtroStatus: status,
+      });
+    } catch (erro) {
+      console.error("[Admin.suporte]", erro);
+      res.status(500).send("Não foi possível carregar o suporte.");
     }
-    res.redirect("/admin/painel");
   },
 
-  // ── Sair do admin ───────────────────────────────────────────
+  responderSuporte: async (req, res) => {
+    try {
+      const sucesso = await adminModel.responderSuporte(
+        req.params.id,
+        req.body.resposta,
+      );
+
+      if (!sucesso) {
+        return res.status(400).send("A resposta não pode estar vazia.");
+      }
+
+      return res.redirect("/admin/suporte");
+    } catch (erro) {
+      console.error("[Admin.responderSuporte]", erro);
+      return res.status(500).send("Não foi possível responder à solicitação.");
+    }
+  },
+
+  alterarStatusSuporte: async (req, res) => {
+    try {
+      const sucesso = await adminModel.alterarStatusSuporte(
+        req.params.id,
+        req.body.status,
+      );
+
+      if (!sucesso) {
+        return res.status(400).send("Status inválido.");
+      }
+
+      return res.redirect("/admin/suporte");
+    } catch (erro) {
+      console.error("[Admin.alterarStatusSuporte]", erro);
+      return res.status(500).send("Não foi possível alterar o status.");
+    }
+  },
+
   sair: (req, res) => {
     req.session.adminAutenticado = false;
-    res.redirect("/admin");
+
+    req.session.save(() => {
+      res.redirect("/admin");
+    });
   },
 };
 

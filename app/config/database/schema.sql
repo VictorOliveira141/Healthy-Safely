@@ -1,154 +1,148 @@
+```sql
+-- ============================================================
+-- HEALTHY SAFELY - SCHEMA DO BANCO
+-- ============================================================
+-- Para criar o banco:
 -- mysql -u root -p < app/database/schema.sql
+--
+-- Este arquivo representa o ESTADO ATUAL/FNAL do banco.
+-- Não contém mais estruturas de profissionais, amizades etc.
+-- ============================================================
+```
 
-
--- ── USUÁRIOS ─────────────────────────────────────────────────
+-- ── USUÁRIOS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS usuarios (
-  id           INT          AUTO_INCREMENT PRIMARY KEY,
-  nome         VARCHAR(100) NOT NULL,
-  nomeusuario  VARCHAR(50)  UNIQUE,
-  email        VARCHAR(150) NOT NULL UNIQUE,
-  senha        VARCHAR(255) NOT NULL,   -- bcrypt hash
-  tipo         ENUM('cliente','profissional') NOT NULL DEFAULT 'cliente',
-  nivel        VARCHAR(50)  DEFAULT 'iniciante',
-  pontos       INT          DEFAULT 0,
-  foto_perfil  VARCHAR(255) DEFAULT NULL,
-  onboarding_concluido TINYINT(1) DEFAULT 0,
-  perfil_pesquisa JSON DEFAULT NULL,
-  criado_em    DATETIME     DEFAULT CURRENT_TIMESTAMP
+  id                    INT AUTO_INCREMENT PRIMARY KEY,
+  nome                  VARCHAR(100) NOT NULL,
+  nomeusuario           VARCHAR(50) UNIQUE,
+  email                 VARCHAR(150) NOT NULL UNIQUE,
+  senha                 CHAR(60) NOT NULL,
+  foto_perfil           VARCHAR(255) DEFAULT NULL,
+  criado_em             DATETIME DEFAULT CURRENT_TIMESTAMP,
+  onboarding_concluido  TINYINT(1) DEFAULT 0,
+  perfil_pesquisa       JSON DEFAULT NULL
 );
 
--- ── TOKENS DE RECUPERAÇÃO DE SENHA ──────────────────────────
+
+-- ── TOKENS DE RECUPERAÇÃO DE SENHA ─────────────────────────
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   email      VARCHAR(150) NOT NULL,
   token      VARCHAR(255) NOT NULL UNIQUE,
   expira_em  DATETIME NOT NULL,
   criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+
   INDEX idx_reset_email (email),
   INDEX idx_reset_expira (expira_em)
 );
 
-CREATE TABLE webauthn_credentials (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    credential_id VARCHAR(255) NOT NULL UNIQUE,
-    public_key TEXT NOT NULL,
-    counter INT DEFAULT 0,
-    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (usuario_id)
-        REFERENCES usuarios(id)
-        ON DELETE CASCADE
+-- ── CREDENCIAIS WEBAUTHN / PASSKEY ─────────────────────────
+CREATE TABLE IF NOT EXISTS webauthn_credentials (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id    INT NOT NULL,
+  credential_id VARCHAR(255) NOT NULL UNIQUE,
+  public_key    TEXT NOT NULL,
+  counter      INT DEFAULT 0,
+  criado_em    DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 );
 
--- ── PROFISSIONAIS (dados extras) ─────────────────────────────
-CREATE TABLE IF NOT EXISTS profissionais (
-  id                INT  AUTO_INCREMENT PRIMARY KEY,
-  usuario_id        INT  NOT NULL UNIQUE,
-  cref              VARCHAR(30)  DEFAULT NULL,
-  area_atuacao      VARCHAR(100) DEFAULT NULL,
-  tempo_experiencia INT          DEFAULT 0,
-  especialidades    TEXT         DEFAULT NULL,
-  disponivel        TINYINT(1)   DEFAULT 1,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
--- ── TAREFAS ──────────────────────────────────────────────────
+-- ── TAREFAS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tarefas (
-  id            INT  AUTO_INCREMENT PRIMARY KEY,
-  usuario_id    INT  NOT NULL,
-  criado_por    INT  DEFAULT NULL,   -- profissional que criou (NULL = o proprio usuario)
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id    INT NOT NULL,
   titulo        VARCHAR(200) NOT NULL,
-  descricao     TEXT         DEFAULT NULL,
-  pontos        INT          DEFAULT 10,
-  concluida     TINYINT(1)   DEFAULT 0,
-  concluida_em  DATETIME     DEFAULT NULL,
-  data          DATE         DEFAULT NULL,
-  horario       TIME         DEFAULT NULL,
+  descricao     TEXT DEFAULT NULL,
+  concluida     TINYINT(1) DEFAULT 0,
+  concluida_em  DATETIME DEFAULT NULL,
+  data          DATE DEFAULT NULL,
+  horario       TIME DEFAULT NULL,
   repeticao     ENUM('once','daily','weekly') DEFAULT 'once',
-  dia_semana    ENUM('domingo','segunda','terca','quarta','quinta','sexta','sabado') DEFAULT NULL,
-  categoria     ENUM('saude','sono','alimentacao','exercicio','geral') DEFAULT 'geral',
-  criado_em     DATETIME     DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (criado_por) REFERENCES usuarios(id) ON DELETE SET NULL
+  dia_semana    ENUM(
+    'domingo',
+    'segunda',
+    'terca',
+    'quarta',
+    'quinta',
+    'sexta',
+    'sabado'
+  ) DEFAULT NULL,
+  categoria     ENUM(
+    'saude',
+    'sono',
+    'alimentacao',
+    'exercicio',
+    'geral'
+  ) DEFAULT 'geral',
+  criado_em     DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 );
 
--- ── TAREFAS PADRÃO (seed p/ novos clientes) ──────────────────
+
+-- ── TAREFAS PADRÃO ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tarefas_padrao (
-  id        INT  AUTO_INCREMENT PRIMARY KEY,
+  id        INT AUTO_INCREMENT PRIMARY KEY,
   titulo    VARCHAR(200) NOT NULL,
-  pontos    INT  DEFAULT 10,
-  categoria ENUM('saude','sono','alimentacao','exercicio','geral') DEFAULT 'geral'
+  categoria ENUM(
+    'saude',
+    'sono',
+    'alimentacao',
+    'exercicio',
+    'geral'
+  ) DEFAULT 'geral'
 );
 
-INSERT IGNORE INTO tarefas_padrao (id, titulo, pontos, categoria) VALUES
-  (1,'Beber água (2L)',                 10,'saude'),
-  (2,'Dormir bem (8h)',                 15,'sono'),
-  (3,'Fazer exercício físico',          20,'exercicio'),
-  (4,'Comer frutas e vegetais',         10,'alimentacao'),
-  (5,'Meditar por 10 minutos',          15,'saude'),
-  (6,'Evitar telas 1h antes de dormir',10,'sono'),
-  (7,'Caminhar 30 minutos',            15,'exercicio');
 
--- ── VÍNCULOS paciente ↔ profissional ────────────────────────
-CREATE TABLE IF NOT EXISTS vinculos (
-  id               INT  AUTO_INCREMENT PRIMARY KEY,
-  paciente_id      INT  NOT NULL,
-  profissional_id  INT  NOT NULL,
-  status           ENUM('pendente','ativo','recusado','encerrado') DEFAULT 'pendente',
-  criado_em        DATETIME DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY uk_vinculo (paciente_id, profissional_id),
-  FOREIGN KEY (paciente_id)     REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (profissional_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+-- Seeds das tarefas padrão
+INSERT IGNORE INTO tarefas_padrao (id, titulo, categoria) VALUES
+  (1, 'Beber água (2L)',                  'saude'),
+  (2, 'Dormir bem (8h)',                  'sono'),
+  (3, 'Fazer exercício físico',           'exercicio'),
+  (4, 'Comer frutas e vegetais',          'alimentacao'),
+  (5, 'Meditar por 10 minutos',           'saude'),
+  (6, 'Evitar telas 1h antes de dormir', 'sono'),
+  (7, 'Caminhar 30 minutos',              'exercicio');
 
--- ── SOLICITAÇÕES de troca de profissional ────────────────────
-CREATE TABLE IF NOT EXISTS solicitacoes (
-  id               INT  AUTO_INCREMENT PRIMARY KEY,
-  paciente_id      INT  NOT NULL,
-  profissional_id  INT  NOT NULL,   -- profissional solicitado
-  tipo             ENUM('vinculo','troca') DEFAULT 'vinculo',
-  status           ENUM('pendente','aprovada','rejeitada') DEFAULT 'pendente',
-  mensagem         TEXT DEFAULT NULL,
-  criado_em        DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (paciente_id)     REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (profissional_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
--- ── NOTIFICAÇÕES ─────────────────────────────────────────────
+-- ── NOTIFICAÇÕES ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS notificacoes (
-  id         INT  AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT  NOT NULL,
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
   mensagem   VARCHAR(500) NOT NULL,
-  lida       TINYINT(1)   DEFAULT 0,
-  criado_em  DATETIME     DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+  lida       TINYINT(1) DEFAULT 0,
+  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 );
 
--- ── SONO ─────────────────────────────────────────────────────
+
+-- ── REGISTROS DE SONO ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS registros_sono (
-  id             INT  AUTO_INCREMENT PRIMARY KEY,
-  usuario_id     INT  NOT NULL,
+  id             INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id     INT NOT NULL,
   horas_dormidas DECIMAL(4,1) NOT NULL,
   qualidade      TINYINT DEFAULT 3,
-  data           DATE    DEFAULT (CURDATE()),
+  data           DATE DEFAULT (CURDATE()),
+
   UNIQUE KEY uk_sono_dia (usuario_id, data),
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 );
 
--- ── AMIZADES ─────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS amizades (
-  id             INT  AUTO_INCREMENT PRIMARY KEY,
-  solicitante_id INT  NOT NULL,
-  receptor_id    INT  NOT NULL,
-  status         ENUM('pendente','aceita','recusada') DEFAULT 'pendente',
-  criado_em      DATETIME DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY unico_par (solicitante_id, receptor_id),
-  FOREIGN KEY (solicitante_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (receptor_id)    REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
--- ── WEB PUSH: assinaturas dos dispositivos ────────────────────
+-- ── WEB PUSH: ASSINATURAS DOS DISPOSITIVOS ────────────────
 CREATE TABLE IF NOT EXISTS push_subscriptions (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id INT NOT NULL,
@@ -157,18 +151,58 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   auth       VARCHAR(255) NOT NULL,
   user_agent VARCHAR(255) DEFAULT NULL,
   criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+
   UNIQUE KEY uk_push_endpoint (endpoint(191)),
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 );
 
--- ── WEB PUSH: controle de envios (evita duplicados) ───────────
+
+-- ── WEB PUSH: CONTROLE DE ENVIOS ──────────────────────────
 CREATE TABLE IF NOT EXISTS push_notificacoes_enviadas (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   tarefa_id  INT NOT NULL,
   usuario_id INT NOT NULL,
-  referencia DATE NOT NULL,  -- data da ocorrência da tarefa que gerou o envio
+  referencia DATE NOT NULL,
   criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+
   UNIQUE KEY uk_envio_ocorrencia (tarefa_id, referencia),
-  FOREIGN KEY (tarefa_id)  REFERENCES tarefas(id)  ON DELETE CASCADE,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+
+  FOREIGN KEY (tarefa_id)
+    REFERENCES tarefas(id)
+    ON DELETE CASCADE,
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
+
+-- ── SUPORTE ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS suporte (
+  id             INT NOT NULL AUTO_INCREMENT,
+  usuario_id     INT NULL,
+  nome           VARCHAR(100) NOT NULL DEFAULT '',
+  email          VARCHAR(150) NOT NULL DEFAULT '',
+  assunto        VARCHAR(255) NOT NULL,
+  tipo           VARCHAR(80) NOT NULL DEFAULT 'Geral',
+  mensagem       TEXT NOT NULL,
+  status         ENUM(
+    'pendente',
+    'respondido',
+    'resolvido'
+  ) NOT NULL DEFAULT 'pendente',
+  resposta       TEXT NULL,
+  criado_em      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  respondido_em  TIMESTAMP NULL DEFAULT NULL,
+  atualizado_em  DATETIME DEFAULT CURRENT_TIMESTAMP
+                 ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+
+  INDEX idx_suporte_usuario (usuario_id),
+  INDEX idx_suporte_status (status),
+  INDEX idx_suporte_criado_em (criado_em)
 );

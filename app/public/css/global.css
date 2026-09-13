@@ -32,7 +32,7 @@
   --surface-muted: #fbfcfd;
 
   /* Bordas & sombras */
-  --border: rgba(12, 79, 67, 0.08);
+  --border: 1px solid rgba(12, 79, 67, 0.16);
   --border-radius: 14px;
 
   /* Tipografia */
@@ -51,6 +51,9 @@
   --botao-opacity: 0.92;
 
 }
+.card,input,textarea,select,button {
+  border-width: 2px;
+}
 
 /* Dark mode */
 html.dark body {
@@ -62,7 +65,7 @@ html.dark body {
   --surface-card: #1a2820;
   --surface-muted: #1e2e26;
 
-  --border: rgba(255, 255, 255, 0.09);
+  --border: 1px solid rgba(255, 255, 255, 0.09);
   --fundoclaro: #c8e6dc;
   --fundoescuro: #c8e6dc;
 

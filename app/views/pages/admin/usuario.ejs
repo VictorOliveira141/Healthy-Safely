@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuário #<%= usuario.id %> — Admin Healthy Safely</title>
+  <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/css/admin/usuario.css" />
+  <link rel="stylesheet" href="/css/global.css" />
+</head>
+
+<body>
+  <%- include('../../partials/admin-header.ejs', { activePage: 'usuarios' }) %>
+
+  <main class="admin-main">
+    <a class="back-link" href="/admin/usuarios">
+      <i class="bi bi-arrow-left"></i>
+      Voltar para usuários
+    </a>
+
+    <header class="user-heading">
+      <div class="identity">
+        <% if (usuario.foto_perfil) { %>
+          <img class="profile-avatar" src="<%= usuario.foto_perfil %>" alt="" />
+        <% } else { %>
+          <span class="profile-avatar profile-inicial">
+            <%= usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "?" %>
+          </span>
+        <% } %>
+
+        <div>
+          <span class="eyebrow">Usuário #<%= usuario.id %></span>
+          <h1><%= usuario.nome %></h1>
+          <p>@<%= usuario.nomeusuario || "sem nome de usuário" %></p>
+        </div>
+      </div>
+
+      <form
+        action="/admin/usuario/deletar/<%= usuario.id %>"
+        method="POST"
+        onsubmit="return confirm('Excluir <%= usuario.nome %>? Esta ação removerá os dados relacionados e não pode ser desfeita.')"
+      >
+        <button class="danger-button" type="submit">
+          <i class="bi bi-trash3"></i>
+          Excluir usuário
+        </button>
+      </form>
+    </header>
+
+    <section class="detail-grid">
+      <article class="panel-card">
+        <header class="panel-header">
+          <h2>Dados da conta</h2>
+        </header>
+
+        <dl class="details">
+          <div>
+            <dt>Nome</dt>
+            <dd><%= usuario.nome %></dd>
+          </div>
+          <div>
+            <dt>Nome de usuário</dt>
+            <dd>@<%= usuario.nomeusuario || "—" %></dd>
+          </div>
+          <div>
+            <dt>E-mail</dt>
+            <dd><%= usuario.email %></dd>
+          </div>
+          <div>
+            <dt>Cadastro</dt>
+            <dd><%= usuario.criado_em ? new Date(usuario.criado_em).toLocaleString("pt-BR") : "—" %></dd>
+          </div>
+          <div>
+            <dt>Onboarding</dt>
+            <dd>
+              <span class="status-pill <%= usuario.onboarding_concluido ? 'ok' : 'pendente' %>">
+                <%= usuario.onboarding_concluido ? "Concluído" : "Pendente" %>
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt>Última tarefa concluída</dt>
+            <dd><%= usuario.ultima_tarefa_concluida ? new Date(usuario.ultima_tarefa_concluida).toLocaleString("pt-BR") : "Nenhuma" %></dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="panel-card">
+        <header class="panel-header">
+          <h2>Atividade</h2>
+        </header>
+
+        <div class="activity-stats">
+          <div>
+            <strong><%= Number(usuario.total_tarefas || 0) %></strong>
+            <span>Tarefas</span>
+          </div>
+          <div>
+            <strong><%= Number(usuario.tarefas_concluidas || 0) %></strong>
+            <span>Concluídas</span>
+          </div>
+        </div>
+
+        <% if (!tarefas.length) { %>
+          <div class="empty-state">
+            <i class="bi bi-check2-square"></i>
+            <span>Este usuário ainda não possui tarefas.</span>
+          </div>
+        <% } else { %>
+          <div class="activity-list">
+            <% tarefas.forEach((tarefa) => { %>
+              <div class="activity-row">
+                <span class="task-status <%= tarefa.concluida ? 'concluida' : '' %>">
+                  <i class="bi <%= tarefa.concluida ? 'bi-check-lg' : 'bi-dash' %>"></i>
+                </span>
+                <div>
+                  <strong><%= tarefa.titulo %></strong>
+                  <small>
+                    <%= tarefa.categoria || "geral" %>
+                    <% if (tarefa.data) { %> · <%= new Date(tarefa.data).toLocaleDateString("pt-BR") %><% } %>
+                  </small>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </article>
+    </section>
+  </main>
+  <%- include('../../partials/footer.ejs') %>
+</body>
+</html>

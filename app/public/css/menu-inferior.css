@@ -1,20 +1,19 @@
 /* ===========================
    MENU DE ACESSIBILIDADE
 =========================== */
+
 .menu-acessibilidade {
   position: fixed;
-
   right: 1px;
   bottom: 105px;
   width: 220px;
-
   background: var(--secondary-color);
+  border: var(--border);
   border-radius: var(--border-radius);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
-
   transform: translateY(15px);
   transition: 0.25s ease;
   z-index: 1200;
@@ -28,11 +27,9 @@
 
 .menu-item {
   width: 100%;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 16px 18px;
   background: none;
   border: none;
@@ -61,29 +58,33 @@
   color: var(--fundoescuro);
 }
 
-/* ---- botao de abrir ---- */
+
+/* ===========================
+   BOTÃO DE ACESSIBILIDADE
+=========================== */
+
 .botao-acessibilidade {
   position: fixed;
-  bottom: 55px; /* altura do menu */
+  bottom: 55px;
   right: 1px;
   width: 52px;
   height: 42px;
   border: none;
-
+  border-radius: var(--border-radius) 0 0 0;
   background: var(--accent-color);
   color: var(--fundoescuro);
   display: flex;
-
   justify-content: center;
   align-items: center;
   cursor: pointer;
-
   z-index: 1001;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
+
 .botao-acessibilidade:hover {
   transform: translateY(-2px);
 }
+
 .botao-acessibilidade svg {
   width: 22px;
   height: 22px;
@@ -93,15 +94,17 @@
 /* ===========================
    MENU INFERIOR
 =========================== */
+
 .menu-inferior {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100vw;
   background: var(--secondary-color);
+  border-top: var(--border);
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
   z-index: 1002;
-  display: none; /* começa escondido */
+  display: none;
   justify-content: center;
   height: 55px;
   padding: 0;
@@ -113,6 +116,61 @@
   width: 100%;
   gap: 0;
 }
+
+
+/* ===========================
+   ITENS DO MENU
+=========================== */
+
+.menu-container a,
+.menu-container button {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--font-icon);
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--fundoescuro);
+  transition: opacity 0.2s ease;
+}
+
+.menu-container a:hover,
+.menu-container button:hover {
+  opacity: 0.8;
+}
+
+.menu-inferior svg {
+  width: 24px;
+  height: 24px;
+}
+
+.menu-inferior button {
+  background: var(--secondary-color);
+  color: var(--fundoescuro);
+  border: none;
+}
+
+
+/* ===========================
+   ÍCONE DE DESTAQUE
+=========================== */
+
+.menu-inferior button.icone-destaque svg {
+  width: 35px;
+  height: 35px;
+}
+
+
+/* ===========================
+   FOTO DE PERFIL
+=========================== */
 
 .menu-container .foto-perfil {
   flex: 1;
@@ -142,51 +200,30 @@
   border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
-.menu-container a,
-.menu-container button {
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
-  font-size: var(--font-icon);
-  padding: 8px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font: inherit;
-  color: var(--fundoescuro);
-  transition: opacity 0.2s ease;
+
+/* ===========================
+   MENU ADMIN
+=========================== */
+
+/*
+   O menu administrativo utiliza
+   exatamente a mesma estrutura visual
+   do menu inferior comum.
+
+   A classe .menu-inferior-admin permite
+   personalizações futuras sem precisar
+   duplicar o CSS inteiro.
+*/
+
+.menu-inferior-admin {
+  /* Mantém o mesmo comportamento visual */
 }
 
-.menu-container a:hover {
-  opacity: 0.8;
-}
 
-.menu-inferior svg {
-  width: 24px;
-  height: 24px;
-}
+/* ===========================
+   TOGGLE SWITCH
+=========================== */
 
-.menu-inferior button {
-  background: var(--secondary-color);
-  color: var(--fundoescuro);
-  border: none;
-}
-.menu-inferior button.icone-destaque svg {
-  width: 35px;
-  height: 35px;
-}
-
-@media (max-width: 768px) {
-  .menu-inferior {
-    display: flex;
-  }
-}
-
-/* Toggle switch */
 .toggle {
   position: relative;
   width: 44px;
@@ -225,4 +262,15 @@
 
 .toggle input:checked + .slider-toggle::before {
   transform: translateX(20px);
+}
+
+
+/* ===========================
+   EXIBIÇÃO MOBILE
+=========================== */
+
+@media (max-width: 768px) {
+  .menu-inferior {
+    display: flex;
+  }
 }

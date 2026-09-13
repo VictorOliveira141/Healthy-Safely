@@ -1,0 +1,156 @@
+<header class="admin-header">
+  <a
+    href="/admin/painel"
+    class="admin-brand"
+    aria-label="Healthy Safely — painel administrativo"
+  >
+    <img src="/imagem/Logo repaginado 2.webp" alt="Healthy Safely" />
+    <span>Admin</span>
+  </a>
+
+  <nav class="admin-nav" aria-label="Navegação administrativa">
+    <a
+      href="/admin/painel"
+      class="<%= typeof activePage !== 'undefined' && activePage === 'painel' ? 'ativo' : '' %>"
+    >
+      <i class="bi bi-grid-1x2-fill"></i>
+      <span>Painel</span>
+    </a>
+
+    <a
+      href="/admin/usuarios"
+      class="<%= typeof activePage !== 'undefined' && activePage === 'usuarios' ? 'ativo' : '' %>"
+    >
+      <i class="bi bi-people-fill"></i>
+      <span>Usuários</span>
+    </a>
+
+    <a
+      href="/admin/suporte"
+      class="<%= typeof activePage !== 'undefined' && activePage === 'suporte' ? 'ativo' : '' %>"
+    >
+      <i class="bi bi-headset"></i>
+      <span>Suporte</span>
+    </a>
+  </nav>
+
+  <a href="/admin/sair" class="admin-logout">
+    <i class="bi bi-box-arrow-right"></i>
+    <span>Sair</span>
+  </a>
+
+  <script src="/js/features/darkmode.js"></script>
+  <script src="/js/features/header-scroll.js"></script>
+</header>
+
+<%- include('../partials/admin-menu-inferior.ejs') %>
+
+
+<style>
+.admin-header {
+  min-height: 64px;
+  padding: 0 28px;
+
+  background: var(--secondary-color);
+  color: var(--fundoescuro);
+
+  display: flex;
+  align-items: center;
+  gap: 28px;
+
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.admin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 145px;
+
+  font-weight: 800;
+}
+.admin-brand:hover{
+  transform: scale(1.02)
+}
+
+.admin-brand img {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+
+  filter: brightness(0) invert(1);
+}
+.admin-brand span {
+  font-size: var(--font-text);
+}
+
+.admin-nav {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+
+  gap: 4px;
+  flex: 1;
+}
+
+.admin-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 13px;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: var(--font-text);
+  font-weight: 600;
+
+  border-bottom: 2px solid transparent;
+
+  transition: var(--transition);
+}
+
+.admin-nav a:hover,
+.admin-nav a.ativo {
+  color: #fff;
+}
+
+.admin-nav a.ativo {
+  border-bottom-color: var(--accent-color);
+}
+
+
+.admin-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 8px 12px;
+
+  border-radius: 9px;
+
+  color: rgba(255, 255, 255, 0.8);
+
+  font-size: var(--font-text);
+  font-weight: 700;
+
+  transition: var(--transition);
+}
+
+.admin-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+@media(max-width: 768px){
+  .admin-nav,.admin-logout{
+    display: none;
+  }
+}
+</style>
