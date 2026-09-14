@@ -1,97 +1,4 @@
 /* ===========================
-   MENU DE ACESSIBILIDADE
-=========================== */
-
-.menu-acessibilidade {
-  position: fixed;
-  right: 1px;
-  bottom: 105px;
-  width: 220px;
-  background: var(--secondary-color);
-  border: var(--border);
-  border-radius: var(--border-radius);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(15px);
-  transition: 0.25s ease;
-  z-index: 1200;
-}
-
-.menu-acessibilidade.ativo {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.menu-item {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 18px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.menu-item-esquerda {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.menu-item span {
-  font-size: var(--font-text);
-  color: var(--fundoescuro);
-}
-
-.menu-item svg {
-  width: 20px;
-  height: 20px;
-  color: var(--fundoescuro);
-}
-
-
-/* ===========================
-   BOTÃO DE ACESSIBILIDADE
-=========================== */
-
-.botao-acessibilidade {
-  position: fixed;
-  bottom: 55px;
-  right: 1px;
-  width: 52px;
-  height: 42px;
-  border: none;
-  border-radius: var(--border-radius) 0 0 0;
-  background: var(--accent-color);
-  color: var(--fundoescuro);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 1001;
-  transition: 0.2s ease;
-}
-
-.botao-acessibilidade:hover {
-  transform: translateY(-2px);
-}
-
-.botao-acessibilidade svg {
-  width: 22px;
-  height: 22px;
-}
-
-
-/* ===========================
    MENU INFERIOR
 =========================== */
 
@@ -116,7 +23,6 @@
   width: 100%;
   gap: 0;
 }
-
 
 /* ===========================
    ITENS DO MENU
@@ -157,7 +63,6 @@
   border: none;
 }
 
-
 /* ===========================
    ÍCONE DE DESTAQUE
 =========================== */
@@ -166,59 +71,6 @@
   width: 35px;
   height: 35px;
 }
-
-
-/* ===========================
-   FOTO DE PERFIL
-=========================== */
-
-.menu-container .foto-perfil {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-.menu-container .foto-perfil a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 0;
-}
-
-.menu-container .foto-perfil img {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-}
-
-
-/* ===========================
-   MENU ADMIN
-=========================== */
-
-/*
-   O menu administrativo utiliza
-   exatamente a mesma estrutura visual
-   do menu inferior comum.
-
-   A classe .menu-inferior-admin permite
-   personalizações futuras sem precisar
-   duplicar o CSS inteiro.
-*/
-
-.menu-inferior-admin {
-  /* Mantém o mesmo comportamento visual */
-}
-
 
 /* ===========================
    TOGGLE SWITCH
@@ -264,7 +116,6 @@
   transform: translateX(20px);
 }
 
-
 /* ===========================
    EXIBIÇÃO MOBILE
 =========================== */
@@ -274,3 +125,228 @@
     display: flex;
   }
 }
+
+/* =========================================
+   MENU "MAIS" - MENU INFERIOR
+========================================= */
+.menu-mais {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 25px;
+}
+
+/* Botão dos três pontos */
+.botao-menu-mais {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  border-radius: 50%;
+
+  color: var(--text-color);
+  font-size: 26px;
+
+  transition: background 0.2s ease;
+}
+
+.botao-menu-mais:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   MENU ABERTO
+========================================= */
+
+.menu-mais-opcoes {
+  position: fixed;
+  right: 1px;
+  bottom: 105px;
+  width: 220px;
+  padding: 6px;
+  background: var(--primary-color);
+  border: var(--border);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.12);
+  display: none;
+  z-index: 9999;
+  box-sizing: border-box;
+}
+
+.menu-mais-opcoes.aberto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* =========================================
+   ITENS
+========================================= */
+
+.menu-mais-opcoes a,
+.menu-mais-opcoes .item-acessibilidade {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+  text-decoration: none;
+
+  color: var(--fundoclaro);
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* =========================================
+   HOVER
+========================================= */
+
+.menu-mais-opcoes a:hover,
+.menu-mais-opcoes .item-acessibilidade:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================
+   IMAGENS / ÍCONES
+========================================= */
+
+.menu-mais-opcoes a img,
+.menu-mais-opcoes .item-acessibilidade img {
+  width: 24px !important;
+  height: 24px !important;
+
+  object-fit: contain;
+
+  flex: 0 0 24px;
+
+  display: block;
+}
+
+/* =========================================
+   TEXTOS
+========================================= */
+
+.menu-mais-opcoes a span,
+.menu-mais-opcoes .item-acessibilidade span {
+  flex: 1;
+  min-width: 0;
+
+  white-space: nowrap;
+  text-align: left;
+}
+
+
+/* ===========================
+   MENU DE ACESSIBILIDADE
+=========================== */
+.botao-voltar-acessibilidade {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+
+  background: var(--accent-color);
+  color: var(--fundoescuro);
+
+  font-size: 20px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+
+
+.acessibilidade-header h3{
+  color: var(--fundoclaro);
+  margin-left: 5px
+}
+
+
+.menu-acessibilidade {
+  position: fixed;
+  right: 1px;
+  bottom: 105px;
+  width: 220px;
+  background: var(--primary-color);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: 0.25s ease;
+  z-index: 1200;
+}
+
+.menu-acessibilidade.ativo {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-item-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-item span {
+  font-size: var(--font-text);
+  color: var(--fundoclaro);
+}
+
+.menu-item svg {
+  width: 20px;
+  height: 20px;
+  color: var(--fundoclaro);
+}
+
+

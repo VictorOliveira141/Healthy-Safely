@@ -9,80 +9,323 @@
 
   <section class="header-container">
 
-    <!-- ======= LOGO ======= -->
-    <a
-      href="/"
-      class="header-logo"
-      aria-label="Página inicial da Healthy Safely"
-    >
-      <img
-        src="/imagem/1x/logozeko.webp"
-        alt="Healthy Safely - Plataforma de hábitos saudáveis"
-      />
+   <!-- ======= LOGO ======= -->
 
-      <span class="header-logo-text">Healthy Safely</span>
-    </a>
+<a
+  href="/"
+  class="header-logo"
+  aria-label="Página inicial da Healthy Safely"
+>
+  <img
+    src="/imagem/Logo repaginado 2.webp"
+    alt="Healthy Safely - Plataforma de hábitos saudáveis"
+  />
 
-    <!-- ======= AÇÕES DO USUÁRIO ======= -->
-    <nav class="header-actions" aria-label="Ações do usuário">
+  <span class="header-logo-text">
+    Healthy Safely
+  </span>
+</a>
 
-      <% if (usuario) { %>
 
-        <section class="user-menu cliente">
-          
-          <a href="/" class="links" aria-label="Início">
-          <i data-lucide="house" aria-hidden="true"></i>
-          </a>
+<!-- ======= AÇÕES DO USUÁRIO ======= -->
 
-          <a href="/tasks" class="links" aria-label="Tarefas">
-          <i data-lucide="clipboard-check" aria-hidden="true"></i>
-          </a>
+<nav
+  class="header-actions"
+  aria-label="Ações do usuário"
+>
 
-          <a href="/historico" class="links" aria-label="Histórico">
-          <i data-lucide="bar-chart-3" aria-hidden="true"></i>
-          </a>
+  <% if (usuario) { %>
 
-          <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
-          <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
-          </button>
+    <section class="user-menu cliente">
 
-          <figure class="foto-perfil">
-            <button type="button" class="profile-toggle" aria-expanded="false" aria-controls="profileDropdown">
-              <img
-                src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
-                alt="Foto de perfil"
-                onerror="this.onerror=null;this.src='/imagem/user.webp';"
-              />
-            </button>
-          </figure>
+      <!-- INÍCIO -->
 
-          <div class="user-menu-dropdown" id="profileDropdown" aria-label="Menu do usuário">
-            <a href="/perfil">Perfil</a>
-            <a href="/notificacoes">Notificações</a>
-            <a href="/configuracoes">Configurações</a>
-            <a href="/ajuda">Ajuda</a>
-            <a href="/sair" class="logout-link">Sair</a>
-          </div>
+      <a
+        href="/"
+        class="links"
+        aria-label="Início"
+      >
+        <i
+          data-lucide="house"
+          aria-hidden="true"
+        ></i>
+      </a>
 
-        </section>
 
-      <% } else { %>
+      <!-- TAREFAS -->
 
-        <section class="logar-cadastrar">
+      <a
+        href="/tasks"
+        class="links"
+        aria-label="Tarefas"
+      >
+        <i
+          data-lucide="clipboard-check"
+          aria-hidden="true"
+        ></i>
+      </a>
 
-          <a href="/login" aria-label="Entrar">
-            <i class="bi bi-person-circle" aria-hidden="true"></i>
-          </a>
 
-          <a href="/login" class="abrir">Entrar</a>
-          <span>|</span>
-          <a href="/cadastro" class="abrir-cadastro">Cadastrar</a>
+      <!-- HISTÓRICO -->
 
-        </section>
+      <a
+        href="/historico"
+        class="links"
+        aria-label="Histórico"
+      >
+        <i
+          data-lucide="bar-chart-3"
+          aria-hidden="true"
+        ></i>
+      </a>
 
-      <% } %>
 
+      <!-- HEALTHY AI -->
+
+      <button
+        id="healthyAiToggleMobile"
+        aria-label="Assistente IA"
+        class="icone-destaque healthy-ai-trigger"
+        type="button"
+      >
+        <i
+          data-lucide="sparkles"
+          class="icone-destaque"
+          aria-hidden="true"
+        ></i>
+      </button>
+
+
+      <!-- FOTO DE PERFIL -->
+
+      <figure class="foto-perfil">
+
+        <button
+          type="button"
+          class="profile-toggle"
+          aria-expanded="false"
+          aria-controls="profileDropdown"
+          aria-label="Abrir menu do usuário"
+        >
+          <img
+            src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
+            alt="Foto de perfil"
+            onerror="this.onerror=null;this.src='/imagem/user.webp';"
+          />
+        </button>
+
+      </figure>
+
+
+      <!-- ======= DROPDOWN DO PERFIL ======= -->
+
+      <div
+        class="user-menu-dropdown"
+        id="profileDropdown"
+        aria-label="Menu do usuário"
+      >
+
+        <!-- PERFIL -->
+
+        <a href="/perfil">
+
+          <img
+            src="/imagem/menu-inferior/person.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Perfil
+          </span>
+
+        </a>
+
+
+        <!-- ASSINATURA -->
+
+        <a href="/assinatura">
+
+          <img
+            src="/imagem/menu-inferior/assinatura.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Assinatura
+          </span>
+
+        </a>
+
+
+        <!-- CONFIGURAÇÕES -->
+
+        <a href="/configuracoes">
+
+          <img
+            src="/imagem/menu-inferior/settings.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Configurações
+          </span>
+
+        </a>
+
+
+        <!-- NOTIFICAÇÕES -->
+
+        <a href="/notificacoes">
+
+          <img
+            src="/imagem/menu-inferior/message.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Notificações
+          </span>
+
+        </a>
+
+
+        <!-- AJUDA -->
+
+        <a href="/ajuda">
+
+          <img
+            src="/imagem/menu-inferior/help.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Ajuda
+          </span>
+
+        </a>
+
+
+        <!-- ACESSIBILIDADE -->
+
+        <button
+          type="button"
+          class="item-acessibilidade"
+          id="abrirAcessibilidade"
+          aria-label="Abrir opções de acessibilidade"
+        >
+
+          <img
+            src="/imagem/menu-inferior/acessibility.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Acessibilidade
+          </span>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+  <% } else { %>
+
+
+    <!-- ======= USUÁRIO NÃO LOGADO ======= -->
+
+    <section class="logar-cadastrar">
+
+      <a
+        href="/login"
+        aria-label="Entrar"
+      >
+        <i
+          class="bi bi-person-circle"
+          aria-hidden="true"
+        ></i>
+      </a>
+
+      <a
+        href="/login"
+        class="abrir"
+      >
+        Entrar
+      </a>
+
+      <span>|</span>
+
+      <a
+        href="/cadastro"
+        class="abrir-cadastro"
+      >
+        Cadastrar
+      </a>
+
+    </section>
+
+
+  <% } %>
+
+</nav>
+
+
+<!-- ======= PLANO ======= -->
+
+<% if (usuario) { %>
+
+  <a
+    href="/assinatura"
+    class="header-plano header-plano-<%= usuario.plano %>"
+    aria-label="Plano atual: <%= usuario.plano === 'premium' ? 'Premium' : 'Free' %>"
+  >
+
+    <% if (usuario.plano === 'premium') { %>
+
+      <span
+        class="plano-brilho"
+        aria-hidden="true"
+      >
+        ✦
+      </span>
+
+      <span>
+        PREMIUM
+      </span>
+
+    <% } else { %>
+
+      <span>
+        FREE
+      </span>
+
+      <span
+        class="plano-alerta"
+        aria-hidden="true"
+      >
+        !
+      </span>
+
+    <% } %>
+
+  </a>
+
+<% } %>
     </nav>
+    
   </section>
 
   <script src="/js/features/darkmode.js"></script>

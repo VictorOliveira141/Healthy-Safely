@@ -1,15 +1,103 @@
 <link rel="stylesheet" href="/css/menu-inferior.css">
 
-<!-- Botão de acessibilidade -->
-<button
-  id="btnAcessibilidade"
-  class="botao-acessibilidade"
-  aria-label="Abrir opções de acessibilidade"
->
-  <i data-lucide="accessibility"></i>
-</button>
+<!-- MENU INFERIOR-->
+<nav role="navigation" class="menu-inferior" aria-label="Menu inferior">
+  <section class="menu-container">
 
+    <% if (usuario) { %>
+
+      <a href="/" aria-label="Início">
+      <i data-lucide="house" aria-hidden="true"></i>
+      </a>
+
+      <a href="/tasks" aria-label="Tarefas">
+      <i data-lucide="clipboard-check" aria-hidden="true"></i>
+      </a>
+
+      <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
+      <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
+      </button>
+
+      <a href="/historico" aria-label="Histórico">
+      <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+      </a>
+
+      <div class="menu-mais">
+        <button
+        type="button"
+        class="botao-menu-mais"
+        id="botaoMenuMais"
+        aria-label="Mais opções"
+        aria-expanded="false"
+        aria-controls="menuMaisOpcoes"
+        >
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+      
+      <div class="menu-mais-opcoes" id="menuMaisOpcoes">
+        <a href="/perfil">
+          <img src="../imagem/menu-inferior/person.webp" alt="" width="35px" height="auto">
+          <span>Perfil</span>
+        </a>
+
+        <a href="/assinatura">
+          <img src="../imagem/menu-inferior/assinatura.webp" alt="" width="35px" height="auto">
+          <span>Assinatura</span>
+        </a>
+
+        <a href="/configuracoes">
+          <img src="../imagem/menu-inferior/settings.webp" alt="" width="35px" height="auto">
+          <span>Configurações</span>
+        </a>
+
+        <a href="/notificacoes">
+          <img src="../imagem/menu-inferior/message.webp" alt="" width="35px" height="auto">
+          <span>Notificações</span>
+        </a>
+
+        <a href="/ajuda">
+          <img src="../imagem/menu-inferior/help.webp" alt="" width="35px" height="auto">
+          <span>Ajuda</span>
+        </a>
+
+        <div class="menu-mais-separador"></div>
+        <button type="button" class="item-acessibilidade" id="abrirAcessibilidade" aria-label="Abrir opções de acessibilidade">          <img src="../imagem/menu-inferior/acessibility.webp" alt="" width="35px" height="auto">
+          <span>Acessibilidade</span>
+        </a>
+        </button>
+      </div>
+
+    <% } else { %>
+
+      <a href="/" aria-label="Início">
+      <i data-lucide="house" aria-hidden="true"></i>
+      </a>
+
+      <a href="/login" aria-label="Entrar">
+      <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+      </a>
+
+    <% } %>
+
+  </section>
+</nav>
+
+<!-- Acessibilidade-->
 <div class="menu-acessibilidade" id="menuAcessibilidade">
+    <div class="acessibilidade-header">
+      <button
+      type="button"
+      id="voltarAcessibilidade"
+      class="botao-voltar-acessibilidade"
+      aria-label="Voltar ao menu"
+      >
+      ←
+    </button>
+    
+    <h3>Acessibilidade</h3>
+  </div>
+
+
   <div class="menu-item">
     <div class="menu-item-esquerda">
       <i data-lucide="moon"></i>
@@ -69,57 +157,6 @@
   </div>
 </div>
 
-<!-- MENU INFERIOR-->
-<nav role="navigation" class="menu-inferior" aria-label="Menu inferior">
-  <section class="menu-container">
-
-    <% if (usuario) { %>
-
-      <a href="/" aria-label="Início">
-      <i data-lucide="house" aria-hidden="true"></i>
-      </a>
-
-      <a href="/tasks" aria-label="Tarefas">
-      <i data-lucide="clipboard-check" aria-hidden="true"></i>
-      </a>
-
-      <button id="healthyAiToggleMobile" aria-label="Assistente IA" class="icone-destaque healthy-ai-trigger">
-      <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
-      </button>
-
-      <a href="/historico" aria-label="Histórico">
-      <i data-lucide="bar-chart-3" aria-hidden="true"></i>
-      </a>
-
-      <figure class="foto-perfil">
-        <a href="/perfil" aria-label="Ir para perfil">
-          <img
-            src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
-            alt="Foto de perfil"
-            onerror="this.onerror=null;this.src='/imagem/user.webp';"
-          />
-        </a>
-      </figure>
-
-    <% } else { %>
-
-      <a href="/" aria-label="Início">
-      <i class="bi bi-house-door-fill" aria-hidden="true"></i>
-      </a>
-
-      <a href="/login" aria-label="Entrar">
-      <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-      </a>
-
-      <a href="/cadastro" aria-label="Cadastrar">
-      <i class="bi bi-person-plus" aria-hidden="true"></i>
-      </a>
-
-    <% } %>
-
-  </section>
-</nav>
-
 <!-- HEALTHY AI-->
 <aside class="healthy-ai-sidebar" id="healthyAiSidebar" aria-hidden="true">
     <section class="healthy-ai-panel">
@@ -140,10 +177,6 @@
           <div class="healthy-ai-meta">Healthy AI</div>
           <p>Olá! Eu sou o assistente Healthy AI. Posso ajudar você a organizar tarefas, estabelecer hábitos saudáveis e acompanhar suas metas.</p>
         </div>
-        <div class="healthy-ai-message user">
-          <div class="healthy-ai-meta">Você</div>
-          <p>Quero organizar meu dia com hábitos saudáveis, manter o foco e cumprir minhas tarefas com mais facilidade.</p>
-        </div>
       </section>
 
       <article class="healthy-ai-footer">
@@ -157,4 +190,5 @@
 </aside>
 
 <script src="/js/features/healthy-ai.js"></script>
-<script src="/js/features/acessibilidade.js"></script>
+<script src="/js/features/acessibility.js"></script>
+<script src="/js/features/open-menu.js"></script>
