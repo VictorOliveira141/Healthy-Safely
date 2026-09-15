@@ -40,15 +40,16 @@ const usuarioModel = {
 
   gerarTokenRecuperacao: async (email) => {
     try {
-      const emailNormalizado = String(email || "").trim().toLowerCase();
+      const emailNormalizado = String(email || "")
+        .trim()
+        .toLowerCase();
       const usuario = await usuarioModel.buscarPorEmail(emailNormalizado);
       if (!usuario) return null;
 
       const token = crypto.randomBytes(32).toString("hex");
-      await pool.query(
-        `DELETE FROM password_reset_tokens WHERE email = ?`,
-        [emailNormalizado],
-      );
+      await pool.query(`DELETE FROM password_reset_tokens WHERE email = ?`, [
+        emailNormalizado,
+      ]);
       await pool.query(
         `INSERT INTO password_reset_tokens (email, token, expira_em)
          VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))`,
@@ -135,6 +136,27 @@ const usuarioModel = {
     return nomeusuario;
   },
 
+  nomeUsuarioDisponivel: async (nomeusuario, usuarioId = null) => {
+    try {
+      let query = "SELECT id FROM usuarios WHERE nomeusuario = ?";
+      const params = [nomeusuario];
+
+      if (usuarioId) {
+        query += " AND id != ?";
+        params.push(usuarioId);
+      }
+
+      query += " LIMIT 1";
+
+      const [linhas] = await pool.query(query, params);
+
+      return linhas.length === 0;
+    } catch (e) {
+      console.error("Erro ao verificar disponibilidade do nome de usuário:", e);
+      return false;
+    }
+  },
+
   emailExiste: async (email) => {
     try {
       const [linhas] = await pool.query(
@@ -212,10 +234,10 @@ const usuarioModel = {
 
   salvarPerfilPesquisa: async (usuarioId, perfil) => {
     try {
-      await pool.query(
-        "UPDATE usuarios SET perfil_pesquisa = ? WHERE id = ?",
-        [JSON.stringify(perfil || {}), usuarioId],
-      );
+      await pool.query("UPDATE usuarios SET perfil_pesquisa = ? WHERE id = ?", [
+        JSON.stringify(perfil || {}),
+        usuarioId,
+      ]);
       return true;
     } catch (e) {
       console.error("Erro ao salvar perfil da pesquisa:", e);

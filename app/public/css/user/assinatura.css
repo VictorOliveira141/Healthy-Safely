@@ -1,0 +1,687 @@
+/* =========================================================
+   ASSINATURAS — HEALTHY SAFELY
+========================================================= */
+
+.assinaturas-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+}
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.assinaturas-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.assinaturas-header h1 {
+  margin: 0 0 8px;
+  color: var(--fundoclaro);
+  font-size: clamp(25px, 4vw, 34px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.assinaturas-header p {
+  max-width: 600px;
+  margin: 0 auto;
+
+  color: var(--muted);
+  font-size: var(--font-text);
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PLANOS
+========================================================= */
+
+.planos {
+  width: 100%;
+
+  display: grid;
+
+  /* SEMPRE DOIS LADO A LADO */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+/* =========================================================
+   CARD BASE
+========================================================= */
+
+.plano-card {
+  position: relative;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 24px 20px;
+
+  background: var(--surface-card);
+  color: var(--fundoclaro);
+
+  border: 2px solid rgba(12, 79, 67, 0.14);
+  border-radius: var(--border-radius);
+
+  box-shadow: 0 8px 24px rgba(12, 79, 67, 0.07);
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition);
+}
+
+.plano-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 12px 30px rgba(12, 79, 67, 0.12);
+}
+
+/* =========================================================
+   FREE
+========================================================= */
+
+.plano-free {
+  border-color: rgba(12, 79, 67, 0.15);
+}
+
+/* =========================================================
+   PREMIUM
+========================================================= */
+
+.plano-premium {
+  background: var(--surface-card);
+
+  /* DOURADO */
+  border: 2px solid rgba(183, 145, 43, 0.55);
+
+  box-shadow: 0 8px 26px rgba(183, 145, 43, 0.08);
+}
+
+.plano-premium:hover {
+  border-color: rgba(183, 145, 43, 0.75);
+
+  box-shadow: 0 12px 32px rgba(183, 145, 43, 0.15);
+}
+
+/* =========================================================
+   TOPO DOS CARDS
+========================================================= */
+
+.plano-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+/* =========================================================
+   ÍCONE
+========================================================= */
+
+.plano-icone {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: var(--surface-muted);
+  color: var(--secondary-color);
+
+  font-size: 18px;
+}
+
+.plano-premium .plano-icone {
+  background: rgba(183, 145, 43, 0.12);
+  color: #a27b1e;
+}
+
+/* =========================================================
+   TIPO
+========================================================= */
+
+.plano-tipo {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.plano-card h2 {
+  margin: 0;
+
+  color: var(--fundoclaro);
+
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.plano-premium h2 {
+  color: #a27b1e;
+}
+
+/* =========================================================
+   SELO PREMIUM
+========================================================= */
+
+.premium-selo {
+  position: absolute;
+
+  top: 16px;
+  right: 16px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: rgba(183, 145, 43, 0.12);
+  color: #9b7419;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.premium-selo i {
+  font-size: 10px;
+}
+
+/* =========================================================
+   DESCRIÇÃO
+========================================================= */
+
+.plano-descricao {
+  margin: 0 0 18px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PREÇO
+========================================================= */
+
+.plano-preco {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+
+  margin: 0 0 5px;
+}
+
+.plano-preco strong {
+  color: var(--fundoclaro);
+
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.plano-preco span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* PREÇO PREMIUM */
+
+.plano-premium .plano-preco strong {
+  color: #a27b1e;
+}
+
+/* =========================================================
+   PREÇO RECORRENTE
+========================================================= */
+
+.plano-preco-recorrente {
+  margin: 0 0 18px;
+
+  color: #a27b1e;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   RECURSOS
+========================================================= */
+
+.plano-recursos {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  margin: 0 0 24px;
+  padding: 0;
+
+  list-style: none;
+}
+
+.plano-recursos li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+
+  color: var(--fundoclaro);
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.plano-recursos li i {
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  color: var(--secondary-color);
+
+  font-size: 12px;
+}
+
+/* CHECKS PREMIUM */
+
+.plano-premium .plano-recursos li i {
+  color: #b18a2d;
+}
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.plano-botao {
+  width: 100%;
+  min-height: 43px;
+
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 9px 14px;
+
+  border-radius: 10px;
+
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+}
+
+/* =========================================================
+   BOTÃO FREE
+========================================================= */
+
+.plano-botao-free {
+  border: 2px solid rgba(12, 79, 67, 0.15);
+
+  background: var(--surface-muted);
+  color: var(--muted);
+
+  cursor: default;
+}
+
+/* =========================================================
+   BOTÃO PREMIUM
+========================================================= */
+
+.plano-botao-premium {
+  border: 2px solid #a27b1e;
+
+  background: #a27b1e;
+  color: #ffffff;
+}
+
+.plano-botao-premium:hover {
+  background: #8e6b19;
+  border-color: #8e6b19;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(162, 123, 30, 0.2);
+}
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+html.dark .plano-card {
+  background: var(--surface-card);
+  border-color: var(--border);
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+html.dark .plano-premium {
+  background: var(--surface-card);
+
+  border-color: rgba(210, 175, 73, 0.55);
+
+  box-shadow: 0 8px 26px rgba(210, 175, 73, 0.08);
+}
+
+html.dark .plano-premium h2 {
+  color: #d8b95a;
+}
+
+html.dark .plano-premium .plano-preco strong {
+  color: #d8b95a;
+}
+
+html.dark .plano-premium .plano-icone {
+  background: rgba(210, 175, 73, 0.1);
+  color: #d8b95a;
+}
+
+html.dark .plano-premium .plano-recursos li i {
+  color: #d8b95a;
+}
+
+html.dark .premium-selo {
+  background: rgba(210, 175, 73, 0.12);
+  color: #d8b95a;
+}
+
+html.dark .plano-preco-recorrente {
+  color: #d8b95a;
+}
+
+html.dark .plano-botao-premium {
+  background: #b18a2d;
+  border-color: #b18a2d;
+}
+
+/* =========================================================
+   ALTO CONTRASTE
+========================================================= */
+
+html.contraste .plano-card {
+  border: 2px solid var(--fundoclaro);
+  box-shadow: none;
+}
+
+html.contraste .plano-premium {
+  border-color: var(--fundoclaro);
+}
+
+html.contraste .plano-botao {
+  border-width: 2px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .assinaturas-page {
+    padding: 28px 14px 45px;
+  }
+
+  .assinaturas-header {
+    margin-bottom: 22px;
+  }
+
+  .planos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .plano-card {
+    padding: 19px 14px;
+  }
+
+  .plano-topo {
+    gap: 9px;
+  }
+
+  .plano-icone {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+  }
+
+  .plano-card h2 {
+    font-size: 18px;
+  }
+
+  .plano-preco strong {
+    font-size: 27px;
+  }
+
+  .plano-recursos li {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   OS DOIS CARDS PERMANECEM LADO A LADO
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .assinaturas-page {
+    padding: 22px 8px 32px;
+  }
+
+  .assinaturas-header {
+    margin-bottom: 18px;
+  }
+
+  .assinaturas-header h1 {
+    font-size: 21px;
+  }
+
+  .assinaturas-header p {
+    font-size: 11px;
+  }
+
+  /* NÃO ALTERAR PARA 1 COLUNA */
+
+  .planos {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+  .plano-card {
+    padding: 14px 9px;
+
+    border-radius: 11px;
+  }
+
+  .plano-topo {
+    gap: 7px;
+
+    margin-bottom: 12px;
+  }
+
+  .plano-icone {
+    width: 31px;
+    height: 31px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+  }
+
+  .plano-tipo {
+    font-size: 8px;
+  }
+
+  .plano-card h2 {
+    font-size: 14px;
+  }
+
+  .premium-selo {
+    position: static;
+
+    width: fit-content;
+
+    margin-bottom: 8px;
+
+    padding: 4px 6px;
+
+    font-size: 7px;
+  }
+
+  .plano-descricao {
+    margin-bottom: 12px;
+
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  .plano-preco {
+    gap: 3px;
+
+    margin-bottom: 4px;
+  }
+
+  .plano-preco strong {
+    font-size: 21px;
+  }
+
+  .plano-preco span {
+    font-size: 8px;
+  }
+
+  .plano-preco-recorrente {
+    margin-bottom: 14px;
+
+    font-size: 8px;
+  }
+
+  .plano-recursos {
+    gap: 7px;
+
+    margin-bottom: 16px;
+  }
+
+  .plano-recursos li {
+    gap: 4px;
+
+    font-size: 8.5px;
+    line-height: 1.3;
+  }
+
+  .plano-recursos li i {
+    font-size: 9px;
+  }
+
+  .plano-botao {
+    min-height: 35px;
+
+    padding: 7px 5px;
+
+    border-radius: 8px;
+
+    font-size: 9px;
+  }
+}
+
+/* =========================================================
+   CELULARES MUITO PEQUENOS
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .assinaturas-page {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .planos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .plano-card {
+    padding: 12px 7px;
+  }
+
+  .plano-topo {
+    gap: 6px;
+  }
+
+  .plano-icone {
+    width: 28px;
+    height: 28px;
+
+    font-size: 12px;
+  }
+
+  .plano-tipo {
+    font-size: 7px;
+  }
+
+  .plano-card h2 {
+    font-size: 13px;
+  }
+
+  .plano-descricao {
+    font-size: 8px;
+  }
+
+  .plano-preco strong {
+    font-size: 19px;
+  }
+
+  .plano-preco span {
+    font-size: 7px;
+  }
+
+  .plano-preco-recorrente {
+    font-size: 7px;
+  }
+
+  .plano-recursos li {
+    font-size: 7.5px;
+  }
+
+  .plano-botao {
+    font-size: 8px;
+  }
+}

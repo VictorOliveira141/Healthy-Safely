@@ -315,7 +315,7 @@
    FREE
 ===================================== */
 .header-plano-free {
-  color: var(--text-color);
+  color: var(--fundoescuro);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);

@@ -1,245 +1,689 @@
 .config-main {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 2rem 1.25rem 6rem;
+max-width: 700px;
+margin: 0 auto;
+padding: 2rem 1.25rem 6rem;
+}
+
+.config-header {
+margin-bottom: 2rem;
 }
 
 .config-titulo {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--fundoclaro);
-  margin-bottom: 0.25rem;
+font-size: 1.4rem;
+font-weight: 700;
+color: var(--fundoclaro);
+margin-bottom: 0.25rem;
 }
 
 .config-subtitulo {
-  font-size: var(--font-text);
-  color: var(--muted);
-  margin-bottom: 2rem;
+font-size: var(--font-text);
+color: var(--muted);
+margin-bottom: 0;
 }
 
 .config-grupo {
-  background: var(--primary-color);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  margin-bottom: 1.25rem;
-  overflow: hidden;
+background: var(--primary-color);
+border: 1px solid var(--border);
+border-radius: var(--border-radius);
+margin-bottom: 1.25rem;
+overflow: hidden;
 }
 
 .config-grupo-titulo {
-  padding: 0.85rem 1.2rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-  background: rgba(0, 0, 0, 0.02);
-  border-bottom: 1px solid var(--border);
+padding: 0.85rem 1.2rem;
+font-size: 0.78rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+color: var(--muted);
+background: rgba(0, 0, 0, 0.02);
+border-bottom: 1px solid var(--border);
+}
+
+/* ==========================================================
+MINHA CONTA
+========================================================== */
+
+.config-perfil {
+display: flex;
+align-items: center;
+gap: 1rem;
+padding: 1.25rem 1.2rem;
+border-bottom: 1px solid var(--border);
+}
+
+.config-perfil-foto {
+width: 58px;
+height: 58px;
+margin: 0;
+border-radius: 50%;
+overflow: hidden;
+background: var(--botao);
+color: var(--fundoescuro);
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+font-size: 1.25rem;
+font-weight: 700;
+}
+
+.config-perfil-foto img {
+width: 100%;
+height: 100%;
+display: block;
+object-fit: cover;
+}
+
+.config-perfil-info {
+min-width: 0;
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 0.12rem;
+}
+
+.config-perfil-nome {
+color: var(--fundoclaro);
+font-size: 1rem;
+font-weight: 700;
+line-height: 1.2;
+}
+
+.config-perfil-usuario {
+color: var(--muted);
+font-size: 0.78rem;
+}
+
+.config-perfil-email {
+color: var(--muted);
+font-size: 0.75rem;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+
+.config-editar-perfil {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 0.45rem;
+padding: 0.55rem 0.85rem;
+border: 1px solid var(--border);
+border-radius: 9px;
+background: var(--botao);
+color: var(--fundoescuro);
+font-family: "Outfit", sans-serif;
+font-size: var(--font-small);
+font-weight: 700;
+cursor: pointer;
+transition:
+transform 0.15s ease,
+box-shadow 0.2s ease,
+opacity 0.2s ease;
+flex-shrink: 0;
+}
+
+.config-editar-perfil:hover {
+transform: translateY(-1px);
+box-shadow: 0 3px 10px rgba(12, 79, 67, 0.15);
+}
+
+.config-editar-perfil:active {
+transform: scale(0.98);
+}
+
+/* ==========================================================
+ITENS
+========================================================== */
+
+.config-item-link {
+display: block;
+color: inherit;
+text-decoration: none;
 }
 
 .config-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--border);
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 1rem;
+padding: 1rem 1.2rem;
+border: none;
+border-bottom: 1px solid var(--border);
+background: transparent;
+text-align: left;
+font-family: inherit;
 }
 
 .config-item:last-child {
-  border-bottom: none;
+border-bottom: none;
+}
+
+.config-item-link .config-item {
+cursor: pointer;
+transition: background 0.2s ease;
+}
+
+.config-item-link:hover .config-item {
+background: rgba(0, 0, 0, 0.025);
 }
 
 .config-item-esquerda {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
+min-width: 0;
+display: flex;
+align-items: center;
+gap: 0.85rem;
+}
+
+.config-item-esquerda > section {
+min-width: 0;
 }
 
 .config-icone {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--botao);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fundoescuro);
-  font-size: 1rem;
-  flex-shrink: 0;
+width: 38px;
+height: 38px;
+border-radius: 10px;
+background: var(--botao);
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(--fundoescuro);
+font-size: 1rem;
+flex-shrink: 0;
 }
 
 .config-icone.perigo {
-  background: #fff0f0;
-  color: #dc3545;
+background: #fff0f0;
+color: #dc3545;
 }
 
 .config-nome {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--fundoclaro);
-  display: block;
+font-size: 0.875rem;
+font-weight: 600;
+color: var(--fundoclaro);
+display: block;
 }
 
 .config-desc {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* Toggle switch */
-.toggle {
-  position: relative;
-  width: 44px;
-  height: 24px;
-}
-
-.toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider-toggle {
-  position: absolute;
-  inset: 0;
-  background: #ccc;
-  border-radius: 24px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.slider-toggle::before {
-  content: "";
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  inset: 3px auto auto 3px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.2s;
-}
-
-.toggle input:checked + .slider-toggle {
-  background: var(--accent-color);
-}
-
-.toggle input:checked + .slider-toggle::before {
-  transform: translateX(20px);
+font-size: 11px;
+color: var(--muted);
 }
 
 .config-seta {
-  color: var(--muted);
-  font-size: 0.9rem;
+color: var(--muted);
+font-size: 0.9rem;
+flex-shrink: 0;
 }
 
 .config-select {
-  padding: 0.35rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: var(--font-text);
-  color: var(--fundoclaro);
-  background: var(--primary-color);
-  cursor: pointer;
+padding: 0.35rem 0.65rem;
+border: 1px solid var(--border);
+border-radius: 8px;
+font-size: var(--font-text);
+color: var(--fundoclaro);
+background: var(--primary-color);
+cursor: pointer;
+flex-shrink: 0;
+}
+
+/* ==========================================================
+ZONA DE PERIGO
+========================================================== */
+
+.config-item-perigo {
+cursor: pointer;
+color: inherit;
+background: transparent;
+transition: background 0.2s ease;
+}
+
+.config-item-perigo:hover {
+background: rgba(220, 53, 69, 0.035);
 }
 
 .config-item-perigo .config-nome {
-  color: #dc3545;
+color: #dc3545;
 }
 
+/* ==========================================================
+BOTÃO SALVAR
+========================================================== */
+
 .btn-salvar-config {
-  width: 100%;
-  padding: 0.85rem;
-  background: var(--botao);
-  color: #fff;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
+width: 100%;
+padding: 0.85rem;
+background: var(--botao);
+color: #fff;
+border: none;
+border-radius: var(--border-radius);
+font-size: 0.9rem;
+font-weight: 600;
+cursor: pointer;
+margin-top: 0.5rem;
+transition:
+opacity 0.2s,
+transform 0.2s;
 }
 
 .btn-salvar-config:hover {
-  transform: var(--animacao);
+transform: var(--animacao);
 }
 
 .msg-salvo {
-  display: none;
-  text-align: center;
-  color: var(--accent-color);
-  font-size: var(--font-text);
-  font-weight: 600;
-  margin-top: 0.75rem;
+display: none;
+text-align: center;
+color: var(--accent-color);
+font-size: var(--font-text);
+font-weight: 600;
+margin-top: 0.75rem;
 }
 
+/* ==========================================================
+TOGGLE SWITCH
+========================================================== */
 
-/* ── Biometria ───────────────────────────────────── */
+.toggle {
+position: relative;
+width: 44px;
+height: 24px;
+flex-shrink: 0;
+}
+
+.toggle input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.slider-toggle {
+position: absolute;
+inset: 0;
+background: #ccc;
+border-radius: 24px;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.slider-toggle::before {
+content: "";
+position: absolute;
+width: 18px;
+height: 18px;
+inset: 3px auto auto 3px;
+background: #fff;
+border-radius: 50%;
+transition: transform 0.2s;
+}
+
+.toggle input:checked + .slider-toggle {
+background: var(--accent-color);
+}
+
+.toggle input:checked + .slider-toggle::before {
+transform: translateX(20px);
+}
+
+/* ==========================================================
+BIOMETRIA
+========================================================== */
+
 .biometria-status {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
+display: flex;
+align-items: center;
+gap: 0.75rem;
+flex-shrink: 0;
 }
 
 .status-biometria {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.4rem 0.75rem;
-    border-radius: 999px;
-    font-size: var(--font-small);
-    font-weight: 700;
-    white-space: nowrap;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 0.4rem 0.75rem;
+border-radius: 999px;
+font-size: var(--font-small);
+font-weight: 700;
+white-space: nowrap;
 }
 
-/* Não ativada */
 .status-biometria.nao-ativada {
-    color: #b45309;
-    background: rgba(245, 158, 11, 0.12);
+color: #b45309;
+background: rgba(245, 158, 11, 0.12);
 }
 
-/* Ativada */
 .status-biometria.ativada {
-    color: #15803d;
-    background: rgba(34, 197, 94, 0.12);
+color: #15803d;
+background: rgba(34, 197, 94, 0.12);
 }
 
-/* Botão */
 #btn-cadastrar-biometria {
-    min-width: 100px;
-    padding: 0.55rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    background: var(--botao);
-    color: var(--fundoescuro);
-    font-family: "Outfit", sans-serif;
-    font-size: var(--font-small);
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+min-width: 100px;
+padding: 0.55rem 1rem;
+border: 1px solid var(--border);
+border-radius: var(--border-radius);
+background: var(--botao);
+color: var(--fundoescuro);
+font-family: "Outfit", sans-serif;
+font-size: var(--font-small);
+font-weight: 700;
+cursor: pointer;
+transition:
+transform 0.15s ease,
+box-shadow 0.2s ease,
+background 0.2s ease;
 }
+
 #btn-cadastrar-biometria:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(12, 79, 67, 0.15);
+transform: translateY(-1px);
+box-shadow: 0 3px 10px rgba(12, 79, 67, 0.15);
 }
+
 #btn-cadastrar-biometria:active {
-    transform: scale(0.98);
+transform: scale(0.98);
 }
 
-/* Quando a biometria estiver ativada,
-   o botão pode assumir aparência de remoção */
 #btn-cadastrar-biometria.remover {
-    color: #dc2626;
+color: #dc2626;
 }
 
-@media (max-width: 768px){
-  .config-item.biometria{
-    flex-direction: column;
-    align-items: baseline;
+/* ==========================================================
+MODAL — EDITAR PERFIL
+========================================================== */
 
-  }
+.modal-perfil {
+position: fixed;
+inset: 0;
+z-index: 9999;
+display: none;
+align-items: center;
+justify-content: center;
+padding: 1rem;
+}
+
+.modal-perfil.ativo {
+display: flex;
+}
+
+.modal-perfil-overlay {
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.5);
+backdrop-filter: blur(3px);
+}
+
+.modal-perfil-conteudo {
+position: relative;
+z-index: 1;
+width: min(100%, 500px);
+max-height: calc(100vh - 2rem);
+overflow-y: auto;
+background: var(--primary-color);
+border: 1px solid var(--border);
+border-radius: var(--border-radius);
+box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+padding: 1.5rem;
+}
+
+.modal-perfil-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 1rem;
+margin-bottom: 1.5rem;
+}
+
+.modal-perfil-header h2 {
+margin: 0;
+color: var(--fundoclaro);
+font-size: 1.15rem;
+font-weight: 700;
+}
+
+.modal-perfil-header p {
+margin: 0.25rem 0 0;
+color: var(--muted);
+font-size: var(--font-small);
+}
+
+.modal-perfil-fechar {
+width: 34px;
+height: 34px;
+border: none;
+border-radius: 8px;
+background: transparent;
+color: var(--muted);
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition:
+background 0.2s ease,
+color 0.2s ease;
+flex-shrink: 0;
+}
+
+.modal-perfil-fechar:hover {
+background: rgba(0, 0, 0, 0.06);
+color: var(--fundoclaro);
+}
+
+/* Foto do modal */
+
+.form-perfil-foto {
+display: flex;
+flex-direction: column;
+align-items: center;
+margin-bottom: 1.5rem;
+}
+
+.form-perfil-foto-preview {
+position: relative;
+width: 86px;
+height: 86px;
+border-radius: 50%;
+overflow: hidden;
+background: var(--botao);
+color: var(--fundoescuro);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.7rem;
+font-weight: 700;
+cursor: pointer;
+}
+
+.form-perfil-foto-preview img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.form-perfil-foto-preview input {
+display: none;
+}
+
+.form-perfil-foto-overlay {
+position: absolute;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+background: rgba(0, 0, 0, 0.45);
+color: #fff;
+opacity: 0;
+transition: opacity 0.2s ease;
+}
+
+.form-perfil-foto-preview:hover .form-perfil-foto-overlay {
+opacity: 1;
+}
+
+.form-perfil-foto-ajuda {
+margin-top: 0.5rem;
+color: var(--muted);
+font-size: var(--font-small);
+}
+
+#foto-perfil {
+display: none;
+}
+
+/* Campos */
+
+.form-editar-perfil {
+display: flex;
+flex-direction: column;
+}
+
+.form-grupo {
+display: flex;
+flex-direction: column;
+gap: 0.4rem;
+margin-bottom: 1rem;
+}
+
+.form-grupo label {
+color: var(--fundoclaro);
+font-size: var(--font-small);
+font-weight: 600;
+}
+
+.form-grupo input {
+width: 100%;
+min-height: 42px;
+padding: 0.65rem 0.8rem;
+border: 1px solid var(--border);
+border-radius: 9px;
+background: var(--primary-color);
+color: var(--fundoclaro);
+font-family: "Outfit", sans-serif;
+font-size: var(--font-text);
+outline: none;
+transition: border-color 0.2s ease;
+box-sizing: border-box;
+}
+
+.form-grupo input:focus {
+border-color: var(--accent-color);
+}
+
+.form-input-prefix {
+position: relative;
+display: flex;
+align-items: center;
+}
+
+.form-input-prefix > span {
+position: absolute;
+left: 0.8rem;
+color: var(--muted);
+pointer-events: none;
+}
+
+.form-input-prefix input {
+padding-left: 1.7rem;
+}
+
+/* Ações */
+
+.form-acoes {
+display: flex;
+gap: 0.75rem;
+margin-top: 0.5rem;
+}
+
+.btn-cancelar-perfil,
+.form-acoes .btn-salvar-config {
+width: 100%;
+min-height: 42px;
+margin-top: 0;
+}
+
+.btn-cancelar-perfil {
+padding: 0.85rem;
+border: 1px solid var(--border);
+border-radius: var(--border-radius);
+background: transparent;
+color: var(--fundoclaro);
+font-family: "Outfit", sans-serif;
+font-size: 0.9rem;
+font-weight: 600;
+cursor: pointer;
+transition:
+background 0.2s ease,
+transform 0.2s ease;
+}
+
+.btn-cancelar-perfil:hover {
+background: rgba(0, 0, 0, 0.04);
+}
+
+/* ==========================================================
+RESPONSIVO
+========================================================== */
+
+@media (max-width: 768px) {
+.config-main {
+padding: 1.5rem 1rem 5rem;
+}
+
+.config-item.biometria {
+flex-direction: column;
+align-items: stretch;
+}
+
+.biometria-status {
+width: 100%;
+justify-content: flex-end;
+}
+}
+
+@media (max-width: 520px) {
+.config-perfil {
+align-items: flex-start;
+flex-wrap: wrap;
+}
+
+.config-perfil-info {
+flex: 1;
+min-width: 150px;
+}
+
+.config-editar-perfil {
+width: 100%;
+margin-top: 0.25rem;
+}
+
+.config-item {
+padding: 0.9rem 1rem;
+}
+
+.config-grupo-titulo {
+padding: 0.8rem 1rem;
+}
+
+.config-item-esquerda {
+gap: 0.7rem;
+}
+
+.config-desc {
+line-height: 1.35;
+}
+
+.config-select {
+max-width: 125px;
+}
+
+.biometria-status {
+justify-content: space-between;
+}
+
+.form-acoes {
+flex-direction: column-reverse;
+}
+
+.modal-perfil-conteudo {
+padding: 1.25rem;
+}
 }

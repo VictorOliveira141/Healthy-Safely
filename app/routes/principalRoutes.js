@@ -301,6 +301,7 @@ router.get("/configuracoes", apenasAutenticado, (req, res) =>
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
   }),
 );
+router.get("/assinatura", apenasAutenticado, (req, res) => res.render("pages/user/assinatura"));
 
 /* ---------------- Privacidade ---------------- */
 router.get("/privacidade", apenasAutenticado, (req, res) =>
@@ -315,7 +316,11 @@ router.get(
   "/api/cadastro/disponibilidade",
   usuarioController.verificarDisponibilidade,
 );
-
+router.get(
+  "/api/configuracoes/disponibilidade",
+  apenasAutenticado,
+  usuarioController.verificarDisponibilidade,
+);
 router.post(
   "/webauthn/register/options",
   webauthnController.gerarOpcoesCadastro,

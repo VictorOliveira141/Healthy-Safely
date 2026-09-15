@@ -1,229 +1,841 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configurações | Healthy Safely</title>
-  <meta name="description" content="Acesse suas configurações e personalize sua experiência no Healthy Safely." />
-  <meta name="keywords" content="configurações, usuário, saúde, bem-estar" />
-  <meta property="og:title" content="Configurações | Healthy Safely" />
-  <meta property="og:description" content="Acesse suas configurações e personalize sua experiência no Healthy Safely." />
-  <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
-  <meta property="og:url" content="https://healthysafely.com/configuracoes" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Healthy Safely" />
-  <link rel="stylesheet" href="/css/global.css" />
-  <link rel="stylesheet" href="/css/user/configuracoes.css" />
-  <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#5BBF6A" />
+<title>Configurações | Healthy Safely</title>
+
+<meta
+  name="description"
+  content="Acesse suas configurações e personalize sua experiência no Healthy Safely."
+/>
+
+<meta
+  name="keywords"
+  content="configurações, usuário, saúde, bem-estar"
+/>
+
+<meta property="og:title" content="Configurações | Healthy Safely" />
+<meta
+  property="og:description"
+  content="Acesse suas configurações e personalize sua experiência no Healthy Safely."
+/>
+<meta
+  property="og:image"
+  content="/imagem/Logo repaginado 2.webp"
+/>
+<meta
+  property="og:url"
+  content="https://healthysafely.com/configuracoes"
+/>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Healthy Safely" />
+
+<link rel="stylesheet" href="/css/global.css" />
+<link rel="stylesheet" href="/css/user/configuracoes.css" />
+
+<link rel="icon" href="/imagem/Logo repaginado 2.webp" />
+<link rel="manifest" href="/manifest.json" />
+
+<meta name="theme-color" content="#5BBF6A" />
+
+
   </head>
+
   <body>
-   <%- include('../../partials/header.ejs') %>
+    <%- include('../../partials/header.ejs') %>
 
-    <main class="config-main" aria-labelledby="titulo-config">
-      <%- include('../../partials/botao-voltar.ejs', { voltarPara: '/dashboard' }) %>
-      <h1 class="config-titulo" id="titulo-config">Configurações</h1>
-      <p class="config-subtitulo">Personalize sua experiência na plataforma</p>
 
-      <!-- CONTA -->
-      <% if (usuario) { %>
-      <section class="config-grupo" aria-labelledby="grupo-conta">
-        <h2 class="config-grupo-titulo" id="grupo-conta">Conta</h2>
+<main class="config-main" aria-labelledby="titulo-config">
 
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-person-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">Editar perfil</span>
-              <span class="config-desc">Nome, foto e informações pessoais</span>
-            </section>
-          </section>
-          <a href="/perfil" aria-label="Ir para editar perfil">
-            <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
-          </a>
-        </article>
+  <%- include('../../partials/botao-voltar.ejs', {
+    voltarPara: '/dashboard'
+  }) %>
 
-        <a href="/alterar-senha" aria-label="Ir para alterar senha">
-        <article class="config-item" style="border-bottom: 1px solid var(--border);">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-shield-lock-fill"></i>
-            </figure>
-            <section>
-                <span class="config-nome">Alterar senha</span>
-                <span class="config-desc">Redefina sua senha de acesso</span>
-            </section>
-          </section>
-          <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
-        </article>
-        </a>
+  <header class="config-header">
+    <h1 class="config-titulo" id="titulo-config">
+      Configurações
+    </h1>
 
-        <article class="config-item biometria">
-        <section class="config-item-esquerda">
-        <figure class="config-icone" aria-hidden="true">
-        <i class="bi bi-fingerprint"></i>
+    <p class="config-subtitulo">
+      Personalize sua experiência na plataforma
+    </p>
+  </header>
+
+  <% if (usuario) { %>
+
+    <!-- =====================================================
+         MINHA CONTA
+    ====================================================== -->
+
+    <section
+      class="config-grupo"
+      aria-labelledby="grupo-conta"
+    >
+      <h2 class="config-grupo-titulo" id="grupo-conta">
+        Minha conta
+      </h2>
+
+      <!-- Resumo do perfil -->
+
+      <article class="config-perfil">
+
+        <figure class="config-perfil-foto">
+          <% if (usuario.foto_perfil) { %>
+
+            <img
+              src="<%= usuario.foto_perfil %>"
+              alt="Foto de perfil de <%= usuario.nome %>"
+            />
+
+          <% } else { %>
+
+            <span aria-hidden="true">
+              <%= usuario.nome
+                ? usuario.nome.charAt(0).toUpperCase()
+                : 'U'
+              %>
+            </span>
+
+          <% } %>
         </figure>
 
-        <section>
-        <span class="config-nome">Biometria</span>
-        <span class="config-desc">Entre usando a biometria do seu dispositivo</span>
+        <section class="config-perfil-info">
+          <span class="config-perfil-nome">
+            <%= usuario.nome %>
+          </span>
+
+          <span class="config-perfil-usuario">
+            @<%= usuario.nomeusuario %>
+          </span>
+
+          <span class="config-perfil-email">
+            <%= usuario.email %>
+          </span>
         </section>
+
+        <button
+          type="button"
+          class="config-editar-perfil"
+          id="btn-editar-perfil"
+          aria-label="Editar informações do perfil"
+        >
+          <i
+            class="bi bi-pencil"
+            aria-hidden="true"
+          ></i>
+
+          <span>Editar</span>
+        </button>
+
+      </article>
+
+
+      <!-- Alterar senha -->
+
+      <a
+        href="/alterar-senha"
+        class="config-item-link"
+        aria-label="Ir para alterar senha"
+      >
+        <article class="config-item">
+
+          <section class="config-item-esquerda">
+
+            <figure
+              class="config-icone"
+              aria-hidden="true"
+            >
+              <i class="bi bi-shield-lock-fill"></i>
+            </figure>
+
+            <section>
+              <span class="config-nome">
+                Alterar senha
+              </span>
+
+              <span class="config-desc">
+                Redefina sua senha de acesso
+              </span>
+            </section>
+
+          </section>
+
+          <i
+            class="bi bi-chevron-right config-seta"
+            aria-hidden="true"
+          ></i>
+
+        </article>
+      </a>
+
+
+      <!-- Biometria -->
+
+      <article class="config-item biometria">
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone"
+            aria-hidden="true"
+          >
+            <i class="bi bi-fingerprint"></i>
+          </figure>
+
+          <section>
+            <span class="config-nome">
+              Biometria
+            </span>
+
+            <span class="config-desc">
+              Entre usando a biometria do seu dispositivo
+            </span>
+          </section>
+
         </section>
 
         <section class="biometria-status">
-        <span id="status-biometria" class="status-biometria nao-ativada">
-         Não ativada
+
+          <span
+            id="status-biometria"
+            class="status-biometria nao-ativada"
+          >
+            Não ativada
+          </span>
+
+          <button
+            type="button"
+            id="btn-cadastrar-biometria"
+            class="config-acao"
+          >
+            Cadastrar
+          </button>
+
+        </section>
+
+        
+
+      </article>
+
+      <!-- Premium -->
+<a
+  href="/assinatura"
+  class="config-item-link"
+  aria-label="Ir para Healthy Safely Premium"
+>
+  <article class="config-item">
+    <section class="config-item-esquerda">
+
+      <figure
+        class="config-icone"
+        aria-hidden="true"
+      >
+        <i class="bi bi-stars"></i>
+      </figure>
+
+      <section>
+        <span class="config-nome">
+          Healthy Safely Premium
         </span>
 
-        <button
-        type="button"
-        id="btn-cadastrar-biometria"
-        class="config-acao"
-         >
-        Cadastrar
-        </button>
-        </section>
-        
-        </article>
-
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-envelope-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">E-mail cadastrado</span>
-              <span class="config-desc">
-                <%= usuario ? usuario.email : 'sem@email.com' %>
-              </span>
-            </section>
-          </section>
-          <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
-        </article>
+        <span class="config-desc">
+          <% if (usuario.plano === 'premium') { %>
+            Seu plano Premium está ativo
+          <% } else { %>
+            Desbloqueie recursos exclusivos da plataforma
+          <% } %>
+        </span>
       </section>
-      <% } %>
 
-      <!-- APARÊNCIA -->
-      <section class="config-grupo" aria-labelledby="grupo-aparencia">
-        <h2 class="config-grupo-titulo" id="grupo-aparencia">Aparência</h2>
+    </section>
 
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-moon-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">Modo de aparência</span>
-              <span class="config-desc"
-                >Escolha automático, claro ou escuro</span
-              >
-            </section>
-          </section>
-          <select
-            class="config-select"
-            id="selectTheme"
-            aria-label="Selecionar modo de aparência"
+    <% if (usuario.plano === 'premium') { %>
+
+      <span class="status-premium">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        Ativo
+      </span>
+
+    <% } else { %>
+
+      <span class="config-seta">
+        Ativar
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+      </span>
+
+    <% } %>
+
+  </article>
+</a>
+    </section>
+
+    
+
+    <!-- =====================================================
+         APARÊNCIA
+    ====================================================== -->
+
+    <section
+      class="config-grupo"
+      aria-labelledby="grupo-aparencia"
+    >
+      <h2
+        class="config-grupo-titulo"
+        id="grupo-aparencia"
+      >
+        Aparência
+      </h2>
+
+      <!-- Tema -->
+
+      <article class="config-item">
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone"
+            aria-hidden="true"
           >
-            <option value="auto">Automático</option>
-            <option value="light">Claro</option>
-            <option value="dark">Escuro</option>
-          </select>
-        </article>
+            <i class="bi bi-moon-fill"></i>
+          </figure>
 
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-translate"></i>
-            </figure>
-            <section>
-              <span class="config-nome">Idioma</span>
-              <span class="config-desc">Idioma da interface</span>
-            </section>
+          <section>
+            <span class="config-nome">
+              Modo de aparência
+            </span>
+
+            <span class="config-desc">
+              Escolha automático, claro ou escuro
+            </span>
           </section>
-          <select class="config-select" aria-label="Selecionar idioma">
-            <option selected>Português (BR)</option>
-            <option>English</option>
-            <option>Español</option>
-          </select>
-        </article>
-      </section>
 
-      <!-- NOTIFICAÇÕES -->
-      <% if (usuario) { %>
-      <section class="config-grupo" aria-labelledby="grupo-notificacoes">
-        <h2 class="config-grupo-titulo" id="grupo-notificacoes">
-          Notificações
-        </h2>
+        </section>
 
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-bell-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">Lembretes de tarefas</span>
-              <span class="config-desc"
-                >Receba um push no celular quando uma tarefa chegar no horário</span
+        <select
+          class="config-select"
+          id="selectTheme"
+          aria-label="Selecionar modo de aparência"
+        >
+          <option value="auto">
+            Automático
+          </option>
+
+          <option value="light">
+            Claro
+          </option>
+
+          <option value="dark">
+            Escuro
+          </option>
+        </select>
+
+      </article>
+
+
+      <!-- Idioma -->
+
+      <article class="config-item">
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone"
+            aria-hidden="true"
+          >
+            <i class="bi bi-translate"></i>
+          </figure>
+
+          <section>
+            <span class="config-nome">
+              Idioma
+            </span>
+
+            <span class="config-desc">
+              Idioma da interface
+            </span>
+          </section>
+
+        </section>
+
+        <select
+          class="config-select"
+          aria-label="Selecionar idioma"
+        >
+          <option selected>
+            Português (BR)
+          </option>
+
+          <option>
+            English
+          </option>
+
+          <option>
+            Español
+          </option>
+        </select>
+
+      </article>
+
+    </section>
+
+
+    <!-- =====================================================
+         NOTIFICAÇÕES
+    ====================================================== -->
+
+    <section
+      class="config-grupo"
+      aria-labelledby="grupo-notificacoes"
+    >
+      <h2
+        class="config-grupo-titulo"
+        id="grupo-notificacoes"
+      >
+        Notificações
+      </h2>
+
+
+      <!-- Lembretes -->
+
+      <article class="config-item">
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone"
+            aria-hidden="true"
+          >
+            <i class="bi bi-bell-fill"></i>
+          </figure>
+
+          <section>
+            <span class="config-nome">
+              Lembretes de tarefas
+            </span>
+
+            <span class="config-desc">
+              Receba um push no celular quando uma tarefa chegar no horário
+            </span>
+          </section>
+
+        </section>
+
+        <label
+          class="toggle"
+          aria-label="Ativar lembretes de tarefas"
+        >
+          <input
+            type="checkbox"
+            id="toggleLembrete"
+          />
+
+          <span class="slider-toggle"></span>
+        </label>
+
+      </article>
+
+
+      <!-- E-mails -->
+
+      <article class="config-item">
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone"
+            aria-hidden="true"
+          >
+            <i class="bi bi-envelope-fill"></i>
+          </figure>
+
+          <section>
+            <span class="config-nome">
+              E-mails da plataforma
+            </span>
+
+            <span class="config-desc">
+              Novidades e atualizações por e-mail
+            </span>
+          </section>
+
+        </section>
+
+        <label
+          class="toggle"
+          aria-label="Ativar e-mails da plataforma"
+        >
+          <input
+            type="checkbox"
+            id="toggleEmail"
+          />
+
+          <span class="slider-toggle"></span>
+        </label>
+
+      </article>
+
+    </section>
+
+
+    <!-- =====================================================
+         ZONA DE PERIGO
+    ====================================================== -->
+
+    <section
+      class="config-grupo"
+      aria-labelledby="grupo-perigo"
+    >
+      <h2
+        class="config-grupo-titulo"
+        id="grupo-perigo"
+      >
+        Zona de perigo
+      </h2>
+
+      <button
+        type="button"
+        class="config-item config-item-perigo"
+        id="btn-excluir-conta"
+        aria-label="Excluir conta"
+      >
+
+        <section class="config-item-esquerda">
+
+          <figure
+            class="config-icone perigo"
+            aria-hidden="true"
+          >
+            <i class="bi bi-trash-fill"></i>
+          </figure>
+
+          <section>
+            <span class="config-nome">
+              Excluir conta
+            </span>
+
+            <span class="config-desc">
+              Ação permanente e irreversível
+            </span>
+          </section>
+
+        </section>
+
+        <i
+          class="bi bi-chevron-right config-seta"
+          aria-hidden="true"
+        ></i>
+
+      </button>
+
+    </section>
+
+  <% } %>
+
+</main>
+
+<%- include('../../partials/voltar-topo.ejs') %>
+
+<%- include('../../partials/footer.ejs') %>
+
+
+<!-- =======================================================
+     MODAL DE EDIÇÃO DO PERFIL
+     O JavaScript pode ser conectado posteriormente.
+======================================================== -->
+
+<% if (usuario) { %>
+
+  <div
+    class="modal-perfil"
+    id="modal-editar-perfil"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-perfil-overlay"
+      data-modal-fechar
+    ></div>
+
+    <section
+      class="modal-perfil-conteudo"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-perfil-titulo"
+    >
+
+      <header class="modal-perfil-header">
+
+        <div>
+          <h2 id="modal-perfil-titulo">
+            Editar perfil
+          </h2>
+
+          <p>
+            Atualize suas informações pessoais.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-perfil-fechar"
+          data-modal-fechar
+          aria-label="Fechar edição de perfil"
+        >
+          <i
+            class="bi bi-x-lg"
+            aria-hidden="true"
+          ></i>
+        </button>
+
+      </header>
+
+
+      <form
+        id="form-editar-perfil"
+        class="form-editar-perfil"
+        method="POST"
+        action="/perfil/editar"
+        enctype="multipart/form-data"
+      >
+
+        <!-- Foto -->
+
+        <div class="form-perfil-foto">
+
+          <label
+            for="foto-perfil"
+            class="form-perfil-foto-preview"
+          >
+
+            <% if (usuario.foto_perfil) { %>
+
+              <img
+                id="preview-foto-perfil"
+                src="<%= usuario.foto_perfil %>"
+                alt="Pré-visualização da foto de perfil"
+              />
+
+            <% } else { %>
+
+              <span
+                id="preview-inicial-perfil"
+                aria-hidden="true"
               >
-            </section>
-          </section>
-          <label class="toggle" aria-label="Ativar lembretes de tarefas">
-            <input type="checkbox" id="toggleLembrete" />
-            <span class="slider-toggle"></span>
+                <%= usuario.nome
+                  ? usuario.nome.charAt(0).toUpperCase()
+                  : 'U'
+                %>
+              </span>
+
+            <% } %>
+
+            <span class="form-perfil-foto-overlay">
+              <i
+                class="bi bi-camera-fill"
+                aria-hidden="true"
+              ></i>
+            </span>
+
           </label>
-        </article>
 
-        <article class="config-item">
-          <section class="config-item-esquerda">
-            <figure class="config-icone" aria-hidden="true">
-              <i class="bi bi-envelope-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">E-mails da plataforma</span>
-              <span class="config-desc"
-                >Novidades e atualizações por e-mail</span
-              >
-            </section>
-          </section>
-          <label class="toggle" aria-label="Ativar e-mails da plataforma">
-            <input type="checkbox" id="toggleEmail" />
-            <span class="slider-toggle"></span>
+          <input
+            type="file"
+            id="foto-perfil"
+            name="foto_perfil"
+            accept="image/*"
+          />
+
+          <span class="form-perfil-foto-ajuda">
+            Alterar foto
+          </span>
+
+        </div>
+
+
+        <!-- Nome -->
+
+        <div class="form-grupo">
+
+          <label for="nome">
+            Nome
           </label>
-        </article>
-      </section>
 
-      <!-- ZONA DE PERIGO -->
-      <section class="config-grupo" aria-labelledby="grupo-perigo">
-        <h2 class="config-grupo-titulo" id="grupo-perigo">Zona de perigo</h2>
+          <input
+            type="text"
+            id="nome"
+            name="nome"
+            value="<%= usuario.nome %>"
+            autocomplete="name"
+            maxlength="100"
+            required
+          />
 
-        <article class="config-item config-item-perigo">
-          <section class="config-item-esquerda">
-            <figure class="config-icone perigo" aria-hidden="true">
-              <i class="bi bi-trash-fill"></i>
-            </figure>
-            <section>
-              <span class="config-nome">Excluir conta</span>
-              <span class="config-desc">Ação permanente e irreversível</span>
-            </section>
-          </section>
-          <i class="bi bi-chevron-right config-seta" aria-hidden="true"></i>
-        </article>
-      </section>
-      <% } %>
-    </main>
+        </div>
 
-    <%- include('../../partials/voltar-topo.ejs') %>
-    <%- include('../../partials/footer.ejs') %>
+        <!-- Nome de usuário -->
+<div class="form-grupo">
+  <label for="nomeusuario">
+    Nome de usuário
+  </label>
 
-    <script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
-    <script src="/js/user/biometria-cadastro.js"></script>
-    <script>
-      window.VAPID_PUBLIC_KEY = "<%= vapidPublicKey %>";
-    </script>
-    <script src="/js/features/push-notificacoes.js"></script>
-  </body>
-</html>
+  <div class="form-input-prefix">
+    <span aria-hidden="true">@</span>
+
+    <input
+      type="text"
+      id="nomeusuario"
+      name="nomeusuario"
+      value="<%= usuario.nomeusuario %>"
+      autocomplete="username"
+      minlength="3"
+      maxlength="30"
+      required
+    />
+  </div>
+
+  <small
+    id="status-nomeusuario"
+    class="status-nomeusuario"
+    aria-live="polite"
+  ></small>
+</div>
+
+
+        <!-- E-mail -->
+
+        <div class="form-grupo">
+
+          <label for="email">
+            E-mail
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="<%= usuario.email %>"
+            autocomplete="email"
+            required
+          />
+
+        </div>
+
+
+        <div class="form-acoes">
+
+          <button
+            type="button"
+            class="btn-cancelar-perfil"
+            data-modal-fechar
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn-salvar-config"
+          >
+            Salvar alterações
+          </button>
+
+        </div>
+
+        <p
+          class="msg-salvo"
+          id="msg-perfil-salvo"
+          role="status"
+          aria-live="polite"
+        >
+          Alterações salvas!
+        </p>
+
+      </form>
+
+    </section>
+
+  </div>
+
+<% } %>
+
+
+<!-- =======================================================
+     BIOMETRIA
+======================================================== -->
+
+<script src="https://unpkg.com/@simplewebauthn/browser@13.3.0/dist/bundle/index.umd.min.js"></script>
+
+<script src="/js/user/biometria-cadastro.js"></script>
+
+<script>
+  window.VAPID_PUBLIC_KEY = "<%= vapidPublicKey %>";
+</script>
+
+<script src="/js/features/push-notificacoes.js"></script>
+
+<script src="/js/user/configuracoes.js"></script>
+
+<style>
+  .config-premium {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.config-premium .config-card-icon {
+  flex-shrink: 0;
+}
+
+.config-premium .config-card-content {
+  flex: 1;
+}
+
+.config-premium .config-card-content h2 {
+  margin: 0 0 4px;
+}
+
+.config-premium .config-card-content p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.btn-assinatura {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+
+  padding: 10px 16px;
+  border-radius: var(--border-radius);
+
+  background: #c9a227;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-assinatura:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .config-premium {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .config-premium .config-card-content {
+    min-width: 0;
+  }
+
+  .btn-assinatura {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>

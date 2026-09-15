@@ -65,10 +65,16 @@ const usuarioController = {
 
       if (nomeusuario) {
         const valor = String(nomeusuario).trim();
+
         if (valor) {
+          const usuarioId = req.session?.usuario?.id || null;
+
           resposta.nomeusuario = {
             valor,
-            disponivel: !(await usuarioModel.nomeUsuarioExiste(valor)),
+            disponivel: await usuarioModel.nomeUsuarioDisponivel(
+              valor,
+              usuarioId,
+            ),
           };
         }
       }

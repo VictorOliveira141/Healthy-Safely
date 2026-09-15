@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Assinatura | Healthy Safely</title>
+
+    <meta
+      name="description"
+      content="Acesse suas configurações e personalize sua experiência no Healthy Safely."
+    />
+
+    <meta name="keywords" content="configurações, usuário, saúde, bem-estar" />
+
+    <meta property="og:title" content="Configurações | Healthy Safely" />
+    <meta
+      property="og:description"
+      content="Acesse suas configurações e personalize sua experiência no Healthy Safely."
+    />
+    <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
+    <meta property="og:url" content="https://healthysafely.com/configuracoes" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Healthy Safely" />
+
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/user/assinaturas.css" />
+
+    <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <meta name="theme-color" content="#5BBF6A" />
+  </head>
+
+  <%- include('../../partials/header.ejs') %>
+  <body>
+    <main class="assinaturas-page">
+      <article class="assinaturas-header">
+      
+        <h1>Sua rotina pode ir além</h1>
+        <p>
+          Escolha o plano que combina com a forma como você quer cuidar da sua
+          rotina.
+        </p>
+      </article>
+      <section class="planos" aria-label="Planos de assinatura">
+        <!-- ========================= FREE ========================== -->
+        <article class="plano-card plano-free">
+          <div class="plano-topo">
+            <div class="plano-icone">
+              <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+            </div>
+            <div>
+              <span class="plano-tipo"> Plano gratuito </span>
+              <h2>Free</h2>
+            </div>
+          </div>
+          <p class="plano-descricao">
+            O essencial para começar a organizar e acompanhar sua rotina.
+          </p>
+          <div class="plano-preco"><strong>R$ 0</strong> <span>/mês</span></div>
+          <ul class="plano-recursos">
+            <li><i class="bi bi-check2"></i> Organização de tarefas</li>
+            <li><i class="bi bi-check2"></i> Tarefas por período do dia</li>
+            <li><i class="bi bi-check2"></i> Metas e acompanhamento</li>
+            <li><i class="bi bi-check2"></i> Registro do sono</li>
+            <li><i class="bi bi-check2"></i> Estatísticas da rotina</li>
+            <li><i class="bi bi-check2"></i> Notificações</li>
+            <li><i class="bi bi-check2"></i> Acesso ao Healthy AI</li>
+          </ul>
+          <button type="button" class="plano-botao plano-botao-free" disabled>
+            Plano atual
+          </button>
+        </article>
+        <!-- ========================= PREMIUM ========================== -->
+        <article class="plano-card plano-premium">
+          <div class="premium-selo">
+            <i class="bi bi-stars" aria-hidden="true"></i> Premium
+          </div>
+          <div class="plano-topo">
+            <div class="plano-icone">
+              <i class="bi bi-stars" aria-hidden="true"></i>
+            </div>
+            <div>
+              <span class="plano-tipo"> Experiência completa </span>
+              <h2>Premium</h2>
+            </div>
+          </div>
+          <p class="plano-descricao">
+            Mais recursos para acompanhar sua evolução e personalizar sua
+            experiência.
+          </p>
+          <div class="plano-preco">
+            <strong>R$ 4,99</strong> <span>1º mês</span>
+          </div>
+          <p class="plano-preco-recorrente">Depois, R$ 11,99/mês</p>
+          <ul class="plano-recursos">
+            <li><i class="bi bi-check2"></i> Tudo do plano Free</li>
+            <li><i class="bi bi-check2"></i> Recursos exclusivos Premium</li>
+            <li><i class="bi bi-check2"></i> Recomendações personalizadas</li>
+            <li><i class="bi bi-check2"></i> Acompanhamento mais completo</li>
+            <li><i class="bi bi-check2"></i> Insights sobre sua rotina</li>
+            <li><i class="bi bi-check2"></i> Experiência personalizada</li>
+            <li><i class="bi bi-check2"></i> Recursos futuros do Premium</li>
+          </ul>
+          <a href="#" class="plano-botao plano-botao-premium">
+            Assinar Premium <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </article>
+      </section>
+    </main>
+
+    <%- include('../../partials/footer.ejs') %>
+  </body>
+
+</html>
