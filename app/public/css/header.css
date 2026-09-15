@@ -30,10 +30,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  max-width: 1000px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   gap: 16px;
-  background: transparent;
 }
 
 .header-logo {
@@ -51,11 +51,10 @@
   width: auto;
   display: block;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  
 
   object-fit: contain;
 
-  filter: brightness(0) invert(1);
 }
 
 .header-actions {
@@ -271,11 +270,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   background: var(--secondary-color);
   color: var(--fundoescuro);
   border: none;
   padding: 0;
   min-width: 0;
+}
+.user-menu.cliente .links span,
+.user-menu.cliente .item-acessibilidade span{
+  font-size: 8px;
 }
 .user-menu button i {
   font-size: var(--font-icon);
@@ -426,50 +430,104 @@
   text-decoration: none;
 }
 
+/* ============================================================
+   RESPONSIVIDADE
+============================================================ */
+
+/* TABLET / TELAS MENORES */
 @media (max-width: 1024px) {
+
+  .header-container {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
   .header-logo img {
-    height: 50px;
+    height: 46px;
+  }
+
+  .header-logo-text {
+    font-size: 1.3rem;
+  }
+
+  .header-actions {
+    gap: 6px;
+    margin-right: 4px;
+  }
+
+  .user-menu {
+    gap: 8px;
+  }
+
+  .user-menu.cliente .links,
+  .user-menu button {
+    min-width: 58px;
+  }
+
+  .user-menu svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .user-menu .links span,
+  .user-menu button span {
+    font-size: 11px;
+  }
+
+  .header-plano {
+    padding: 6px 11px;
+    font-size: 0.7rem;
   }
 }
 
-@media (max-width: 768px) {
 
-  .header-nav2 {
-    display: none;
+/* ============================================================
+   MOBILE
+   ATÉ 600px: ESCONDE O MENU DE FUNCIONALIDADES
+============================================================ */
+
+@media (max-width: 600px) {
+
+  .header-container {
+    padding: 9px 14px;
+    gap: 10px;
   }
 
-  /* No mobile: somente o texto da logo */
   .header-logo {
-    display: flex;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
-  .header-logo img {
-    display: none;
-  }
 
   .header-logo-text {
     display: block;
     font-size: 1.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* No mobile: esconde TODOS os ícones */
   .header-actions {
     display: none;
   }
 
-  /* Plano continua visível */
   .header-plano {
     display: inline-flex;
     flex-shrink: 0;
-    margin: 0;
+    padding: 6px 10px;
+    font-size: 0.68rem;
   }
 }
+
+
+/* ============================================================
+   CELULARES PEQUENOS
+============================================================ */
 
 @media (max-width: 470px) {
 
   .header-container {
-    gap: 14px;
+    padding: 8px 12px;
   }
 
   .header-logo-text {
@@ -477,7 +535,15 @@
   }
 
   .header-plano {
-    padding: 6px 10px;
-    font-size: 0.68rem;
+    padding: 5px 9px;
+    font-size: 0.65rem;
+  }
+
+  .plano-alerta {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+    top: -4px;
+    right: -4px;
   }
 }

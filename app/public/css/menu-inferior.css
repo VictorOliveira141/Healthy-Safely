@@ -1,4 +1,95 @@
 /* ===========================
+   MENU DE ACESSIBILIDADE
+=========================== */
+.menu-acessibilidade {
+  position: fixed;
+
+  right: 1px;
+  bottom: 105px;
+  width: 220px;
+
+  background: var(--secondary-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(15px);
+  transition: 0.25s ease;
+  z-index: 1200;
+}
+
+.menu-acessibilidade.ativo {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.menu-item {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-item-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-item span {
+  font-size: var(--font-text);
+  color: var(--fundoescuro);
+}
+
+.menu-item svg {
+  width: 20px;
+  height: 20px;
+  color: var(--fundoescuro);
+}
+
+/* ---- botao de abrir ---- */
+.botao-acessibilidade {
+  position: fixed;
+  bottom: 55px; /* altura do menu */
+  right: 1px;
+  width: 52px;
+  height: 42px;
+  border: none;
+
+  background: var(--accent-color);
+  color: var(--fundoescuro);
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  z-index: 1001;
+  transition: 0.2s;
+}
+.botao-acessibilidade:hover {
+  transform: translateY(-2px);
+}
+.botao-acessibilidade svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ===========================
    MENU INFERIOR
 =========================== */
 
@@ -120,7 +211,7 @@
    EXIBIÇÃO MOBILE
 =========================== */
 
-@media (max-width: 768px) {
+@media (max-width: 650px) {
   .menu-inferior {
     display: flex;
   }

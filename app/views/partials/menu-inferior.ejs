@@ -1,5 +1,74 @@
 <link rel="stylesheet" href="/css/menu-inferior.css">
 
+<!-- Botão de acessibilidade -->
+<button
+  id="btnAcessibilidade"
+  class="botao-acessibilidade"
+  aria-label="Abrir opções de acessibilidade"
+>
+  <i data-lucide="accessibility"></i>
+</button>
+
+<div class="menu-acessibilidade" id="menuAcessibilidade">
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="moon"></i>
+      <span>Modo escuro</span>
+    </div>
+
+    <label class="toggle" aria-label="Ativar lembretes de tarefas">
+      <input type="checkbox" checked id="toggleDarkMode" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="type"></i>
+      <span>Aumentar fonte</span>
+    </div>
+
+    <button class="botao-fonte" id="aumentarFonte">A+</button>
+    <button class="botao-fonte" id="diminuirFonte">A-</button>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="contrast"></i>
+      <span>Alto contraste</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleContraste" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="sparkles"></i>
+      <span>Reduzir animações</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleAnimacoes" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="menu-item">
+    <div class="menu-item-esquerda">
+      <i data-lucide="volume-2"></i>
+      <span>Leitor de tela</span>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggleLeitor" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+</div>
+
 <!-- MENU INFERIOR-->
 <nav role="navigation" class="menu-inferior" aria-label="Menu inferior">
   <section class="menu-container">
@@ -35,19 +104,15 @@
       </button>
       
       <div class="menu-mais-opcoes" id="menuMaisOpcoes">
-        <a href="/perfil">
-          <img src="../imagem/menu-inferior/person.webp" alt="" width="35px" height="auto">
-          <span>Perfil</span>
+
+        <a href="/configuracoes">
+          <img src="../imagem/menu-inferior/settings.webp" alt="" width="35px" height="auto">
+          <span>Configurações</span>
         </a>
 
         <a href="/assinatura">
           <img src="../imagem/menu-inferior/assinatura.webp" alt="" width="35px" height="auto">
           <span>Assinatura</span>
-        </a>
-
-        <a href="/configuracoes">
-          <img src="../imagem/menu-inferior/settings.webp" alt="" width="35px" height="auto">
-          <span>Configurações</span>
         </a>
 
         <a href="/notificacoes">
@@ -60,11 +125,16 @@
           <span>Ajuda</span>
         </a>
 
-        <div class="menu-mais-separador"></div>
-        <button type="button" class="item-acessibilidade" id="abrirAcessibilidade" aria-label="Abrir opções de acessibilidade">          <img src="../imagem/menu-inferior/acessibility.webp" alt="" width="35px" height="auto">
-          <span>Acessibilidade</span>
+           <!-- Sair -->
+
+        <a href="/sair">
+
+          <i data-lucide="log-out"></i>
+          <span>
+            Sair
+          </span>
+
         </a>
-        </button>
       </div>
 
     <% } else { %>

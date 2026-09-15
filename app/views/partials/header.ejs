@@ -49,6 +49,7 @@
           data-lucide="house"
           aria-hidden="true"
         ></i>
+    
       </a>
 
 
@@ -63,6 +64,7 @@
           data-lucide="clipboard-check"
           aria-hidden="true"
         ></i>
+ 
       </a>
 
 
@@ -77,6 +79,7 @@
           data-lucide="bar-chart-3"
           aria-hidden="true"
         ></i>
+        
       </a>
 
 
@@ -93,8 +96,10 @@
           class="icone-destaque"
           aria-hidden="true"
         ></i>
+   
       </button>
 
+      
 
       <!-- FOTO DE PERFIL -->
 
@@ -107,11 +112,8 @@
           aria-controls="profileDropdown"
           aria-label="Abrir menu do usuário"
         >
-          <img
-            src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
-            alt="Foto de perfil"
-            onerror="this.onerror=null;this.src='/imagem/user.webp';"
-          />
+          <i data-lucide="ellipsis"></i>
+      
         </button>
 
       </figure>
@@ -125,42 +127,8 @@
         aria-label="Menu do usuário"
       >
 
-        <!-- PERFIL -->
 
-        <a href="/perfil">
-
-          <img
-            src="/imagem/menu-inferior/person.webp"
-            alt=""
-            width="35"
-            height="35"
-          />
-
-          <span>
-            Perfil
-          </span>
-
-        </a>
-
-
-        <!-- ASSINATURA -->
-
-        <a href="/assinatura">
-
-          <img
-            src="/imagem/menu-inferior/assinatura.webp"
-            alt=""
-            width="35"
-            height="35"
-          />
-
-          <span>
-            Assinatura
-          </span>
-
-        </a>
-
-
+      
         <!-- CONFIGURAÇÕES -->
 
         <a href="/configuracoes">
@@ -178,6 +146,22 @@
 
         </a>
 
+
+        <!-- ASSINATURA -->
+        <a href="/assinatura">
+
+          <img
+            src="/imagem/menu-inferior/assinatura.webp"
+            alt=""
+            width="35"
+            height="35"
+          />
+
+          <span>
+            Assinatura
+          </span>
+
+        </a>
 
         <!-- NOTIFICAÇÕES -->
 
@@ -214,28 +198,17 @@
 
         </a>
 
+        
+        <!-- Sair -->
 
-        <!-- ACESSIBILIDADE -->
+        <a href="/sair">
 
-        <button
-          type="button"
-          class="item-acessibilidade"
-          id="abrirAcessibilidade"
-          aria-label="Abrir opções de acessibilidade"
-        >
-
-          <img
-            src="/imagem/menu-inferior/acessibility.webp"
-            alt=""
-            width="35"
-            height="35"
-          />
-
+          <i data-lucide="log-out"></i>
           <span>
-            Acessibilidade
+            Sair
           </span>
 
-        </button>
+        </a>
 
       </div>
 

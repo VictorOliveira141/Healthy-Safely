@@ -2,50 +2,19 @@
 // MENU ACESSIBILIDADE
 // =====================================
 
-const botaoAcessibilidade = document.getElementById("abrirAcessibilidade");
-
+const botaoAcessibilidade = document.getElementById("btnAcessibilidade");
 const menuAcessibilidade = document.getElementById("menuAcessibilidade");
 
-const menuMaisOpcoes = document.getElementById("menuMaisOpcoes");
+botaoAcessibilidade.addEventListener("click", (e) => {
+  e.stopPropagation();
 
-const voltarAcessibilidade = document.getElementById("voltarAcessibilidade");
+  menuAcessibilidade.classList.toggle("ativo");
+});
 
-// Abrir acessibilidade
-if (botaoAcessibilidade && menuAcessibilidade) {
-  botaoAcessibilidade.addEventListener("click", (e) => {
-    e.stopPropagation();
-
-    // Fecha o menu dos três pontos
-    if (menuMaisOpcoes) {
-      menuMaisOpcoes.classList.remove("aberto");
-    }
-
-    // Abre o menu de acessibilidade
-    menuAcessibilidade.classList.add("ativo");
-  });
-}
-
-// Voltar para o menu dos três pontos
-if (voltarAcessibilidade) {
-  voltarAcessibilidade.addEventListener("click", (e) => {
-    e.stopPropagation();
-
-    // Fecha acessibilidade
-    menuAcessibilidade.classList.remove("ativo");
-
-    // Abre novamente o menu dos três pontos
-    if (menuMaisOpcoes) {
-      menuMaisOpcoes.classList.add("aberto");
-    }
-  });
-}
-
-// Fechar acessibilidade ao clicar fora
 document.addEventListener("click", (e) => {
   if (
-    menuAcessibilidade &&
-    menuAcessibilidade.classList.contains("ativo") &&
-    !menuAcessibilidade.contains(e.target)
+    !menuAcessibilidade.contains(e.target) &&
+    !botaoAcessibilidade.contains(e.target)
   ) {
     menuAcessibilidade.classList.remove("ativo");
   }
@@ -87,17 +56,14 @@ const diminuirFonte = document.getElementById("diminuirFonte");
 let tamanhoFonte = Number(localStorage.getItem("tamanhoFonte") ?? 2);
 
 // aplicar ao carregar
+
 document.documentElement.classList.toggle(
   "fonte-minuscula",
   tamanhoFonte === 0,
 );
-
 document.documentElement.classList.toggle("fonte-pequena", tamanhoFonte === 1);
-
 document.documentElement.classList.toggle("fonte-padrao", tamanhoFonte === 2);
-
 document.documentElement.classList.toggle("fonte-grande", tamanhoFonte === 3);
-
 document.documentElement.classList.toggle("fonte-gigante", tamanhoFonte === 4);
 
 if (aumentarFonte) {
@@ -130,7 +96,6 @@ const classesFonte = [
 
 function aplicarFonte() {
   document.documentElement.classList.remove(...classesFonte);
-
   document.documentElement.classList.add(classesFonte[tamanhoFonte]);
 
   localStorage.setItem("tamanhoFonte", tamanhoFonte);
@@ -150,11 +115,9 @@ if (toggleContraste) {
   toggleContraste.addEventListener("change", () => {
     if (toggleContraste.checked) {
       document.documentElement.classList.add("contraste");
-
       localStorage.setItem("contraste", "true");
     } else {
       document.documentElement.classList.remove("contraste");
-
       localStorage.setItem("contraste", "false");
     }
   });
