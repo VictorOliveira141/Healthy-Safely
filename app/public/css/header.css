@@ -28,8 +28,8 @@
 .header-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
+  justify-content: flex-start;
+  padding: 14px 72px;
   width: 100%;
   max-width: none;
   margin: 0;
@@ -64,7 +64,7 @@
   gap: 12px;
   font-size: var(--font-icon);
   flex-shrink: 0;
-  margin-right: 8px;
+  margin: 0 auto;
 }
 
 .header-actions .foto-perfil img {
@@ -452,7 +452,7 @@
 
   .header-actions {
     gap: 6px;
-    margin-right: 4px;
+    margin: 0 auto;
   }
 
   .user-menu {

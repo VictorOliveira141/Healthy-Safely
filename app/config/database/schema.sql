@@ -12,15 +12,21 @@
 
 -- ── USUÁRIOS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS usuarios (
-  id                    INT AUTO_INCREMENT PRIMARY KEY,
-  nome                  VARCHAR(100) NOT NULL,
-  nomeusuario           VARCHAR(50) UNIQUE,
-  email                 VARCHAR(150) NOT NULL UNIQUE,
-  senha                 CHAR(60) NOT NULL,
-  foto_perfil           VARCHAR(255) DEFAULT NULL,
-  criado_em             DATETIME DEFAULT CURRENT_TIMESTAMP,
-  onboarding_concluido  TINYINT(1) DEFAULT 0,
-  perfil_pesquisa       JSON DEFAULT NULL
+  id                       INT AUTO_INCREMENT PRIMARY KEY,
+  nome                     VARCHAR(100) NOT NULL,
+  nomeusuario              VARCHAR(50) UNIQUE,
+  email                    VARCHAR(150) NOT NULL UNIQUE,
+  senha                    CHAR(60) NOT NULL,
+  foto_perfil              VARCHAR(255) DEFAULT NULL,
+  criado_em                DATETIME DEFAULT CURRENT_TIMESTAMP,
+  onboarding_concluido     TINYINT(1) DEFAULT 0,
+  perfil_pesquisa          JSON DEFAULT NULL,
+  plano                    ENUM('free', 'premium') NOT NULL DEFAULT 'free',
+  mp_preapproval_id        VARCHAR(64) DEFAULT NULL,
+  assinatura_status        VARCHAR(32) DEFAULT NULL,
+  assinatura_atualizada_em DATETIME DEFAULT NULL,
+
+  INDEX idx_usuarios_mp_preapproval (mp_preapproval_id)
 );
 
 

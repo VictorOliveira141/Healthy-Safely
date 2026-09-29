@@ -31,6 +31,28 @@ ALTER TABLE usuarios
 
 
 -- ─────────────────────────────────────────────────────────────
+-- ASSINATURA (MERCADO PAGO)
+-- ─────────────────────────────────────────────────────────────
+
+ALTER TABLE usuarios
+  ADD COLUMN IF NOT EXISTS plano
+    ENUM('free', 'premium')
+    NOT NULL DEFAULT 'free';
+
+ALTER TABLE usuarios
+  ADD COLUMN IF NOT EXISTS mp_preapproval_id VARCHAR(64) DEFAULT NULL;
+
+ALTER TABLE usuarios
+  ADD COLUMN IF NOT EXISTS assinatura_status VARCHAR(32) DEFAULT NULL;
+
+ALTER TABLE usuarios
+  ADD COLUMN IF NOT EXISTS assinatura_atualizada_em DATETIME DEFAULT NULL;
+
+ALTER TABLE usuarios
+  ADD INDEX IF NOT EXISTS idx_usuarios_mp_preapproval (mp_preapproval_id);
+
+
+-- ─────────────────────────────────────────────────────────────
 -- REMOÇÃO DO SISTEMA ANTIGO
 -- ─────────────────────────────────────────────────────────────
 

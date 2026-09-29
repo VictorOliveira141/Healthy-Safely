@@ -25,7 +25,7 @@
     <meta property="og:site_name" content="Healthy Safely" />
 
     <link rel="stylesheet" href="/css/global.css" />
-    <link rel="stylesheet" href="/css/user/assinaturas.css" />
+    <link rel="stylesheet" href="/css/user/assinatura.css" />
 
     <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
     <link rel="manifest" href="/manifest.json" />
@@ -33,82 +33,182 @@
     <meta name="theme-color" content="#5BBF6A" />
   </head>
 
-  <%- include('../../partials/header.ejs') %>
   <body>
-    <main class="assinaturas-page">
-      <article class="assinaturas-header">
-      
-        <h1>Sua rotina pode ir além</h1>
-        <p>
-          Escolha o plano que combina com a forma como você quer cuidar da sua
-          rotina.
-        </p>
+    <%- include('../../partials/header.ejs') %>
+    <% const isPremium = usuario.plano === 'premium'; %>
+
+    <main class="assinatura-page">
+
+      <%- include('../../partials/botao-voltar.ejs', {
+        voltarPara: '/dashboard'
+      }) %>
+
+      <!-- ======= HERO ======= -->
+      <article class="assinatura-hero">
+        <span class="assinatura-eyebrow">
+          <i class="bi bi-stars" aria-hidden="true"></i> Assinatura
+        </span>
+        <h1>Leve sua rotina para o próximo nível</h1>
+        <% if (isPremium) { %>
+          <p>
+            Você está no plano <strong>Premium</strong>. Obrigado por apoiar o
+            Healthy Safely!
+          </p>
+        <% } else { %>
+          <p>
+            Você está no plano <strong>Free</strong>. Conheça o Premium e
+            desbloqueie mais recursos para evoluir com consistência.
+          </p>
+        <% } %>
       </article>
-      <section class="planos" aria-label="Planos de assinatura">
-        <!-- ========================= FREE ========================== -->
-        <article class="plano-card plano-free">
-          <div class="plano-topo">
-            <div class="plano-icone">
-              <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
-            </div>
-            <div>
-              <span class="plano-tipo"> Plano gratuito </span>
-              <h2>Free</h2>
-            </div>
-          </div>
-          <p class="plano-descricao">
-            O essencial para começar a organizar e acompanhar sua rotina.
+
+      <% if (typeof erro !== 'undefined' && erro) { %>
+        <p class="assinatura-erro" role="alert">
+          Não foi possível concluir a operação. Tente novamente em instantes.
+        </p>
+      <% } %>
+
+      <!-- ======= PLANO ATUAL ======= -->
+      <section class="plano-atual" aria-label="Seu plano atual">
+        <div class="plano-atual-icone">
+          <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+        </div>
+        <div class="plano-atual-texto">
+          <span class="plano-atual-label">Plano atual</span>
+          <h2><%= isPremium ? 'Premium' : 'Free' %></h2>
+          <p>
+            Organização de tarefas, metas, sono, estatísticas e Healthy AI.
           </p>
-          <div class="plano-preco"><strong>R$ 0</strong> <span>/mês</span></div>
-          <ul class="plano-recursos">
-            <li><i class="bi bi-check2"></i> Organização de tarefas</li>
-            <li><i class="bi bi-check2"></i> Tarefas por período do dia</li>
-            <li><i class="bi bi-check2"></i> Metas e acompanhamento</li>
-            <li><i class="bi bi-check2"></i> Registro do sono</li>
-            <li><i class="bi bi-check2"></i> Estatísticas da rotina</li>
-            <li><i class="bi bi-check2"></i> Notificações</li>
-            <li><i class="bi bi-check2"></i> Acesso ao Healthy AI</li>
-          </ul>
-          <button type="button" class="plano-botao plano-botao-free" disabled>
-            Plano atual
-          </button>
-        </article>
-        <!-- ========================= PREMIUM ========================== -->
-        <article class="plano-card plano-premium">
-          <div class="premium-selo">
-            <i class="bi bi-stars" aria-hidden="true"></i> Premium
-          </div>
-          <div class="plano-topo">
-            <div class="plano-icone">
-              <i class="bi bi-stars" aria-hidden="true"></i>
-            </div>
-            <div>
-              <span class="plano-tipo"> Experiência completa </span>
-              <h2>Premium</h2>
-            </div>
-          </div>
-          <p class="plano-descricao">
-            Mais recursos para acompanhar sua evolução e personalizar sua
-            experiência.
-          </p>
-          <div class="plano-preco">
-            <strong>R$ 4,99</strong> <span>1º mês</span>
-          </div>
-          <p class="plano-preco-recorrente">Depois, R$ 11,99/mês</p>
-          <ul class="plano-recursos">
-            <li><i class="bi bi-check2"></i> Tudo do plano Free</li>
-            <li><i class="bi bi-check2"></i> Recursos exclusivos Premium</li>
-            <li><i class="bi bi-check2"></i> Recomendações personalizadas</li>
-            <li><i class="bi bi-check2"></i> Acompanhamento mais completo</li>
-            <li><i class="bi bi-check2"></i> Insights sobre sua rotina</li>
-            <li><i class="bi bi-check2"></i> Experiência personalizada</li>
-            <li><i class="bi bi-check2"></i> Recursos futuros do Premium</li>
-          </ul>
-          <a href="#" class="plano-botao plano-botao-premium">
-            Assinar Premium <i class="bi bi-arrow-right" aria-hidden="true"></i>
-          </a>
-        </article>
+        </div>
+        <span class="plano-atual-tag">Ativo</span>
       </section>
+
+      <% if (isPremium) { %>
+
+        <!-- ======= ASSINATURA ATIVA ======= -->
+        <section class="premium-spotlight premium-spotlight-ativo" aria-label="Assinatura Premium ativa">
+          <span class="premium-spotlight-glow" aria-hidden="true"></span>
+
+          <div class="premium-spotlight-info">
+            <span class="premium-badge">
+              <i class="bi bi-check2-circle" aria-hidden="true"></i> Ativa
+            </span>
+
+            <h2>Você é Premium</h2>
+            <p>
+              Sua assinatura está ativa e renova automaticamente todo mês.
+              Pode cancelar quando quiser, sem burocracia.
+            </p>
+          </div>
+
+          <div class="premium-spotlight-cta">
+            <form method="POST" action="/assinatura/cancelar">
+              <button type="submit" class="premium-botao premium-botao-cancelar">
+                Cancelar assinatura
+              </button>
+            </form>
+          </div>
+        </section>
+
+      <% } else { %>
+
+        <!-- ======= PREMIUM EM DESTAQUE ======= -->
+        <section class="premium-spotlight" aria-label="Plano Premium">
+          <span class="premium-spotlight-glow" aria-hidden="true"></span>
+
+          <div class="premium-spotlight-info">
+            <span class="premium-badge">
+              <i class="bi bi-stars" aria-hidden="true"></i> Recomendado
+            </span>
+
+            <h2>Premium</h2>
+            <p>
+              Mais recursos para acompanhar sua evolução e personalizar sua
+              experiência.
+            </p>
+
+            <ul class="premium-lista">
+              <li>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Recomendações personalizadas
+              </li>
+              <li>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Acompanhamento mais completo
+              </li>
+              <li>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Insights sobre sua rotina
+              </li>
+              <li>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Experiência personalizada
+              </li>
+              <li>
+                <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                Recursos futuros do Premium
+              </li>
+            </ul>
+          </div>
+
+          <div class="premium-spotlight-cta">
+            <div class="premium-preco">
+              <strong>R$ <%= precoPremium.toFixed(2).replace('.', ',') %></strong>
+              <span>/mês</span>
+            </div>
+            <p class="premium-recorrente">Cancele quando quiser.</p>
+
+            <form method="POST" action="/assinatura/assinar">
+              <button type="submit" class="premium-botao">
+                Assinar Premium <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </button>
+            </form>
+          </div>
+        </section>
+
+      <% } %>
+
+      <!-- ======= BENEFÍCIOS ======= -->
+      <section class="assinatura-beneficios" aria-label="Benefícios do Premium">
+        <h3>O que você ganha com o Premium</h3>
+
+        <div class="beneficios-grid">
+          <article class="beneficio-card">
+            <div class="beneficio-icone">
+              <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+            </div>
+            <h4>Insights avançados</h4>
+            <p>Entenda os padrões da sua rotina com análises mais profundas.</p>
+          </article>
+
+          <article class="beneficio-card">
+            <div class="beneficio-icone">
+              <i class="bi bi-magic" aria-hidden="true"></i>
+            </div>
+            <h4>Recomendações sob medida</h4>
+            <p>Sugestões pensadas para o seu ritmo e seus objetivos.</p>
+          </article>
+
+          <article class="beneficio-card">
+            <div class="beneficio-icone">
+              <i class="bi bi-palette" aria-hidden="true"></i>
+            </div>
+            <h4>Experiência personalizada</h4>
+            <p>
+              Ajustes e recursos exclusivos para deixar o app com a sua cara.
+            </p>
+          </article>
+
+          <article class="beneficio-card">
+            <div class="beneficio-icone">
+              <i class="bi bi-rocket-takeoff" aria-hidden="true"></i>
+            </div>
+            <h4>Sempre evoluindo</h4>
+            <p>Acesso antecipado a novos recursos assim que forem lançados.</p>
+          </article>
+        </div>
+      </section>
+
     </main>
 
     <%- include('../../partials/footer.ejs') %>

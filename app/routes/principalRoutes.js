@@ -8,6 +8,8 @@ const usuarioController = require("../controllers/usuarioController");
 const webauthnController = require("../controllers/webauthnController");
 const tarefaController = require("../controllers/tarefaController");
 const pushController = require("../controllers/pushController");
+const assinaturaController = require("../controllers/assinaturaController");
+const { PRECO_PREMIUM } = require("../config/planos");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
 
 /* ============================================================
@@ -301,7 +303,15 @@ router.get("/configuracoes", apenasAutenticado, (req, res) =>
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
   }),
 );
-router.get("/assinatura", apenasAutenticado, (req, res) => res.render("pages/user/assinatura"));
+router.get("/assinatura", apenasAutenticado, (req, res) =>
+  res.render("pages/user/assinatura", {
+    erro: req.query.erro === "1",
+    precoPremium: PRECO_PREMIUM,
+  }),
+);
+router.post("/assinatura/assinar", apenasAutenticado, assinaturaController.criarAssinatura);
+router.get("/assinatura/retorno", apenasAutenticado, assinaturaController.retorno);
+router.post("/assinatura/cancelar", apenasAutenticado, assinaturaController.cancelarAssinatura);
 
 /* ---------------- Privacidade ---------------- */
 router.get("/privacidade", apenasAutenticado, (req, res) =>
@@ -354,6 +364,11 @@ router.post(
 // Rota chamada pelo cron externo (cron-job.org). Protegida por
 // header X-Cron-Secret — NÃO usa sessão/autenticação de usuário.
 router.get("/api/push/cron", pushController.executarCron);
+
+/* ---------------- Mercado Pago ---------------- */
+// Rota chamada pelo Mercado Pago. Protegida pela assinatura HMAC do
+// header X-Signature — NÃO usa sessão/autenticação de usuário.
+router.post("/webhooks/mercadopago", assinaturaController.webhook);
 
 /* ============================================================
    TESTES

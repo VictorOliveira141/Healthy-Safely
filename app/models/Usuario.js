@@ -341,6 +341,53 @@ const usuarioModel = {
     }
   },
 
+  // Buscar usuário pelo id da assinatura no Mercado Pago
+  buscarPorPreapprovalId: async (preapprovalId) => {
+    try {
+      const [linhas] = await pool.query(
+        "SELECT * FROM usuarios WHERE mp_preapproval_id = ? LIMIT 1",
+        [preapprovalId],
+      );
+      return linhas[0] || null;
+    } catch (e) {
+      console.error("Erro ao buscar usuário por preapproval:", e);
+      return null;
+    }
+  },
+
+  // Vincula a assinatura recém-criada ao usuário (antes da confirmação do pagamento)
+  vincularAssinatura: async (usuarioId, preapprovalId) => {
+    try {
+      await pool.query(
+        `UPDATE usuarios
+         SET mp_preapproval_id = ?, assinatura_status = 'pending', assinatura_atualizada_em = NOW()
+         WHERE id = ?`,
+        [preapprovalId, usuarioId],
+      );
+      return true;
+    } catch (e) {
+      console.error("Erro ao vincular assinatura:", e);
+      return false;
+    }
+  },
+
+  // Atualiza o plano/status a partir do webhook do Mercado Pago
+  atualizarStatusAssinatura: async (preapprovalId, status) => {
+    try {
+      const plano = status === "authorized" ? "premium" : "free";
+      await pool.query(
+        `UPDATE usuarios
+         SET plano = ?, assinatura_status = ?, assinatura_atualizada_em = NOW()
+         WHERE mp_preapproval_id = ?`,
+        [plano, status, preapprovalId],
+      );
+      return true;
+    } catch (e) {
+      console.error("Erro ao atualizar status da assinatura:", e);
+      return false;
+    }
+  },
+
   // Buscar dados reais do perfil
   buscarPerfilCompleto: async (usuarioId) => {
     try {
