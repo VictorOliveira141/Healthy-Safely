@@ -51,20 +51,18 @@
   width: auto;
   display: block;
   flex-shrink: 0;
-  
 
   object-fit: contain;
-
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 12px;
   font-size: var(--font-icon);
   flex-shrink: 0;
-  margin: 0 auto;
+  margin: 0 0 0 auto;
 }
 
 .header-actions .foto-perfil img {
@@ -278,7 +276,7 @@
   min-width: 0;
 }
 .user-menu.cliente .links span,
-.user-menu.cliente .item-acessibilidade span{
+.user-menu.cliente .item-acessibilidade span {
   font-size: 8px;
 }
 .user-menu button i {
@@ -436,7 +434,6 @@
 
 /* TABLET / TELAS MENORES */
 @media (max-width: 1024px) {
-
   .header-container {
     padding: 10px 16px;
     gap: 10px;
@@ -452,7 +449,7 @@
 
   .header-actions {
     gap: 6px;
-    margin: 0 auto;
+    margin: 0 0 0 auto;
   }
 
   .user-menu {
@@ -480,14 +477,12 @@
   }
 }
 
-
 /* ============================================================
    MOBILE
    ATÉ 600px: ESCONDE O MENU DE FUNCIONALIDADES
 ============================================================ */
 
 @media (max-width: 600px) {
-
   .header-container {
     padding: 9px 14px;
     gap: 10px;
@@ -497,7 +492,6 @@
     flex-shrink: 1;
     min-width: 0;
   }
-
 
   .header-logo-text {
     display: block;
@@ -519,13 +513,11 @@
   }
 }
 
-
 /* ============================================================
    CELULARES PEQUENOS
 ============================================================ */
 
 @media (max-width: 470px) {
-
   .header-container {
     padding: 8px 12px;
   }

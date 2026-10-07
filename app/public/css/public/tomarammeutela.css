@@ -48,7 +48,6 @@ body h3::after {
   overflow: hidden;
   border-radius: var(--border-radius);
   padding: 20px;
-
 }
 
 /* ----- titulo e descrição ----- */
@@ -260,7 +259,7 @@ body h3::after {
   padding: 20px 10px;
   border-radius: var(--border-radius);
   background: var(--primary-color);
-  border: 1px solid;
+  border: var(--border);
   transition: 0.3s ease;
   overflow: hidden;
 }
@@ -317,7 +316,7 @@ body h3::after {
 .demo-header {
   max-width: 700px;
   margin: 0 auto 50px;
-  color: var(--fundoclaro)
+  color: var(--fundoclaro);
 }
 
 .demo-badge {
@@ -376,111 +375,200 @@ body h3::after {
   width: min(1300px, 94%);
 }
 .planos-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 380px));
   justify-content: center;
-  align-items: stretch;
-  gap: 30px;
-  flex-wrap: wrap;
+  gap: 20px;
 }
 
 /* ----- card ----- */
 .plano-card {
-  background: var(--primary-color);
-  color: var(--fundoclaro);
-  padding: 20px;
-  border-radius: 12px;
-  width: 280px;
-  min-width: 260px;
-  max-width: 320px;
-  text-align: center;
-  border: var(--border);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  overflow: hidden;
+  align-items: stretch;
+  min-width: 0;
+  padding: 28px;
+  background: var(--surface-card);
+  color: var(--fundoclaro);
+  text-align: left;
+  border: 2px solid rgba(183, 145, 43, 0.5);
+  border-radius: var(--border-radius);
+  box-shadow: 0 14px 36px rgba(183, 145, 43, 0.12);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+.plano-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -60%;
+  right: -20%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(183, 145, 43, 0.16) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.plano-card > * {
+  position: relative;
+}
+.plano-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(183, 145, 43, 0.18);
+}
+.plano-card:not(.destaque) {
+  border-color: rgba(26, 138, 117, 0.4);
+  box-shadow: 0 14px 36px rgba(26, 138, 117, 0.1);
+}
+.plano-card:not(.destaque)::before {
+  background: radial-gradient(
+    circle,
+    rgba(26, 138, 117, 0.14) 0%,
+    transparent 70%
+  );
+}
+.plano-card:not(.destaque):hover {
+  box-shadow: 0 18px 42px rgba(26, 138, 117, 0.16);
+}
+.plano-card:not(.destaque) h3,
+.plano-card:not(.destaque) .preco-atual,
+.plano-card:not(.destaque) li i {
+  color: var(--fundoclaro);
+}
+.plano-card:not(.destaque) .btn-plano {
+  background: var(--secondary-color);
+}
+.plano-card:not(.destaque) .btn-plano:hover {
+  background: var(--c-verde-700);
 }
 .plano-card h3 {
-  margin-bottom: 10px;
+  margin: 0 0 8px;
   width: 100%;
+  color: #a27b1e;
+  font-size: 22px;
+  font-weight: 800;
+}
+.plano-card h3::after {
+  display: none;
 }
 .plano-card ul {
   list-style: none;
   padding: 0;
-  margin: 15px 0;
+  margin: 18px 0 22px;
   width: 100%;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
 }
 .plano-card li {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
-  word-wrap: break-word;
+}
+.plano-card li i {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #b18a2d;
+}
+.plano-card:not(.destaque) li i {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--botao);
 }
 
 /* ---- preços ------ */
-.preco-atual {
-  margin-top: 8px;
-  font-size: 14px;
-  color: var(--muted);
+.plano-card .preco-atual {
+  margin: 10px 0 0;
+  font-size: 18px;
+  font-weight: 700;
 }
-.preco {
-  font-size: var(--font-title);
-  font-weight: bold;
+.plano-card .preco-original {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.plano-card .preco {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 12px 0 0;
+  color: #a27b1e;
+  font-size: 32px;
+  font-weight: 800;
   width: 100%;
 }
-.preco span {
-  color: gray;
-  font-size: 14px;
+.plano-card .preco span {
+  color: var(--muted);
+  font-size: 12px;
   font-weight: normal;
 }
 
 /* ----- botoes ------ */
 .btn-plano {
-  background: var(--botao);
-  color: var(--fundoescuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #a27b1e;
+  color: #ffffff;
   border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
   cursor: pointer;
   width: 100%;
   margin-top: auto;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
 }
 .btn-plano:hover {
-  transform: var(--animacao);
-  opacity: var(--botao-opacity);
+  background: #8e6b19;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(162, 123, 30, 0.25);
 }
 .destaque {
-  border: var(--border)var(--accent-color);
+  border-color: rgba(183, 145, 43, 0.5);
 }
 
 /* ---- selo ----- */
 .selo {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 8px;
+  align-self: flex-start;
+  gap: 5px;
+  margin-bottom: 14px;
+  padding: 5px 11px;
+  font-size: 10px;
+  border-radius: 999px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-  margin-bottom: 15px;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .selo-gratis {
-  background: linear-gradient(135deg, #e0ffe7 0%, #d4f8e0 100%);
-  color: #00a86b;
-  box-shadow: 0 2px 8px rgba(0, 168, 107, 0.15);
+  background: rgba(26, 138, 117, 0.12);
+  color: var(--fundoclaro);
 }
 .selo-premium {
-  background: linear-gradient(135deg, #fff3d6 0%, #ffeec0 100%);
-  color: #d97706;
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.15);
+  background: rgba(183, 145, 43, 0.12);
+  color: #d8b95a;
 }
+
+
 
 /* ================= RESPONSIVIDADE ================= */
 @media (max-width: 1100px) {
@@ -508,5 +596,16 @@ body h3::after {
   }
   .phone-mockup {
     width: 260px;
+  }
+}
+
+@media (max-width: 560px) {
+  .planos-container {
+    grid-template-columns: minmax(0, 380px);
+    justify-content: center;
+  }
+
+  .plano-card {
+    padding: 24px;
   }
 }

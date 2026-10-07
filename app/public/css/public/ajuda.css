@@ -277,7 +277,7 @@
 .form-suporte textarea {
   padding: 0.75rem 1rem;
   background: var(--primary-color);
-  border: 1.5px solid var(--border);
+  border: var(--border);
   border-radius: 8px;
   color: var(--fundoclaro);
   font-size: 0.9rem;

@@ -17,7 +17,6 @@
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#5BBF6A" />
 </head>
-a
 <body>
     <%- include('../../partials/header.ejs') %>
    <main class="main google-confirmacao">
@@ -30,7 +29,7 @@ a
                     Confirmar acesso
                 </h1>
                 
-                <p style="font-size: 1rem;">
+                <p style="font-size: var(--font-title); color: var(--fundoclaro)">
                     Você está entrando com a conta abaixo:
                 </p>
                 
@@ -54,7 +53,7 @@ a
                     </div>
 
                     
-                    <article style="display: flex; flex-direction: row; gap: 15px;">
+                    <article class="google-confirmacao-actions">
                     <form action="/google/confirmacao" method="POST">
                         <button
                         class="btn-primary"
@@ -65,9 +64,8 @@ a
 
                     <form action="/google/cancelar" method="POST">
                         <button
-                         class="btn-primary"
-                         type="submit"
-                         style="color: red;">
+                        class="btn-primary btn-google-cancel"
+                        type="submit">
                          Cancelar
                         </button>
                     </form>

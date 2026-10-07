@@ -34,16 +34,16 @@
 
   background: var(--surface-muted);
   border: var(--border);
-  color: var(--secondary-color);
+  color: var(--fundoclaro);
 
-  font-size: 11px;
+  font-size: var(--font-small);
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
 
 .assinatura-eyebrow i {
-  font-size: 11px;
+  font-size: var(--font-small);
   color: #a27b1e;
 }
 
@@ -83,7 +83,7 @@
 
   color: #b91c1c;
 
-  font-size: 13px;
+  font-size: var(--font-small);
   font-weight: 600;
   text-align: center;
 }
@@ -118,7 +118,7 @@
   background: var(--surface-muted);
   color: var(--secondary-color);
 
-  font-size: 17px;
+  font-size: var(--font-icon);
 }
 
 .plano-atual-texto {
@@ -131,7 +131,7 @@
 
   color: var(--muted);
 
-  font-size: 10px;
+  font-size: var(--font-small);
   font-weight: 600;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -142,7 +142,7 @@
 
   color: var(--fundoclaro);
 
-  font-size: 18px;
+  font-size: var(--font-title);
   font-weight: 700;
 }
 
@@ -150,7 +150,7 @@
   margin: 0;
 
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-small);
   line-height: 1.4;
 }
 
@@ -162,9 +162,9 @@
   border-radius: 999px;
 
   background: rgba(26, 138, 117, 0.12);
-  color: var(--secondary-color);
+  color: var(--fundoclaro);
 
-  font-size: 10px;
+  font-size: var(--font-small);
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -230,14 +230,14 @@
   background: rgba(183, 145, 43, 0.12);
   color: #9b7419;
 
-  font-size: 10px;
+  font-size: var(--font-small);
   font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
 
 .premium-badge i {
-  font-size: 11px;
+  font-size: var(--font-small);
 }
 
 .premium-spotlight-info h2 {
@@ -253,7 +253,7 @@
   margin: 0 0 18px;
 
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-small);
   line-height: 1.55;
 }
 
@@ -272,7 +272,7 @@
 
   color: var(--fundoclaro);
 
-  font-size: 13px;
+  font-size: var(--font-small);
   line-height: 1.4;
 }
 
@@ -281,7 +281,7 @@
   margin-top: 2px;
 
   color: #b18a2d;
-  font-size: 14px;
+  font-size: var(--font-icon);
 }
 
 /* =========================================================
@@ -320,14 +320,14 @@
 
 .premium-preco span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-small);
 }
 
 .premium-recorrente {
   margin: 0 0 18px;
 
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-small);
   line-height: 1.4;
 }
 
@@ -345,7 +345,8 @@
   color: #ffffff;
 
   font-family: var(--font-family);
-  font-size: 14px;
+  font-size: var(--font-text);
+  border: var(--border);
   font-weight: 700;
 
   transition:
@@ -380,7 +381,7 @@
 
 .premium-spotlight-ativo .premium-badge {
   background: rgba(26, 138, 117, 0.12);
-  color: var(--secondary-color);
+  color: var(--fundoclaro);
 }
 
 .premium-spotlight-ativo h2 {
@@ -414,7 +415,7 @@
 
   color: var(--fundoclaro);
 
-  font-size: 17px;
+  font-size: var(--font-title);
   font-weight: 700;
   text-align: center;
 }
@@ -445,9 +446,9 @@
   border-radius: 10px;
 
   background: var(--surface-muted);
-  color: var(--secondary-color);
+  color: var(--fundoclaro);
 
-  font-size: 15px;
+  font-size: var(--font-icon);
 }
 
 .beneficio-card h4 {
@@ -455,7 +456,7 @@
 
   color: var(--fundoclaro);
 
-  font-size: 13px;
+  font-size: var(--font-small);
   font-weight: 700;
 }
 
@@ -463,7 +464,7 @@
   margin: 0;
 
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--font-small);
   line-height: 1.45;
 }
 
@@ -512,7 +513,7 @@ html.dark .premium-spotlight-ativo {
 
 html.dark .premium-spotlight-ativo .premium-badge {
   background: rgba(52, 211, 153, 0.14);
-  color: var(--c-verde-400);
+  color: var(--fundoclaro);
 }
 
 /* =========================================================
@@ -531,7 +532,6 @@ html.contraste .beneficio-card {
 ========================================================= */
 
 @media (max-width: 768px) {
-
   .assinatura-page {
     padding: 24px 16px 55px;
     gap: 20px;
@@ -551,7 +551,6 @@ html.contraste .beneficio-card {
 ========================================================= */
 
 @media (max-width: 560px) {
-
   .plano-atual {
     flex-wrap: wrap;
   }

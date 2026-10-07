@@ -37,6 +37,7 @@
             <%- include('../../partials/botao-voltar.ejs', { voltarPara: '/' }) %>
             <h1 id="titulo-login" class="form-title">Entrar na sua conta</h1>
 
+            <article class="outras-opcoes">
            <a
               class="btn-google"
               href="/auth/google?flow=login"
@@ -44,7 +45,7 @@
               aria-label="Entrar com Google"
             >
               <i class="bi bi-google"></i>
-              <p>Entrar com Google</p>
+              
             </a>
 
            
@@ -55,8 +56,9 @@
             >
             <i class="bi bi-fingerprint"></i>
             
-            Entrar com biometria
+           
             </button>
+            </article>
           
           
 
@@ -124,7 +126,7 @@
             <% } %>
 
             <section class="actions">
-              <button class="btn-primary" type="submit">Entrar</button>
+              <button class="btn-primary btn-login-submit" type="submit">Entrar</button>
             </section>
 
             <p class="small">

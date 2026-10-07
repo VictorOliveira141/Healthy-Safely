@@ -10,7 +10,7 @@
   </head>
   <body>
     <%- include('../../partials/header.ejs') %>
-    <main>
+    <main class="redefinir-senha">
       <article class="card" aria-labelledby="titulo-reset">
         <section class="form-area">
           <% if (typeof invalido !== 'undefined' && invalido) { %>
@@ -34,7 +34,7 @@
                   Sua senha foi redefinida com sucesso. Você já pode fazer login.
                 </section>
                 <section class="actions">
-                  <a href="/login" class="btn-primary" style="display:inline-block; text-decoration:none; text-align:center;">Ir para o login</a>
+                  <a href="/login" class="btn-primary">Ir para o login</a>
                 </section>
               <% } else { %>
                 <% if (typeof erro !== 'undefined' && erro) { %>

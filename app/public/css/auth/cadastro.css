@@ -11,7 +11,7 @@ main {
   padding: 2.5rem 1.5rem 5rem;
   min-height: calc(100vh - 120px);
 }
-main.google-confirmacao{
+main.google-confirmacao {
   align-items: center;
 }
 
@@ -22,10 +22,9 @@ main.google-confirmacao{
   background: var(--primary-color);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(12, 79, 67, 0.12);
-  border: 1px solid var(--border);
+  border: var(--border);
   overflow: hidden;
 }
-
 
 .form-area {
   padding: 2.5rem 2.5rem 2rem;
@@ -44,14 +43,74 @@ form {
 }
 
 /* ── Botão Google ────────────────────────────────────────── */
+.outras-opcoes {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.outras-opcoes .btn-google,
+.outras-opcoes #btn-biometria {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  max-width: none;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+}
+
 .google-card {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.1rem;
-  border: 1px solid var(--border);
+  border: var(--border);
   border-radius: var(--border-radius);
   margin-bottom: 1rem;
+}
+.google-confirmacao-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.google-confirmacao-actions form {
+  flex: 1;
+  min-width: 0;
+}
+.google-confirmacao-actions .btn-primary {
+  max-width: none;
+  min-height: 50px;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: var(--font-text);
+  box-shadow: 0 5px 14px rgba(12, 79, 67, 0.14);
+}
+.google-confirmacao-actions .btn-primary:hover {
+  box-shadow: 0 8px 18px rgba(12, 79, 67, 0.2);
+}
+.google-confirmacao-actions .btn-google-cancel {
+  background: var(--surface-muted);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: #b91c1c;
+  box-shadow: none;
+}
+.google-confirmacao-actions .btn-google-cancel:hover {
+  background: rgba(220, 38, 38, 0.07);
+  border-color: rgba(220, 38, 38, 0.36);
+  box-shadow: none;
+}
+.google-confirmacao-actions .btn-primary:focus-visible {
+  outline: 3px solid rgba(26, 138, 117, 0.35);
+  outline-offset: 3px;
+}
+.google-confirmacao-actions .btn-google-cancel:focus-visible {
+  outline-color: rgba(220, 38, 38, 0.3);
 }
 .google-avatar {
   width: 64px;
@@ -69,7 +128,8 @@ form {
   color: var(--fundoclaro);
   font-size: var(--font-text);
 }
-.google-user-info h2,.google-user-info p {
+.google-user-info h2,
+.google-user-info p {
   margin: 0 0 0.25rem;
   font-size: var(--font-text);
   color: var(--fundoclaro);
@@ -96,22 +156,32 @@ form {
   justify-content: center;
   gap: 0.75rem;
   width: 100%;
-  padding: 0.75rem 1rem;
   border-radius: var(--border-radius);
-  border: 1.5px solid var(--border);
+  border: var(--border);
   background: var(--botao);
   cursor: pointer;
   text-decoration: none;
   color: var(--fundoescuro);
   margin-bottom: 1.25rem;
+  max-width: 100px;
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
     transform 0.15s;
   font-family: "Outfit", sans-serif;
-  font-size: var(--font-text);
+  font-size: var(--font-title);
   font-weight: 600;
   min-height: 48px;
+}
+.btn-google--cadastro {
+  width: 100%;
+  max-width: 550px;
+  min-height: 52px;
+  margin: 0 auto 1.25rem;
+  padding: 0.85rem;
+}
+.btn-google--cadastro p {
+  margin: 0;
 }
 .btn-google:hover {
   box-shadow: 0 2px 10px rgba(12, 79, 67, 0.1);
@@ -132,7 +202,7 @@ form {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size:var(--font-small);
+  font-size: var(--font-small);
   color: #7a9490;
   margin-bottom: 1.25rem;
 }
@@ -162,11 +232,12 @@ label.inputs {
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
-.small{
-  font-size: var(--font-small)
+.small {
+  font-size: var(--font-small);
+  color: var(--muted);
 }
 .link-cadastro {
-  color: var(--accent-color)
+  color: var(--accent-color);
 }
 
 /* ── Inputs ──────────────────────────────────────────────── */
@@ -178,7 +249,7 @@ select,
 textarea {
   width: 100%;
   padding: 0.72rem 1rem;
-  border: 1.5px solid var(--border);
+  border: var(--border);
   border-radius: var(--border-radius);
   font-family: "Outfit", sans-serif;
   font-size: var(--font-text);
@@ -261,14 +332,15 @@ input.erro-input:focus {
   border: none;
   border-radius: var(--border-radius);
   font-family: "Outfit", sans-serif;
-  font-size: var(--font-text);
+  font-size: var(--font-title);
   font-weight: 700;
   cursor: pointer;
   transition:
     background 0.2s,
     transform 0.15s,
     box-shadow 0.2s;
-  min-height: 50px;
+  max-width: 100px;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,6 +352,35 @@ input.erro-input:focus {
 }
 .btn-primary:active {
   transform: scale(0.99);
+}
+.redefinir-senha .actions > .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 550px;
+  min-height: 52px;
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: var(--font-text);
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 5px 14px rgba(12, 79, 67, 0.14);
+}
+.redefinir-senha .actions > .btn-primary:hover {
+  box-shadow: 0 8px 18px rgba(12, 79, 67, 0.2);
+}
+.redefinir-senha .actions > .btn-primary:focus-visible {
+  outline: 3px solid rgba(26, 138, 117, 0.35);
+  outline-offset: 3px;
+}
+.btn-login-submit {
+  width: 100%;
+  max-width: 550px;
+  min-height: 52px;
+  margin: 1.25rem auto 1rem;
 }
 
 /* ── Ações ───────────────────────────────────────────────── */
@@ -340,13 +441,35 @@ input.erro-input:focus {
 }
 .actions-duplo {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
   justify-content: space-between;
+}
+.form-multistep .actions:not(.actions-duplo) {
+  display: flex;
+  justify-content: flex-end;
+}
+.form-multistep .actions:not(.actions-duplo) > .btn-primary {
+  margin: 0;
+}
+.form-multistep .actions-duplo > .btn-secondary {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.form-multistep .actions-duplo > .btn-primary {
+  margin: 0 0 0 auto;
 }
 .btn-secondary {
   flex: 1;
   min-height: 50px;
-  border: 1.5px solid var(--border);
+  border: var(--border);
   background: var(--botao);
   color: var(--fundoescuro);
   padding: 3px;
@@ -367,6 +490,17 @@ input.erro-input:focus {
   opacity: 0.65;
   cursor: not-allowed;
   transform: none;
+}
+
+@media (max-width: 480px) {
+  .google-confirmacao-actions {
+    gap: 10px;
+  }
+
+  .google-confirmacao-actions .btn-primary {
+    padding-inline: 0.5rem;
+    font-size: 14px;
+  }
 }
 .form-loading {
   display: none;
@@ -407,9 +541,9 @@ input.erro-input:focus {
 
 /* ── Responsividade ──────────────────────────────────────── */
 @media (max-width: 768px) {
-    .btn-biometrics {
-        display: block;
-    }
+  .btn-biometrics {
+    display: block;
+  }
 }
 
 @media (max-width: 600px) {
@@ -423,8 +557,10 @@ input.erro-input:focus {
   .actions-duplo {
     flex-direction: column;
   }
+  .form-multistep .actions-duplo {
+    flex-direction: row;
+  }
 }
-
 
 /* Remove o botão nativo de mostrar senha do Edge */
 input::-ms-reveal,
