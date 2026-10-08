@@ -133,7 +133,7 @@ main {
   gap: 1rem;
   padding: 1.2rem 1.4rem;
   background: var(--surface-bg);
-  border: 1px solid var(--border);
+  border:  var(--border);
   border-radius: 18px;
 
   cursor: pointer;
@@ -169,7 +169,7 @@ main {
 
   background: var(--surface-bg);
   border-radius: 50%;
-  border: 1px solid var(--border);
+  border:  var(--border);
   transition: 0.25s;
 }
 

@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Dashboard | Healthy Safely</title>
-  <meta name="description" content="Dashboard do Healthy Safely - Acompanhe seu progresso em saúde e bem-estar." />
-  <meta name="keywords" content="saúde, bem-estar, dashboard, tarefas, programas" />
+  <meta name="description" content="Dashboard do Healthy Safely - Acompanhe sua rotina de saúde e bem-estar." />
+  <meta name="keywords" content="saúde, bem-estar, dashboard, tarefas, rotina" />
   <meta property="og:title" content="Dashboard | Healthy Safely" />
-  <meta property="og:description" content="Acompanhe seu progresso, programas e tarefas — tudo em um só lugar." />
+  <meta property="og:description" content="Acompanhe sua rotina, seu progresso e suas tarefas — tudo em um só lugar." />
   <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
   <meta property="og:url" content="https://healthysafely.com/dashboard" />
   <meta property="og:type" content="website" />
@@ -20,6 +20,7 @@
 <body>
   <%- include('../../partials/header.ejs') %>
   <%
+    /* ── Dados vindos do controller (mesmas variáveis de antes) ───────── */
     const taskList = typeof tasks !== 'undefined' ? tasks : [];
     const tarefasOrdenadas = [...taskList].sort((a, b) => {
       if (!a.horario && !b.horario) return 0;
@@ -27,11 +28,17 @@
       if (!b.horario) return -1;
       return String(a.horario).localeCompare(String(b.horario));
     });
+
+    // Ordem visual: "Durante o dia" primeiro (tarefas flexíveis), depois a linha do tempo.
     const periodos = [
-      { id: 'manha', label: 'Manhã', icon: 'bi-sun', inicio: '00:00', fim: '12:00' },
-      { id: 'tarde', label: 'Tarde', icon: 'bi-cloud-sun', inicio: '12:00', fim: '18:00' },
-      { id: 'noite', label: 'Noite', icon: 'bi-moon-stars', inicio: '18:00', fim: '24:00' },
-      { id: 'sem-horario', label: 'Sem horário', icon: 'bi-pin-angle', inicio: null, fim: null },
+      { id: 'sem-horario', label: 'Durante o dia', icon: 'bi-pin-angle', chip: 'Durante o dia', timed: false,
+        vazio: 'Sem tarefas flexíveis', dica: 'Tarefas sem horário aparecem aqui.' },
+      { id: 'manha', label: 'Manhã', icon: 'bi-sun', chip: 'Manhã', timed: true,
+        vazio: 'Manhã livre', dica: 'Que tal começar o dia com um hábito leve?' },
+      { id: 'tarde', label: 'Tarde', icon: 'bi-cloud-sun', chip: 'Tarde', timed: true,
+        vazio: 'Tarde livre', dica: 'Um pequeno cuidado à tarde faz diferença.' },
+      { id: 'noite', label: 'Noite', icon: 'bi-moon-stars', chip: 'Noite', timed: true,
+        vazio: 'Noite livre', dica: 'Encerrar o dia com calma ajuda no sono.' },
     ];
     const periodoDaTarefa = (tarefa) => {
       if (!tarefa.horario) return 'sem-horario';
@@ -50,25 +57,36 @@
     const tarefasConcluidas = taskList.filter(t => t.completed).length;
     const tarefasPendentes = totalTarefas - tarefasConcluidas;
     const progressoHoje = totalTarefas > 0 ? Math.round((tarefasConcluidas / totalTarefas) * 100) : 0;
-    const progressoSemana = typeof pctSemana !== 'undefined' && !isNaN(pctSemana) ? pctSemana : 0;
+    const progressoSemana = typeof pctSemana !== 'undefined' && !isNaN(pctSemana) ? Math.round(pctSemana) : 0;
+    const tudoCerto = totalTarefas > 0 && tarefasPendentes === 0;
 
-    const primeiroNome = nome ? nome.split(' ')[0] : 'Usuário';
+    const nomeCompleto = typeof nome !== 'undefined' && nome ? String(nome) : '';
+    const primeiroNome = nomeCompleto ? nomeCompleto.split(' ')[0] : 'Usuário';
+
+    const usuarioAtual = typeof usuario !== 'undefined' && usuario ? usuario : {};
+    const sequenciaDias = Number(usuarioAtual.ofensive) || 0;
 
     const nomesCategoria = {
+      geral: 'Geral',
       sono: 'Sono',
       saude: 'Saúde',
       exercicio: 'Atividade física',
-      'atividade fisica': 'Atividade física',
       alimentacao: 'Alimentação',
     };
     const iconesCategoria = {
+      geral: 'bi-list-check',
       sono: 'bi-moon-stars',
       saude: 'bi-heart-pulse',
       exercicio: 'bi-bicycle',
-      'atividade fisica': 'bi-bicycle',
       alimentacao: 'bi-egg-fried',
     };
+    // Normaliza categorias antigas/desconhecidas
+    const chaveCategoria = (c) => {
+      if (c === 'atividade fisica') return 'exercicio';
+      return nomesCategoria[c] ? c : 'geral';
+    };
     const labelsRepeticao = { daily: 'Diária', weekly: 'Semanal' };
+    const plural = (n) => n + (n === 1 ? ' tarefa' : ' tarefas');
 
     const flashAtual = typeof flash !== 'undefined' ? flash : null;
   %>
@@ -80,207 +98,237 @@
     </div>
   <% } %>
 
-  <main class="dashboard-main">
-    <!--CABEÇALHO-->
-    <section class="dashboard-cb" aria-label="Boas-vindas">
-      <article class="welcome">
-        <span class="title">
-          Dashboard
-        </span>
+  <main class="rt<%= tudoCerto ? ' is-all-done' : '' %>">
+    <div class="rt-layout">
 
-        <!--Apresentação-->
-        <h1>Olá, <span class="accent"><%= primeiroNome %></span></h1>
+      <!-- ══════════ COLUNA LATERAL: saudação, progresso, semana ══════════ -->
+      <aside class="rt-side" aria-label="Resumo do dia">
 
-        <p class="welcome-subtitle">
-          <% if (tarefasPendentes > 0) { %>
-            Você tem <strong><%= tarefasPendentes %></strong> tarefa<%= tarefasPendentes > 1 ? 's' : '' %> pendente<%= tarefasPendentes > 1 ? 's' : '' %> para hoje.
-          <% } else if (totalTarefas > 0) { %>
-            Todas as suas tarefas estão em dia. 🎉
-          <% } else { %>
-            Você ainda não tem tarefas cadastradas.
-          <% } %>
-        </p>
-      </article>
-
-      <!--PROGRESSO-->
-      <article class="dashboard-progress" aria-label="Progresso de hoje e da semana">
-        <div class="progress-card">
-          <div class="circular-progress" style="--progress: <%= progressoHoje %>%" role="img" aria-label="<%= progressoHoje %>% das tarefas concluídas hoje">
-              <span class="progress-value"><%= progressoHoje %>%</span>
+        <!-- SAUDAÇÃO -->
+        <header class="rt-hero">
+          <div class="rt-hero__text">
+            <p class="rt-hero__hello" data-rt="hello">Olá,</p>
+            <h1 class="rt-hero__name"><%= primeiroNome %></h1>
+            <p class="rt-hero__date" data-rt="date"></p>
+            <p class="rt-hero__quote">Pequenas escolhas hoje,<br />grandes resultados amanhã. 💚</p>
           </div>
-          <span class="progress-label">Hoje</span>
-        </div>
+          <svg class="rt-hero__art" viewBox="0 0 220 170" aria-hidden="true" focusable="false">
+            <circle class="art-sun" cx="150" cy="52" r="30" />
+            <path class="art-hill art-hill--back" d="M0 170V112C32 84 72 80 108 98c34 17 66 4 112-26v98Z" />
+            <path class="art-hill art-hill--front" d="M40 170V132c28-24 62-26 96-12 30 12 54 8 84-14v64Z" />
+            <path class="art-stem" d="M160 138V92" />
+            <path class="art-leaf" d="M160 100c-18 0-30-9-32-26 18-2 31 7 32 26Z" />
+            <path class="art-leaf" d="M160 90c2-17 14-27 32-26-1 17-14 27-32 26Z" />
+          </svg>
+        </header>
 
-        <div class="progress-card">
-          <div class="circular-progress" style="--progress: <%= progressoSemana %>%" role="img" aria-label="<%= progressoSemana %>% das tarefas concluídas na semana">
-              <span class="progress-value"><%= progressoSemana %>%</span>
+        <!-- PROGRESSO -->
+        <article class="rt-progress" aria-labelledby="rt-progress-title">
+          <div class="rt-ring" role="img" aria-label="<%= progressoHoje %>% das tarefas concluídas hoje">
+            <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+              <circle class="rt-ring__track" cx="22" cy="22" r="19" pathLength="100" />
+              <circle class="rt-ring__value" data-rt="ring" cx="22" cy="22" r="19" pathLength="100" style="--p: <%= progressoHoje %>" />
+            </svg>
+            <span class="rt-ring__pct" data-rt="pct"><%= progressoHoje %>%</span>
           </div>
-          <span class="progress-label">Semana</span>
-        </div>
-      </article>
-    </section>
 
-    <!--RESUMO RÁPIDO-->
-    <section class="dashboard-stats" aria-label="Resumo de tarefas">
-      <article class="stat-card">
-        <div class="stat-icon stat-icon--pendente" aria-hidden="true">
-          <i class="bi bi-hourglass-split"></i>
-        </div>
-        <div class="stat-info">
-          <strong><%= tarefasPendentes %></strong>
-          <span>Pendentes</span>
-        </div>
-      </article>
+          <div class="rt-progress__body">
+            <h2 id="rt-progress-title">Sua rotina de hoje</h2>
+            <% if (totalTarefas > 0) { %>
+              <p class="rt-progress__sum" data-rt="summary"><%= tarefasConcluidas %> de <%= totalTarefas %> tarefa<%= totalTarefas === 1 ? '' : 's' %> concluída<%= tarefasConcluidas === 1 ? '' : 's' %></p>
+            <% } else { %>
+              <p class="rt-progress__sum" data-rt="summary">Nenhuma tarefa para hoje ainda</p>
+            <% } %>
+            <div class="rt-bar" aria-hidden="true"><span data-rt="bar" style="width: <%= progressoHoje %>%"></span></div>
 
-      <article class="stat-card">
-        <div class="stat-icon stat-icon--concluida" aria-hidden="true">
-          <i class="bi bi-check-circle-fill"></i>
-        </div>
-        <div class="stat-info">
-          <strong><%= tarefasConcluidas %></strong>
-          <span>Concluídas</span>
-        </div>
-      </article>
+            <p class="rt-done" data-rt="done" <%= tudoCerto ? '' : 'hidden' %>>✨ Tudo certo! Você concluiu sua rotina de hoje.</p>
 
-      <article class="stat-card">
-        <div class="stat-icon stat-icon--total" aria-hidden="true">
-          <i class="bi bi-list-check"></i>
-        </div>
-        <div class="stat-info">
-          <strong><%= totalTarefas %></strong>
-          <span>Total de tarefas</span>
-        </div>
-      </article>
-    </section>
+            <p class="rt-next" data-rt="next" <%= proximaTarefa ? '' : 'hidden' %>>
+              <i class="bi bi-arrow-right-circle" aria-hidden="true"></i>
+              <span>Próxima: <strong data-rt="next-text"><% if (proximaTarefa) { %><%= String(proximaTarefa.horario).slice(0, 5) %> · <%= proximaTarefa.title %><% } %></strong></span>
+            </p>
 
-    <!-- TAREFAS DE HOJE -->
-    <section class="dashboard-tasks" aria-labelledby="tarefas-hoje-titulo">
-      <article class="tasks-header">
-        <div>
-          <span class="title">Rotina</span>
-          <h2 id="tarefas-hoje-titulo">Tarefas de hoje</h2>
-        </div>
-        <div class="task-actions">
-          <button type="button" class="tab-action-btn" aria-label="Adicionar tarefa" title="Adicionar tarefa" onclick="window.location.href='/tasks'">
-            <i class="bi bi-plus-lg" aria-hidden="true"></i>
-          </button>
-          <a href="/tasks" class="tab-link">Ver todas <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
-        </div>
-      </article>
-
-      <% if (proximaTarefa) { %>
-        <article class="next-task" aria-label="Próxima tarefa">
-          <div class="next-task-icon"><i class="bi bi-arrow-right-circle" aria-hidden="true"></i></div>
-          <div>
-            <span class="next-task-label">Próxima tarefa</span>
-            <strong><time datetime="<%= proximaTarefa.horario %>"><%= String(proximaTarefa.horario).slice(0, 5) %></time> · <%= proximaTarefa.title %></strong>
-            <span class="next-task-category"><%= nomesCategoria[proximaTarefa.categoria] || 'Geral' %></span>
+            <ul class="rt-chips-info">
+              <li><i class="bi bi-calendar-week" aria-hidden="true"></i> Semana: <strong><%= progressoSemana %>%</strong></li>
+              <% if (sequenciaDias > 0) { %>
+                <li><i class="bi bi-fire" aria-hidden="true"></i> <strong><%= sequenciaDias %></strong> dia<%= sequenciaDias === 1 ? '' : 's' %> seguidos</li>
+              <% } %>
+            </ul>
           </div>
         </article>
-      <% } %>
 
-      <div class="task-filters" aria-label="Filtros de tarefas">
-        <label>Mostrar
-          <select id="task-status-filter">
-            <option value="all">Todas</option>
-            <option value="pending">Pendentes</option>
-            <option value="completed">Concluídas</option>
-          </select>
-        </label>
-        <label>Período
-          <select id="task-period-filter">
-            <option value="all">Todos</option>
+        <!-- SEMANA (montada no navegador com a data local; hoje destacado) -->
+        <nav class="rt-weekbox" aria-label="Semana atual">
+          <ol class="rt-week" id="rtWeek"></ol>
+        </nav>
+      </aside>
+
+      <!-- ══════════ ROTINA ══════════ -->
+      <section class="rt-routine" aria-labelledby="rt-routine-title">
+        <header class="rt-routine__head">
+          <div>
+            <p class="rt-kicker">Hoje</p>
+            <h2 id="rt-routine-title">Minha rotina</h2>
+          </div>
+          <a href="/tasks?nova=1" class="rt-add-btn">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Nova tarefa
+          </a>
+        </header>
+
+        <% if (totalTarefas === 0) { %>
+          <!-- SEM NENHUMA TAREFA -->
+          <div class="rt-blank">
+            <span class="rt-blank__icon" aria-hidden="true"><i class="bi bi-flower1"></i></span>
+            <h3>Sua rotina começa aqui</h3>
+            <p>Você ainda não tem tarefas para hoje. Comece com algo simples, como beber um copo d'água ou caminhar por 10 minutos.</p>
+            <a href="/tasks?nova=1" class="rt-add-btn rt-add-btn--solid"><i class="bi bi-plus-lg" aria-hidden="true"></i> Criar minha primeira tarefa</a>
+          </div>
+        <% } else { %>
+
+          <!-- FILTROS -->
+          <div class="rt-filters" aria-label="Filtros de tarefas">
+            <div class="rt-seg" role="group" aria-label="Mostrar">
+              <button type="button" class="rt-seg__btn is-active" data-status="all" aria-pressed="true">Todas</button>
+              <button type="button" class="rt-seg__btn" data-status="pending" aria-pressed="false">Pendentes</button>
+              <button type="button" class="rt-seg__btn" data-status="completed" aria-pressed="false">Concluídas</button>
+            </div>
+            <div class="rt-pchips" role="group" aria-label="Período">
+              <button type="button" class="rt-pchip is-active" data-period="all" aria-pressed="true">Todos</button>
+              <% periodos.forEach(periodo => { %>
+                <button type="button" class="rt-pchip rt-pchip--<%= periodo.id %>" data-period="<%= periodo.id %>" aria-pressed="false">
+                  <i class="bi <%= periodo.icon %>" aria-hidden="true"></i><%= periodo.chip %>
+                </button>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- PERÍODOS / LINHA DO TEMPO -->
+          <div class="rt-periods" id="rtPeriods">
             <% periodos.forEach(periodo => { %>
-              <option value="<%= periodo.id %>"><%= periodo.label %></option>
+              <% const lista = tarefasPorPeriodo[periodo.id]; %>
+              <%# "Durante o dia" vazio não ocupa espaço; manhã/tarde/noite vazios ganham um convite %>
+              <% if (lista.length === 0 && !periodo.timed) { return; } %>
+              <section class="rt-period rt-period--<%= periodo.id %>" data-period="<%= periodo.id %>" data-empty="<%= lista.length === 0 ? 'true' : 'false' %>">
+                <h3 class="rt-period__title">
+                  <button type="button" class="rt-period__toggle" aria-expanded="true" aria-controls="rt-body-<%= periodo.id %>">
+                    <span class="rt-period__icon" aria-hidden="true"><i class="bi <%= periodo.icon %>"></i></span>
+                    <span class="rt-period__label"><%= periodo.label %></span>
+                    <span class="rt-period__count" data-rt="count"><%= plural(lista.length) %></span>
+                    <i class="bi bi-chevron-down rt-period__chev" aria-hidden="true"></i>
+                  </button>
+                </h3>
+
+                <div class="rt-period__body" id="rt-body-<%= periodo.id %>">
+                  <% if (lista.length) { %>
+                    <ol class="rt-list<%= periodo.timed ? ' rt-list--timeline' : '' %>">
+                      <% lista.forEach((t, i) => {
+                        const cat = chaveCategoria(t.categoria);
+                        const hora = t.horario ? String(t.horario).slice(0, 5) : '';
+                        const ehProxima = proximaTarefa && proximaTarefa._id === t._id;
+                      %>
+                        <li class="rt-item<%= periodo.timed ? ' rt-item--timed' : ' rt-item--flex' %><%= i === 0 ? ' is-first' : '' %><%= i === lista.length - 1 ? ' is-last' : '' %><%= ehProxima ? ' rt-item--next' : '' %>"
+                            data-status="<%= t.completed ? 'completed' : 'pending' %>"
+                            data-timed="<%= periodo.timed ? '1' : '0' %>"
+                            data-time="<%= hora %>"
+                            data-title="<%= t.title %>">
+                          <% if (periodo.timed) { %>
+                            <span class="rt-rail" aria-hidden="true"><span class="rt-dot"><i class="bi bi-check-lg"></i></span></span>
+                            <time class="rt-time" datetime="<%= hora %>"><%= hora %></time>
+                          <% } %>
+
+                          <article class="rt-card<%= t.completed ? ' is-done' : '' %>">
+                            <a class="rt-card__main" href="/tasks/editar/<%= t._id %>" aria-label="Editar tarefa: <%= t.title %>">
+                              <span class="rt-card__icon cat-<%= cat %>" aria-hidden="true"><i class="bi <%= iconesCategoria[cat] %>"></i></span>
+                              <span class="rt-card__text">
+                                <span class="rt-card__title"><%= t.title %></span>
+                                <% if (t.descricao) { %><span class="rt-card__desc"><%= t.descricao %></span><% } %>
+                                <span class="rt-card__meta">
+                                  <span class="rt-tag cat-<%= cat %>"><%= nomesCategoria[cat] %></span>
+                                  <% if (t.repeticao && t.repeticao !== 'once') { %>
+                                    <span class="rt-rep"><i class="bi bi-arrow-repeat" aria-hidden="true"></i><%= labelsRepeticao[t.repeticao] || t.repeticao %></span>
+                                  <% } %>
+                                  <span class="rt-pill">Próxima</span>
+                                </span>
+                              </span>
+                            </a>
+
+                            <%# Mesma rota de antes: /tasks/concluir alterna concluída/pendente %>
+                            <a href="/tasks/concluir?id=<%= t._id %>" class="rt-check" role="button"
+                               aria-pressed="<%= t.completed ? 'true' : 'false' %>"
+                               aria-label="<%= t.completed ? 'Desfazer conclusão: ' : 'Concluir: ' %><%= t.title %>">
+                              <i class="bi bi-check-lg" aria-hidden="true"></i>
+                            </a>
+                          </article>
+                        </li>
+                      <% }) %>
+                    </ol>
+                  <% } else { %>
+                    <div class="rt-empty">
+                      <span class="rt-empty__icon" aria-hidden="true"><i class="bi <%= periodo.icon %>"></i></span>
+                      <div>
+                        <p class="rt-empty__title"><%= periodo.vazio %></p>
+                        <p class="rt-empty__text">Você não tem tarefas programadas para este período. <%= periodo.dica %></p>
+                        <a href="/tasks?nova=1" class="rt-empty__cta"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar tarefa</a>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+              </section>
             <% }) %>
-          </select>
-        </label>
-      </div>
+          </div>
 
-      <div class="task-periods" id="task-periods">
-        <% periodos.forEach(periodo => { %>
-          <% const tarefasDoPeriodo = tarefasPorPeriodo[periodo.id]; %>
-          <section class="task-period" data-period="<%= periodo.id %>">
-            <header class="period-header">
-              <h3><i class="bi <%= periodo.icon %>" aria-hidden="true"></i><%= periodo.label %></h3>
-              <span><%= tarefasDoPeriodo.length %></span>
-            </header>
-            <% if (tarefasDoPeriodo.length) { %>
-              <ul class="hs-pessoais-wrapper" role="list">
-                <% tarefasDoPeriodo.forEach((t, i) => { %>
-                  <li class="task-item" data-status="<%= t.completed ? 'completed' : 'pending' %>">
-                    <article class="hs-pessoal-card <%= t.completed ? 'concluida' : '' %>">
-                      <div class="hs-pessoal-left">
-                        <div class="hs-pessoal-icon" aria-hidden="true"><i class="bi <%= iconesCategoria[t.categoria] || 'bi-list' %>"></i></div>
-                        <div class="hs-pessoal-info">
-                          <p class="hs-pessoal-titulo"><%= t.title %></p>
-                          <div class="task-details">
-                            <span class="task-badge categoria"><i class="bi bi-tag" aria-hidden="true"></i><%= nomesCategoria[t.categoria] || 'Geral' %></span>
-                            <% if (t.horario) { %><span class="task-badge horario"><i class="bi bi-clock" aria-hidden="true"></i><time datetime="<%= t.horario %>"><%= String(t.horario).slice(0, 5) %></time></span><% } %>
-                            <% if (t.repeticao && t.repeticao !== 'once') { %><span class="task-badge repeticao"><i class="bi bi-arrow-repeat" aria-hidden="true"></i><%= labelsRepeticao[t.repeticao] || t.repeticao %></span><% } %>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="hs-pessoal-right">
-                        <% if (!t.completed) { %>
-                          <a href="/tasks/concluir?id=<%= t._id %>" class="hs-pessoal-btn" aria-label="Concluir: <%= t.title %>"><i class="bi bi-check-circle" aria-hidden="true"></i><span>Concluir</span></a>
-                        <% } else { %>
-                          <button class="hs-pessoal-btn" disabled aria-label="Tarefa concluída"><i class="bi bi-check-circle-fill" aria-hidden="true"></i></button>
-                        <% } %>
-                      </div>
-                    </article>
-                  </li>
-                <% }) %>
-              </ul>
-            <% } else { %>
-              <p class="period-empty">Nenhuma tarefa neste período.</p>
-            <% } %>
-          </section>
-        <% }) %>
-      </div>
-      <p class="hs-empty-state task-filter-empty" hidden>Nenhuma tarefa corresponde aos filtros.</p>
-    </section>
+          <!-- NENHUM RESULTADO NO FILTRO -->
+          <div class="rt-noresult" id="rtNoResult" hidden>
+            <i class="bi bi-funnel" aria-hidden="true"></i>
+            <p>Nada por aqui com esses filtros.</p>
+            <button type="button" id="rtClear">Limpar filtros</button>
+          </div>
 
-    <!-- ── ÁREAS DE SAÚDE ───────────────────────────────────── -->
-    <section class="dashboard-footer" aria-labelledby="tit-cats">
-      <header class="hs-section-header">
-        <h2 class="hs-section-title" id="tit-cats">
-          Áreas de Saúde
-        </h2>
-      </header>
-      <nav class="hs-categorias" aria-label="Categorias">
-        <a href="/sono" class="hs-categoria-link">
-          <span class="hs-categoria-icone">
-            <img src="/imagem/sono.webp" alt="" aria-hidden="true" />
-          </span>
+          <!-- CONVITE FINAL -->
+          <a class="rt-nudge" href="/tasks?nova=1">
+            <span class="rt-nudge__icon" aria-hidden="true"><i class="bi bi-stars"></i></span>
+            <span class="rt-nudge__text">
+              <strong><%= tudoCerto ? 'Dia completo!' : 'Ainda tem tempo!' %></strong>
+              <span>Que tal adicionar mais uma tarefa para cuidar de você hoje?</span>
+            </span>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </a>
+        <% } %>
+      </section>
+    </div>
+
+    <!-- ══════════ ÁREAS DE SAÚDE ══════════ -->
+    <section class="rt-areas" aria-labelledby="tit-cats">
+      <h2 id="tit-cats">Áreas de saúde</h2>
+      <nav class="rt-areas__grid" aria-label="Categorias">
+        <a href="/sono" class="rt-area">
+          <span class="rt-area__icon"><img src="/imagem/sono.webp" alt="" aria-hidden="true" /></span>
           <span>Sono</span>
         </a>
-        <a href="/saude-mental" class="hs-categoria-link">
-          <span class="hs-categoria-icone">
-            <img src="/imagem/saudemental.webp" alt="" aria-hidden="true" />
-          </span>
-          <span>Saúde Mental</span>
+        <a href="/saude-mental" class="rt-area">
+          <span class="rt-area__icon"><img src="/imagem/saudemental.webp" alt="" aria-hidden="true" /></span>
+          <span>Saúde mental</span>
         </a>
-        <a href="/atividade-fisica" class="hs-categoria-link">
-          <span class="hs-categoria-icone">
-            <img src="/imagem/atf.webp" alt="" aria-hidden="true" />
-          </span>
-          <span>Atividade Física</span>
+        <a href="/atividade-fisica" class="rt-area">
+          <span class="rt-area__icon"><img src="/imagem/atf.webp" alt="" aria-hidden="true" /></span>
+          <span>Atividade física</span>
         </a>
-        <a href="/alimentacao" class="hs-categoria-link">
-          <span class="hs-categoria-icone">
-            <img src="/imagem/alimentacao.webp" alt="" aria-hidden="true" />
-          </span>
+        <a href="/alimentacao" class="rt-area">
+          <span class="rt-area__icon"><img src="/imagem/alimentacao.webp" alt="" aria-hidden="true" /></span>
           <span>Alimentação</span>
         </a>
       </nav>
     </section>
   </main>
 
+  <!-- Botão flutuante (mobile): abre o fluxo existente de criação em /tasks -->
+  <a href="/tasks?nova=1" class="rt-fab" aria-label="Nova tarefa">
+    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+  </a>
 
   <%- include('../../partials/footer.ejs') %>
 
   <script src="/js/app/dashboard.js"></script>
-
+  <script src="/js/app/drawer.js"></script>
 </body>
 </html>

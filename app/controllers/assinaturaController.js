@@ -50,7 +50,10 @@ function assinaturaValida(req) {
 async function sincronizarAssinatura(preapprovalId) {
   const preApproval = new PreApproval(mpClient);
   const assinatura = await preApproval.get({ id: preapprovalId });
-  await usuarioModel.atualizarStatusAssinatura(preapprovalId, assinatura.status);
+  await usuarioModel.atualizarStatusAssinatura(
+    preapprovalId,
+    assinatura.status,
+  );
   return assinatura;
 }
 
@@ -63,7 +66,9 @@ const assinaturaController = {
       if (!process.env.MP_ACCESS_TOKEN) {
         return res
           .status(503)
-          .send("Pagamentos ainda não configurados. Tente novamente mais tarde.");
+          .send(
+            "Pagamentos ainda não configurados. Tente novamente mais tarde.",
+          );
       }
 
       const preApproval = new PreApproval(mpClient);
@@ -82,7 +87,51 @@ const assinaturaController = {
         },
       });
 
-      await usuarioModel.vincularAssinatura(usuario.id, resultado.id);
+      if (!resultado?.id) {
+        throw new Error(
+          "Mercado Pago não retornou o identificador da assinatura.",
+        );
+      }
+
+      if (!resultado?.init_point) {
+        try {
+          await preApproval.update({
+            id: resultado.id,
+            body: { status: "cancelled" },
+          });
+        } catch (erroCancelamento) {
+          console.error(
+            "Erro ao cancelar pré-aprovação sem link de checkout:",
+            erroCancelamento,
+          );
+        }
+
+        throw new Error("Mercado Pago não retornou o link de checkout.");
+      }
+
+      const vinculada = await usuarioModel.vincularAssinatura(
+        usuario.id,
+        resultado.id,
+      );
+
+      if (!vinculada) {
+        try {
+          await preApproval.update({
+            id: resultado.id,
+            body: { status: "cancelled" },
+          });
+        } catch (erroCancelamento) {
+          console.error(
+            "Erro ao cancelar pré-aprovação sem vínculo:",
+            erroCancelamento,
+          );
+        }
+
+        throw new Error(
+          "Não foi possível vincular a pré-aprovação à conta do usuário.",
+        );
+      }
+
       req.session.usuario.mp_preapproval_id = resultado.id;
       req.session.usuario.assinatura_status = "pending";
 
@@ -98,7 +147,9 @@ const assinaturaController = {
     try {
       const usuario = req.session.usuario;
       if (usuario.mp_preapproval_id) {
-        const assinatura = await sincronizarAssinatura(usuario.mp_preapproval_id);
+        const assinatura = await sincronizarAssinatura(
+          usuario.mp_preapproval_id,
+        );
         req.session.usuario.plano =
           assinatura.status === "authorized" ? "premium" : "free";
         req.session.usuario.assinatura_status = assinatura.status;

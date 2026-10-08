@@ -112,6 +112,36 @@ form {
 .google-confirmacao-actions .btn-google-cancel:focus-visible {
   outline-color: rgba(220, 38, 38, 0.3);
 }
+.google-confirmacao .form-multistep .actions:not(.actions-duplo) {
+  justify-content: center;
+}
+.google-confirmacao
+  .form-multistep
+  .actions:not(.actions-duplo)
+  > .btn-primary {
+  width: 100%;
+  max-width: 550px;
+  min-height: 52px;
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: var(--font-text);
+  box-shadow: 0 5px 14px rgba(12, 79, 67, 0.14);
+}
+.google-confirmacao
+  .form-multistep
+  .actions:not(.actions-duplo)
+  > .btn-primary:hover {
+  box-shadow: 0 8px 18px rgba(12, 79, 67, 0.2);
+}
+.google-confirmacao
+  .form-multistep
+  .actions:not(.actions-duplo)
+  > .btn-primary:focus-visible {
+  outline: 3px solid rgba(26, 138, 117, 0.35);
+  outline-offset: 3px;
+}
 .google-avatar {
   width: 64px;
   height: 64px;

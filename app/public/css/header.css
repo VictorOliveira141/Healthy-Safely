@@ -508,6 +508,7 @@
   .header-plano {
     display: inline-flex;
     flex-shrink: 0;
+    margin-left: auto;
     padding: 6px 10px;
     font-size: 0.68rem;
   }
