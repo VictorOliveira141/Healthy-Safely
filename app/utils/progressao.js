@@ -16,7 +16,9 @@ function formatarDataNoFuso(data) {
     month: "2-digit",
     day: "2-digit",
   }).formatToParts(data);
-  const valores = Object.fromEntries(partes.map(({ type, value }) => [type, value]));
+  const valores = Object.fromEntries(
+    partes.map(({ type, value }) => [type, value]),
+  );
   return `${valores.year}-${valores.month}-${valores.day}`;
 }
 
@@ -58,7 +60,8 @@ function inicioDaSemana(data) {
 }
 
 function concluidaAgora(tarefa, hoje = hojeSaoPaulo()) {
-  if (Number(tarefa?.concluida) !== 1 && tarefa?.concluida !== true) return false;
+  if (Number(tarefa?.concluida) !== 1 && tarefa?.concluida !== true)
+    return false;
   const repeticao = tarefa.repeticao || "once";
   if (repeticao === "once") return true;
 
@@ -119,7 +122,9 @@ function tarefaPrevistaNoDia(tarefa, dia) {
 }
 
 function intervaloDias(inicio, quantidade) {
-  return Array.from({ length: quantidade }, (_, indice) => somarDias(inicio, indice));
+  return Array.from({ length: quantidade }, (_, indice) =>
+    somarDias(inicio, indice),
+  );
 }
 
 function criarEventos(conclusoes) {
@@ -153,16 +158,27 @@ function calcularComparacao(eventosPorDia, hoje, periodo, primeiraConclusao) {
   if (!primeiraConclusao || primeiraConclusao > inicioAnterior) return null;
 
   const totalAtual = contarEventos(eventosPorDia, inicioAtual, hoje);
-  const totalAnterior = contarEventos(eventosPorDia, inicioAnterior, fimAnterior);
-  const variacao = totalAnterior === 0
-    ? (totalAtual === 0 ? 0 : 100)
-    : Math.round(((totalAtual - totalAnterior) / totalAnterior) * 100);
+  const totalAnterior = contarEventos(
+    eventosPorDia,
+    inicioAnterior,
+    fimAnterior,
+  );
+  const variacao =
+    totalAnterior === 0
+      ? totalAtual === 0
+        ? 0
+        : 100
+      : Math.round(((totalAtual - totalAnterior) / totalAnterior) * 100);
   return { totalAnterior, variacao };
 }
 
 function calcularSequencia(tarefas, eventosPorDia, hoje) {
-  const diasComEventos = [...eventosPorDia.keys()].filter((dia) => dia <= hoje).sort();
-  const criacoes = tarefas.map((tarefa) => dataSaoPaulo(tarefa.criado_em)).filter(Boolean);
+  const diasComEventos = [...eventosPorDia.keys()]
+    .filter((dia) => dia <= hoje)
+    .sort();
+  const criacoes = tarefas
+    .map((tarefa) => dataSaoPaulo(tarefa.criado_em))
+    .filter(Boolean);
   const inicio = [...diasComEventos, ...criacoes].sort()[0];
   if (!inicio) return { atual: 0, recorde: 0 };
 
@@ -190,7 +206,11 @@ function calcularSequencia(tarefas, eventosPorDia, hoje) {
   return { atual, recorde };
 }
 
-function calcularProgressao({ tarefas = [], conclusoes = [], hoje = hojeSaoPaulo() }) {
+function calcularProgressao({
+  tarefas = [],
+  conclusoes = [],
+  hoje = hojeSaoPaulo(),
+}) {
   const dataHoje = dataSaoPaulo(hoje);
   const { eventos, eventosPorDia } = criarEventos(conclusoes);
   const diasComConclusao = eventosPorDia.size;
@@ -208,39 +228,70 @@ function calcularProgressao({ tarefas = [], conclusoes = [], hoje = hojeSaoPaulo
     const inicio = diasPeriodo[0].iso;
     let previstas = 0;
     for (const dia of diasPeriodo) {
-      previstas += tarefas.filter((tarefa) => tarefaPrevistaNoDia(tarefa, dia.iso)).length;
+      previstas += tarefas.filter((tarefa) =>
+        tarefaPrevistaNoDia(tarefa, dia.iso),
+      ).length;
     }
     periodos[periodo] = {
       dias: diasPeriodo,
       total,
       diasAtivos,
-      taxa: previstas ? Math.min(100, Math.round((total / previstas) * 100)) : null,
-      comparacao: calcularComparacao(eventosPorDia, dataHoje, periodo, primeiraConclusao),
+      taxa: previstas
+        ? Math.min(100, Math.round((total / previstas) * 100))
+        : null,
+      comparacao: calcularComparacao(
+        eventosPorDia,
+        dataHoje,
+        periodo,
+        primeiraConclusao,
+      ),
     };
   }
 
-  const tarefasPorId = new Map(tarefas.map((tarefa) => [String(tarefa.id), tarefa]));
+  const tarefasPorId = new Map(
+    tarefas.map((tarefa) => [String(tarefa.id), tarefa]),
+  );
   const conclusoesHoje = eventosPorDia.get(dataHoje) || new Set();
-  const previstasHoje = tarefas.filter((tarefa) => tarefaPrevistaNoDia(tarefa, dataHoje));
-  const idsPrevistosHoje = new Set(previstasHoje.map((tarefa) => String(tarefa.id)));
-  const extrasHoje = [...conclusoesHoje].filter((id) => !idsPrevistosHoje.has(id)).length;
+  const previstasHoje = tarefas.filter((tarefa) =>
+    tarefaPrevistaNoDia(tarefa, dataHoje),
+  );
+  const idsPrevistosHoje = new Set(
+    previstasHoje.map((tarefa) => String(tarefa.id)),
+  );
+  const extrasHoje = [...conclusoesHoje].filter(
+    (id) => !idsPrevistosHoje.has(id),
+  ).length;
 
   const inicioSemana = inicioDaSemana(dataHoje);
   const diasSemanaAtual = intervaloDias(inicioSemana, 7);
   let previstasSemana = 0;
   for (const dia of diasSemanaAtual) {
-    previstasSemana += tarefas.filter((tarefa) => tarefaPrevistaNoDia(tarefa, dia)).length;
+    previstasSemana += tarefas.filter((tarefa) =>
+      tarefaPrevistaNoDia(tarefa, dia),
+    ).length;
   }
-  const concluidasSemana = contarEventos(eventosPorDia, inicioSemana, somarDias(inicioSemana, 6));
+  const concluidasSemana = contarEventos(
+    eventosPorDia,
+    inicioSemana,
+    somarDias(inicioSemana, 6),
+  );
   const diasEsperadosSemana = new Set();
   for (const dia of diasSemanaAtual) {
-    if (tarefas.some((tarefa) => tarefaPrevistaNoDia(tarefa, dia))) diasEsperadosSemana.add(dia);
+    if (tarefas.some((tarefa) => tarefaPrevistaNoDia(tarefa, dia)))
+      diasEsperadosSemana.add(dia);
   }
 
   const recorde = calcularSequencia(tarefas, eventosPorDia, dataHoje);
-  const ultimaConclusao = [...eventosPorDia.keys()].filter((dia) => dia <= dataHoje).sort().at(-1);
+  const ultimaConclusao = [...eventosPorDia.keys()]
+    .filter((dia) => dia <= dataHoje)
+    .sort()
+    .at(-1);
   let conquista = null;
-  if (recorde.recorde >= 3 && ultimaConclusao && somarDias(dataHoje, -1) <= ultimaConclusao) {
+  if (
+    recorde.recorde >= 3 &&
+    ultimaConclusao &&
+    somarDias(dataHoje, -1) <= ultimaConclusao
+  ) {
     conquista = {
       id: `recorde-${recorde.recorde}`,
       titulo: "Nova sequência!",
@@ -256,7 +307,9 @@ function calcularProgressao({ tarefas = [], conclusoes = [], hoje = hojeSaoPaulo
     periodos,
     sequencia: recorde,
     semana: {
-      diasAtivos: diasSemanaAtual.filter((dia) => (eventosPorDia.get(dia)?.size || 0) > 0).length,
+      diasAtivos: diasSemanaAtual.filter(
+        (dia) => (eventosPorDia.get(dia)?.size || 0) > 0,
+      ).length,
       totalDias: 7,
       metaDiasAtivos: diasEsperadosSemana.size,
     },

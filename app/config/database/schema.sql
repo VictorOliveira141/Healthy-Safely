@@ -148,20 +148,6 @@ INSERT IGNORE INTO tarefas_padrao (id, titulo, categoria) VALUES
   (7, 'Caminhar 30 minutos',              'exercicio');
 
 
--- ── NOTIFICAÇÕES ───────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS notificacoes (
-  id         INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT NOT NULL,
-  mensagem   VARCHAR(500) NOT NULL,
-  lida       TINYINT(1) DEFAULT 0,
-  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-  FOREIGN KEY (usuario_id)
-    REFERENCES usuarios(id)
-    ON DELETE CASCADE
-);
-
-
 -- ── REGISTROS DE SONO ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS registros_sono (
   id             INT AUTO_INCREMENT PRIMARY KEY,

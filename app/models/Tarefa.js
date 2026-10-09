@@ -1,5 +1,9 @@
 var pool = require("../../app/config/pool_conexoes");
-const { hojeSaoPaulo, dataSaoPaulo, concluidaAgora } = require("../utils/progressao");
+const {
+  hojeSaoPaulo,
+  dataSaoPaulo,
+  concluidaAgora,
+} = require("../utils/progressao");
 
 const tarefaModel = {
   listarPorUsuario: async (usuarioId) => {
@@ -37,7 +41,7 @@ const tarefaModel = {
     diaSemana,
   }) => {
     const [r] = await pool.query(
-        `INSERT INTO tarefas (usuario_id, titulo, descricao, categoria, data, horario, repeticao, dia_semana)
+      `INSERT INTO tarefas (usuario_id, titulo, descricao, categoria, data, horario, repeticao, dia_semana)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         usuarioId,

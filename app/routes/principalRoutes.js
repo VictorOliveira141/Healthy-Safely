@@ -257,7 +257,7 @@ router.get("/", (req, res) => {
 router.get("/ajuda", (req, res) => res.render("pages/public/ajuda"));
 
 /* ============================================================
-   User (configurações, notificações, perfil, privacidade)
+  User (configurações, perfil, privacidade)
 ============================================================ */
 
 /* ---------------- Perfil ---------------- */
@@ -273,29 +273,6 @@ router.get("/perfil", apenasAutenticado, async (req, res) => {
 
 router.get("/logout", usuarioController.logout);
 router.get("/sair", usuarioController.logout);
-
-/* ---------------- Notificações ---------------- */
-router.get("/notificacoes", apenasAutenticado, async (req, res) => {
-  const { usuarioModel } = require("../models/Usuario");
-
-  const notificacoes = await usuarioModel.listarNotificacoes(
-    req.session.usuario.id,
-  );
-
-  res.render("pages/user/notificacoes", { notificacoes });
-});
-
-router.post(
-  "/notificacoes/marcar-lidas",
-  apenasAutenticado,
-  async (req, res) => {
-    const { usuarioModel } = require("../models/Usuario");
-
-    await usuarioModel.marcarTodasLidas(req.session.usuario.id);
-
-    res.redirect("/notificacoes");
-  },
-);
 
 /* ---------------- Configurações ---------------- */
 router.get("/configuracoes", apenasAutenticado, (req, res) =>

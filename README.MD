@@ -16,7 +16,7 @@ npm install
 node app
 
 ## 🛠️ Tecnologias
-- **Back-end:** Node.js, Express.js
+- **Back-end:** Node.js, Express.js, Javascript
 - **Views:** EJS
 - **Banco:** MySQL com mysql2
 - **Validação:** express-validator

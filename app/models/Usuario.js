@@ -272,46 +272,6 @@ const usuarioModel = {
     }
   },
 
-  // Criar notificação
-  criarNotificacao: async (usuarioId, mensagem) => {
-    try {
-      await pool.query(
-        "INSERT INTO notificacoes (usuario_id, mensagem) VALUES (?, ?)",
-        [usuarioId, mensagem],
-      );
-      return true;
-    } catch (e) {
-      console.error("Erro notificacao:", e);
-      return false;
-    }
-  },
-
-  // Listar notificações do usuário
-  listarNotificacoes: async (usuarioId) => {
-    try {
-      const [linhas] = await pool.query(
-        "SELECT * FROM notificacoes WHERE usuario_id = ? ORDER BY criado_em DESC LIMIT 50",
-        [usuarioId],
-      );
-      return linhas;
-    } catch (e) {
-      return [];
-    }
-  },
-
-  // Marcar notificações como lidas
-  marcarTodasLidas: async (usuarioId) => {
-    try {
-      await pool.query(
-        "UPDATE notificacoes SET lida = 1 WHERE usuario_id = ?",
-        [usuarioId],
-      );
-      return true;
-    } catch (e) {
-      return false;
-    }
-  },
-
   // Registrar sono
   registrarSono: async (usuarioId, horasDormidas, qualidade) => {
     try {
@@ -394,8 +354,7 @@ const usuarioModel = {
       const [linhas] = await pool.query(
         `SELECT u.*,
                 COUNT(DISTINCT t.id)                                     AS total_tarefas,
-                SUM(CASE WHEN t.concluida=1 THEN 1 ELSE 0 END)          AS tarefas_concluidas,
-                (SELECT COUNT(*) FROM notificacoes n WHERE n.usuario_id=u.id AND n.lida=0) AS notif_nao_lidas
+                SUM(CASE WHEN t.concluida=1 THEN 1 ELSE 0 END)          AS tarefas_concluidas
          FROM usuarios u
          LEFT JOIN tarefas t ON t.usuario_id = u.id
          WHERE u.id = ?

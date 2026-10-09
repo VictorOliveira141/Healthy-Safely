@@ -295,11 +295,6 @@ const tarefaController = {
           tipo: "sucesso",
           msg: "Tarefa concluída!",
         };
-        // Gera notificação de conclusão
-        await usuarioModel.criarNotificacao(
-          req.session.usuario.id,
-          `Tarefa concluída: ${tarefa.titulo || "tarefa"}`,
-        );
       } else {
         req.session.flash = {
           tipo: "info",
