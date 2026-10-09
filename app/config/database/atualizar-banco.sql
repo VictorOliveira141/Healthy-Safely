@@ -110,6 +110,49 @@ ALTER TABLE tarefas
 
 
 -- ─────────────────────────────────────────────────────────────
+-- HISTÓRICO DE CONCLUSÕES (página Progressão)
+--
+-- Uma linha por tarefa e por dia em que ela foi concluída.
+-- Não altera nem apaga nenhuma tabela existente.
+-- ─────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS tarefas_conclusoes (
+  id              INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id      INT NOT NULL,
+  tarefa_id       INT DEFAULT NULL,
+  categoria       ENUM(
+    'saude',
+    'sono',
+    'alimentacao',
+    'exercicio',
+    'geral'
+  ) DEFAULT 'geral',
+  data_referencia DATE NOT NULL,
+  concluida_em    DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uk_conclusao_ocorrencia (tarefa_id, data_referencia),
+  INDEX idx_conclusoes_usuario_data (usuario_id, data_referencia),
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  -- Ao excluir uma tarefa, o histórico de conclusões é mantido
+  FOREIGN KEY (tarefa_id)
+    REFERENCES tarefas(id)
+    ON DELETE SET NULL
+);
+
+
+-- Preserva o que já foi concluído (pode ser executado mais de uma vez)
+INSERT IGNORE INTO tarefas_conclusoes
+  (usuario_id, tarefa_id, categoria, data_referencia, concluida_em)
+SELECT usuario_id, id, categoria, DATE(concluida_em), concluida_em
+FROM tarefas
+WHERE concluida = 1 AND concluida_em IS NOT NULL;
+
+
+-- ─────────────────────────────────────────────────────────────
 -- WEBAUTHN / PASSKEY
 -- ─────────────────────────────────────────────────────────────
 

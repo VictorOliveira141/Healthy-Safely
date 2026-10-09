@@ -2,109 +2,219 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Histórico | Healthy Safely</title>
-  <meta property="og:title" content="Histórico | Healthy Safely" />
-  <meta property="og:description" content="Veja seu histórico de atividades e acompanhe seu progresso com o Healthy Safely." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Progressão | Healthy Safely</title>
+  <meta name="description" content="Acompanhe sua constância, suas metas e a evolução das suas tarefas no Healthy Safely." />
+  <meta property="og:title" content="Progressão | Healthy Safely" />
+  <meta property="og:description" content="Pequenos passos, grandes mudanças. Acompanhe sua evolução no Healthy Safely." />
   <meta property="og:image" content="/imagem/Logo repaginado 2.webp" />
   <meta property="og:url" content="https://healthysafely.com/historico" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Healthy Safely" />
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
   <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/app/historico.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <style>
-    .hist-main { max-width: 700px; margin: 0 auto; padding: 1.5rem 1rem 6rem; }
-    .hist-header { margin-bottom: 1.5rem; }
-    .hist-header h1 { font-size: 1.5rem; font-weight: 900; color: var(--fundoclaro); }
-    .hist-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.75rem; }
-    .hist-stat { background: var(--surface-card, var(--primary-color)); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem; text-align: center; }
-    .hist-stat strong { display: block; font-size: 1.75rem; font-weight: 900; color: var(--secondary-color); }
-    .hist-stat span { font-size: .75rem; color: var(--muted); }
-    .hist-lista { display: flex; flex-direction: column; gap: .75rem; }
-    .hist-dia { background: var(--surface-card, var(--primary-color)); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; }
-    .hist-dia-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
-    .hist-dia-data { font-size: .9rem; font-weight: 800; color: var(--fundoclaro); }
-    .hist-dia-tarefas { font-size: .8rem; color: var(--muted); line-height: 1.5; }
-    .hist-dia-concl { font-size: .75rem; color: var(--muted); margin-top: .35rem; }
-    .pct-bar { width: 100%; height: 5px; background: var(--border); border-radius: 5px; overflow: hidden; margin-top: .35rem; }
-    .pct-fill { height: 100%; background: linear-gradient(90deg, #0c4f43, #34d399); border-radius: 5px; }
-    .empty-hist { text-align: center; padding: 3rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 14px; }
-    .empty-hist i { font-size: 2.5rem; display: block; margin-bottom: .75rem; opacity: .3; }
-    @media(max-width:480px){ .hist-stats{ grid-template-columns:1fr 1fr; } }
-  </style>
-
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#5BBF6A" />
 </head>
 <body>
   <%- include('../../partials/header.ejs') %>
 
-  <main class="hist-main">
-    <header class="hist-header">
-      <%- include('../../partials/botao-voltar.ejs') %>
-      <h1><i class="bi bi-calendar-check-fill" style="color:#1a8a75"></i> Histórico de Atividades</h1>
-      <p style="font-size:.85rem;color:var(--muted);margin-top:.25rem">Acompanhe seu progresso ao longo dos dias</p>
+  <%
+    const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
+    const temDados = !indisponivel && dados && dados.temHistorico;
+    const pctDe = (feitas, previstas) => previstas > 0 ? Math.min(100, Math.round((feitas / previstas) * 100)) : 0;
+    const metaDiariaOk = temDados && dados.metaDiaria.previstas > 0 && dados.metaDiaria.concluidas >= dados.metaDiaria.previstas;
+    const metaSemanalOk = temDados && dados.metaSemanal.previstas > 0 && dados.metaSemanal.concluidas >= dados.metaSemanal.previstas;
+    const mostrarPremium = temDados && dados.diasComConclusao >= 7;
+    const ehPremium = plano === 'premium';
+    const payload = temDados ? {
+      usuarioId: usuarioId,
+      hoje: dados.hoje,
+      periodos: dados.periodos,
+    } : null;
+  %>
+
+  <main class="pg" data-usuario="<%= usuarioId %>">
+
+    <!-- CABEÇALHO -->
+    <header class="pg-head">
+      <h1>Sua progressão</h1>
+      <p>Pequenos passos, grandes mudanças.</p>
     </header>
 
-    <!-- Stats gerais -->
-    <section class="hist-stats" aria-label="Estatísticas gerais">
-      <article class="hist-stat">
-        <strong><%= totalConcluidas %></strong>
-        <span>Tarefas concluídas</span>
-      </article>
-      <article class="hist-stat">
-        <strong><%= historico.length %></strong>
-        <span>Dias ativos</span>
-      </article>
-      <article class="hist-stat">
-        <strong><%= pctSemanal %>%</strong>
-        <span>% esta semana</span>
-      </article>
-    </section>
+    <% if (indisponivel || !dados) { %>
 
-    <!-- Progresso semanal -->
-    <section style="background:var(--surface-card,var(--primary-color));border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1.5rem">
-      <h2 style="font-size:.9rem;font-weight:800;color:var(--fundoclaro);margin-bottom:.5rem">
-        <i class="bi bi-bar-chart-fill" style="color:#1a8a75"></i> Progresso desta semana
-      </h2>
-      <div class="pct-bar" style="height:10px">
-        <div class="pct-fill" style="width:<%= pctSemanal %>%"></div>
-      </div>
-      <p style="font-size:.75rem;color:var(--muted);margin-top:.35rem"><%= pctSemanal %>% das tarefas da semana concluídas</p>
-    </section>
+      <!-- ERRO AO CARREGAR (ex.: banco ainda não atualizado) -->
+      <section class="pg-card pg-state" role="alert">
+        <span class="pg-state__icon" aria-hidden="true"><i class="bi bi-cloud-slash"></i></span>
+        <h2>Não conseguimos carregar sua progressão agora</h2>
+        <p>Tente novamente em alguns instantes. Suas tarefas e conclusões continuam salvas.</p>
+        <a href="/historico" class="pg-cta">Tentar de novo</a>
+      </section>
 
-    <!-- Lista por dia -->
-    <section class="hist-lista" aria-label="Histórico por dia">
-      <% if (!historico || !historico.length) { %>
-        <section class="empty-hist">
-          <i class="bi bi-clock-history"></i>
-          <p style="font-weight:700">Nenhuma atividade registrada ainda</p>
-          <p style="font-size:.85rem">Complete tarefas para ver seu histórico aqui!</p>
-          <a href="/tasks" style="display:inline-block;margin-top:1rem;padding:.55rem 1.25rem;background:var(--secondary-color);color:#fff;border-radius:10px;font-size:.85rem;font-weight:700;text-decoration:none">Ver tarefas</a>
+    <% } else if (!dados.temHistorico) { %>
+
+      <!-- ESTADO INICIAL: SEM HISTÓRICO -->
+      <section class="pg-card pg-state">
+        <span class="pg-state__icon pg-state__icon--leaf" aria-hidden="true"><i class="bi bi-flower1"></i></span>
+        <h2>Sua evolução começa com o primeiro passo.</h2>
+        <p>Conforme você concluir suas tarefas, seus indicadores e gráficos serão preenchidos com seu progresso real.</p>
+        <a href="/tasks" class="pg-cta">Ir para as tarefas</a>
+      </section>
+
+    <% } else { %>
+
+      <!-- CONQUISTA EM DESTAQUE (só com condição real; pode ser dispensada) -->
+      <% if (dados.conquista) { %>
+        <section class="pg-banner" id="pgConquista" data-id="<%= dados.conquista.id %>" role="status" hidden>
+          <span class="pg-banner__icon" aria-hidden="true"><i class="bi <%= dados.conquista.icone === 'flame' ? 'bi-fire' : 'bi-trophy-fill' %>"></i></span>
+          <div class="pg-banner__text">
+            <strong><%= dados.conquista.titulo %></strong>
+            <p><%= dados.conquista.texto %></p>
+          </div>
+          <button type="button" class="pg-banner__close" id="pgConquistaFechar" aria-label="Dispensar aviso"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </section>
-      <% } else { %>
-        <% historico.forEach(dia => { %>
-        <article class="hist-dia">
-          <header class="hist-dia-header">
-            <span class="hist-dia-data">
-              <i class="bi bi-calendar3" style="margin-right:.3rem"></i>
-              <%= new Date(dia.data + 'T12:00:00').toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'}) %>
-            </span>
-          </header>
-          <p class="hist-dia-concl">
-            <i class="bi bi-check-circle-fill" style="color:#34d399"></i>
-            <%= dia.total_concluidas %> tarefa<%= dia.total_concluidas > 1 ? 's' : '' %> concluída<%= dia.total_concluidas > 1 ? 's' : '' %>
-          </p>
-          <% if (dia.tarefas) { %>
-          <p class="hist-dia-tarefas" style="margin-top:.4rem"><%= dia.tarefas %></p>
-          <% } %>
-        </article>
-        <% }) %>
       <% } %>
-    </section>
+
+      <!-- INDICADORES -->
+      <section class="pg-stats" aria-label="Indicadores">
+        <article class="pg-card pg-stat">
+          <span class="pg-stat__icon" aria-hidden="true"><i class="bi bi-fire"></i></span>
+          <p class="pg-stat__label">Sequência atual</p>
+          <p class="pg-stat__value"><%= plural(dados.sequencia.atual, 'dia', 'dias') %></p>
+          <p class="pg-stat__sub">Seu recorde: <%= plural(dados.sequencia.recorde, 'dia', 'dias') %></p>
+        </article>
+
+        <article class="pg-card pg-stat">
+          <span class="pg-stat__icon" aria-hidden="true"><i class="bi bi-calendar2-check"></i></span>
+          <p class="pg-stat__label">Dias ativos na semana</p>
+          <p class="pg-stat__value"><%= dados.semana.diasAtivos %> de <%= dados.semana.totalDias %></p>
+          <p class="pg-stat__sub">
+            <% if (dados.semana.metaDiasAtivos > 0) { %>Meta: <%= plural(dados.semana.metaDiasAtivos, 'dia', 'dias') %><% } else { %>Sem tarefas previstas esta semana<% } %>
+          </p>
+        </article>
+      </section>
+
+      <div class="pg-grid">
+
+        <!-- EVOLUÇÃO -->
+        <section class="pg-card pg-evolucao" aria-labelledby="pg-evolucao-t">
+          <header class="pg-card__head">
+            <h2 id="pg-evolucao-t">Evolução das tarefas</h2>
+            <div class="pg-seg" role="group" aria-label="Período do gráfico">
+              <button type="button" class="pg-seg__btn is-active" data-periodo="7" aria-pressed="true">7 dias</button>
+              <button type="button" class="pg-seg__btn" data-periodo="30" aria-pressed="false">30 dias</button>
+            </div>
+          </header>
+
+          <div class="pg-chart" id="pgChart" role="group" aria-label="Tarefas concluídas por dia"></div>
+          <noscript><p class="pg-muted">Ative o JavaScript para ver o gráfico de evolução.</p></noscript>
+
+          <dl class="pg-metrics">
+            <div><dt>Concluídas</dt><dd id="pgTotal">–</dd></div>
+            <div><dt>Dias ativos</dt><dd id="pgAtivos">–</dd></div>
+            <div><dt>Taxa de conclusão</dt><dd id="pgTaxa">–</dd></div>
+          </dl>
+          <p class="pg-compare" id="pgComparacao" hidden></p>
+        </section>
+
+        <!-- METAS -->
+        <section class="pg-card pg-metas" aria-labelledby="pg-metas-t">
+          <header class="pg-card__head">
+            <h2 id="pg-metas-t"><i class="bi bi-bullseye" aria-hidden="true"></i> Suas metas</h2>
+          </header>
+
+          <div class="pg-meta">
+            <div class="pg-meta__row">
+              <span>Meta diária</span>
+              <% if (dados.metaDiaria.previstas > 0) { %><strong><%= dados.metaDiaria.concluidas %>/<%= dados.metaDiaria.previstas %></strong><% } %>
+            </div>
+            <% if (dados.metaDiaria.previstas > 0) { %>
+              <div class="pg-bar" role="img" aria-label="<%= pctDe(dados.metaDiaria.concluidas, dados.metaDiaria.previstas) %>% da meta diária"><span style="width: <%= pctDe(dados.metaDiaria.concluidas, dados.metaDiaria.previstas) %>%"></span></div>
+              <% if (metaDiariaOk) { %><p class="pg-meta__ok"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Meta de hoje concluída</p><% } %>
+            <% } else { %>
+              <p class="pg-muted">Sem tarefas previstas para hoje.</p>
+            <% } %>
+          </div>
+
+          <div class="pg-meta">
+            <div class="pg-meta__row">
+              <span>Meta semanal</span>
+              <% if (dados.metaSemanal.previstas > 0) { %><strong><%= dados.metaSemanal.concluidas %>/<%= dados.metaSemanal.previstas %></strong><% } %>
+            </div>
+            <% if (dados.metaSemanal.previstas > 0) { %>
+              <div class="pg-bar" role="img" aria-label="<%= pctDe(dados.metaSemanal.concluidas, dados.metaSemanal.previstas) %>% da meta semanal"><span style="width: <%= pctDe(dados.metaSemanal.concluidas, dados.metaSemanal.previstas) %>%"></span></div>
+              <% if (metaSemanalOk) { %><p class="pg-meta__ok"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Meta da semana concluída</p><% } %>
+            <% } else { %>
+              <p class="pg-muted">Sem tarefas previstas para esta semana.</p>
+            <% } %>
+          </div>
+
+          <p class="pg-footnote">Suas metas vêm da sua rotina: as tarefas previstas para o dia e para a semana.</p>
+        </section>
+      </div>
+
+      <!-- PREMIUM (só quando já existe histórico suficiente) -->
+      <% if (mostrarPremium) { %>
+        <section class="pg-card pg-premium" aria-labelledby="pg-premium-t">
+          <header class="pg-premium__head">
+            <span class="pg-premium__lock" aria-hidden="true"><i class="bi <%= ehPremium ? 'bi-stars' : 'bi-lock-fill' %>"></i></span>
+            <div>
+              <h2 id="pg-premium-t">Descubra sua evolução <span class="pg-pill">Premium</span></h2>
+              <p>Compare seus resultados, explore gráficos avançados e receba um relatório personalizado sobre sua constância.</p>
+            </div>
+          </header>
+
+          <ul class="pg-premium__list">
+            <li>
+              <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+              <span><strong>Análises avançadas</strong><small>Tendências de longo prazo, comparações entre semanas e meses e evolução por categoria.</small></span>
+              <% if (!ehPremium) { %><i class="bi bi-lock-fill pg-premium__cadeado" aria-label="Recurso Premium"></i><% } %>
+            </li>
+            <li>
+              <i class="bi bi-robot" aria-hidden="true"></i>
+              <span><strong>Relatório semanal com IA</strong><small>Pontos fortes e oportunidades de melhoria com base nas suas conclusões.</small></span>
+              <% if (!ehPremium) { %><i class="bi bi-lock-fill pg-premium__cadeado" aria-label="Recurso Premium"></i><% } %>
+            </li>
+          </ul>
+
+          <% if (ehPremium) { %>
+            <p class="pg-muted">Esses recursos estão em desenvolvimento e fazem parte do seu plano Premium.</p>
+          <% } else { %>
+            <a href="/assinatura" class="pg-cta pg-cta--block">Conhecer o Premium</a>
+          <% } %>
+        </section>
+      <% } %>
+
+      <!-- HISTÓRICO -->
+      <section class="pg-card pg-historico" aria-labelledby="pg-hist-t">
+        <header class="pg-card__head">
+          <h2 id="pg-hist-t">Histórico</h2>
+          <span class="pg-muted" id="pgHistoricoPeriodo">Últimos 7 dias</span>
+        </header>
+
+        <ol class="pg-hist-lista" id="pgHistLista">
+          <% historico.forEach(dia => { %>
+            <li class="pg-hist-dia" data-dia="<%= dia.dia %>">
+              <div class="pg-hist-dia__top">
+                <strong><%= new Date(dia.dia + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) %></strong>
+                <span><i class="bi bi-check-circle-fill" aria-hidden="true"></i> <%= plural(dia.total, 'tarefa concluída', 'tarefas concluídas') %></span>
+              </div>
+              <p><%= dia.titulos.join(' · ') %></p>
+            </li>
+          <% }) %>
+        </ol>
+        <p class="pg-muted pg-hist-vazio" id="pgHistVazio" hidden>Nenhuma tarefa concluída neste período.</p>
+      </section>
+
+      <script type="application/json" id="pgData"><%- JSON.stringify(payload).replace(/</g, '\\u003c') %></script>
+    <% } %>
   </main>
 
   <%- include('../../partials/footer.ejs') %>
+
+  <% if (temDados) { %><script src="/js/app/progressao.js"></script><% } %>
 </body>
 </html>

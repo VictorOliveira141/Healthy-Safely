@@ -1,11 +1,18 @@
 const { tarefaModel } = require("../models/Tarefa");
 const { usuarioModel } = require("../models/Usuario");
 const { body, validationResult } = require("express-validator");
+const {
+  hojeSaoPaulo,
+  somarDias,
+  concluidaAgora,
+  calcularProgressao,
+  agruparHistorico,
+} = require("../utils/progressao");
 
 const mapearTarefa = (t) => ({
   _id: t.id,
   title: t.titulo,
-  completed: !!t.concluida,
+  completed: concluidaAgora(t),
   categoria: t.categoria,
   data: t.data || null,
   horario: t.horario || null,
@@ -316,25 +323,31 @@ const tarefaController = {
     res.redirect("/tasks");
   },
 
-  // Histórico do usuário
+  // Página Progressão (rota /historico)
   exibirHistorico: async (req, res) => {
+    const usuarioAtual = req.session.usuario;
+    const plano = usuarioAtual.plano === "premium" ? "premium" : "free";
     try {
-      const uid = req.session.usuario.id;
-      const [historico, pctSemanal, totalConcluidas] = await Promise.all([
-        tarefaModel.historicoPorData(uid),
-        tarefaModel.percentualSemanal(uid),
-        tarefaModel.totalConcluidas(uid),
-      ]);
+      const hoje = hojeSaoPaulo();
+      const { tarefas, conclusoes, historico } =
+        await tarefaModel.dadosProgressao(usuarioAtual.id, somarDias(hoje, -29));
+      const dados = calcularProgressao({ tarefas, conclusoes, hoje });
+
       res.render("pages/app/historico", {
-        historico,
-        pctSemanal,
-        totalConcluidas,
+        dados,
+        historico: agruparHistorico(historico),
+        plano,
+        usuarioId: usuarioAtual.id,
+        indisponivel: false,
       });
     } catch (e) {
+      console.error("Erro ao carregar progressão:", e);
       res.render("pages/app/historico", {
+        dados: null,
         historico: [],
-        pctSemanal: 0,
-        totalConcluidas: 0,
+        plano,
+        usuarioId: usuarioAtual.id,
+        indisponivel: true,
       });
     }
   },
