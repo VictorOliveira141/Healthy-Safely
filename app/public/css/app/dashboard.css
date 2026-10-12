@@ -106,7 +106,9 @@ html.dark .rt {
   color: #0b3f35;
   border: 1px solid rgba(12, 79, 67, 0.2);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 .hs-flash--sucesso {
   background: #e4f4ea;
@@ -399,7 +401,9 @@ html:not(.dark) .rt-day.is-today {
   color: var(--rt-on-accent);
   font-weight: 700;
   text-decoration: none;
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 html:not(.dark) .rt-add-btn {
   background: #0c4f43;
@@ -435,7 +439,9 @@ html:not(.dark) .rt-add-btn {
   font-weight: 600;
   color: var(--rt-ink-2);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 .rt-seg__btn.is-active {
   background: var(--rt-accent);
@@ -470,7 +476,9 @@ html:not(.dark) .rt-seg__btn.is-active {
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 .rt-pchip.is-active {
   background: var(--rt-soft);
@@ -655,7 +663,10 @@ html.dark .rt-period--noite {
   background: var(--rt-card);
   color: transparent;
   font-size: calc(var(--font-icon) * 0.8);
-  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 .rt-item[data-status="completed"] .rt-dot {
   background: var(--p-strong);
@@ -692,7 +703,11 @@ html.dark .rt-period--noite {
   background: var(--rt-card);
   border: 1px solid var(--rt-line);
   box-shadow: var(--rt-shadow);
-  transition: background 0.3s ease, opacity 0.3s ease, transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
   animation: rt-rise 0.45s ease both;
 }
 .rt-card:hover {
@@ -844,7 +859,10 @@ html.dark .cat-exercicio {
   color: transparent;
   font-size: calc(var(--font-icon) * 1.23);
   text-decoration: none;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
 }
 .rt-check:hover {
   background: var(--rt-soft);
@@ -1004,14 +1022,14 @@ html.dark .rt-check[aria-pressed="true"] {
 /* ── Botão flutuante (mobile) ───────────────────────────── */
 .rt-fab {
   position: fixed;
-  right: 16px;
+  right: 1px;
   /* acima do botão de acessibilidade (55px + 42px) e do menu inferior */
-  bottom: calc(112px + env(safe-area-inset-bottom));
+  bottom: calc(140px + env(safe-area-inset-bottom));
   z-index: 900;
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: #0c4f43;
   color: #fff;
@@ -1079,7 +1097,9 @@ html.dark .rt-fab {
   font-weight: 700;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 .rt-area:hover {
   transform: translateY(-3px);

@@ -66,8 +66,9 @@
   position: fixed;
   bottom: 55px; /* altura do menu */
   right: 1px;
-  width: 52px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   border: none;
 
   background: var(--accent-color);
@@ -214,6 +215,24 @@
 @media (max-width: 650px) {
   .menu-inferior {
     display: flex;
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    height: 64px;
+    padding: 0 8px;
+    border: var(--border);
+    border-radius: 999px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+    box-sizing: border-box;
+  }
+
+  .botao-acessibilidade {
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 76px);
+  }
+
+  .menu-container {
+    max-width: none;
   }
 }
 
@@ -266,8 +285,7 @@
   background: var(--primary-color);
   border: var(--border);
   border-radius: 16px;
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
   display: none;
   z-index: 9999;
   box-sizing: border-box;
@@ -349,7 +367,6 @@
   text-align: left;
 }
 
-
 /* ===========================
    MENU DE ACESSIBILIDADE
 =========================== */
@@ -376,13 +393,10 @@
   transition: background 0.2s ease;
 }
 
-
-
-.acessibilidade-header h3{
+.acessibilidade-header h3 {
   color: var(--fundoclaro);
-  margin-left: 5px
+  margin-left: 5px;
 }
-
 
 .menu-acessibilidade {
   position: fixed;
@@ -440,4 +454,8 @@
   color: var(--fundoclaro);
 }
 
-
+@media (max-width: 650px) {
+  .menu-acessibilidade {
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 138px);
+  }
+}
