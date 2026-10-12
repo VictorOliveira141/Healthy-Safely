@@ -136,13 +136,19 @@ self.addEventListener("push", (event) => {
 
   const titulo = dados.title || "Lembrete de tarefa";
   const opcoes = {
-    body: dados.horario ? `Horário: ${dados.horario}` : "Sua tarefa está no horário.",
+    body: dados.horario
+      ? `Está na hora da sua tarefa · ${dados.horario}`
+      : "Sua tarefa está no horário.",
     icon: "/imagem/pwa/icon-192.png",
     badge: "/imagem/pwa/icon-192.png",
     tag: dados.tag || `tarefa-${dados.tarefaId || "geral"}`,
     renotify: false,
+    vibrate: [120, 60, 120],
     data: { tarefaId: dados.tarefaId || null },
-    actions: [{ action: "ok", title: "OK" }],
+    actions: [
+      { action: "start", title: "Começar" },
+      { action: "later", title: "Agora não" },
+    ],
   };
 
   event.waitUntil(self.registration.showNotification(titulo, opcoes));
@@ -155,22 +161,24 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  // Clique em "OK" apenas dispensa a notificação.
-  if (event.action === "ok") return;
+  if (event.action !== "start") return;
 
-  // Clique no corpo da notificação: foca/abre o app na tela de tarefas.
+  const tarefaId = event.notification.data?.tarefaId;
+  if (!tarefaId) return;
+
   event.waitUntil(
-    self.clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((janelas) => {
-        for (const janela of janelas) {
-          if (janela.url.includes(self.registration.scope) && "focus" in janela) {
-            return janela.focus();
-          }
-        }
-        if (self.clients.openWindow) {
-          return self.clients.openWindow("/tasks");
-        }
-      }),
+    fetch(
+      new URL(
+        `/tasks/concluir/${encodeURIComponent(tarefaId)}`,
+        self.registration.scope,
+      ),
+      { method: "POST", credentials: "same-origin", cache: "no-store" },
+    ).then((resposta) => {
+      if (!resposta.ok || resposta.redirected) {
+        throw new Error(`Falha ao concluir tarefa: ${resposta.status}`);
+      }
+    }).catch((erro) => {
+      console.error("Não foi possível concluir a tarefa pela notificação:", erro);
+    }),
   );
 });

@@ -307,6 +307,20 @@ const tarefaController = {
     res.redirect(req.get("Referer") || "/tasks");
   },
 
+  concluirPeloPush: async (req, res) => {
+    try {
+      const tarefa = await tarefaModel.alternarConclusao(
+        req.params.id,
+        req.session.usuario.id,
+        true,
+      );
+      return res.sendStatus(tarefa ? 204 : 404);
+    } catch (e) {
+      console.error("Erro ao concluir tarefa pela notificação:", e);
+      return res.sendStatus(500);
+    }
+  },
+
   excluirTarefa: async (req, res) => {
     const { id } = req.params;
     try {

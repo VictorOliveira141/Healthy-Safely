@@ -67,6 +67,12 @@ router.post(
   tarefaController.atualizarTarefa,
 );
 
+router.post(
+  "/tasks/concluir/:id",
+  apenasAutenticado,
+  tarefaController.concluirPeloPush,
+);
+
 router.get(
   "/tasks/concluir",
   apenasAutenticado,

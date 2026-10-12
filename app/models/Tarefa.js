@@ -91,7 +91,7 @@ const tarefaModel = {
   // uma linha por tarefa e por dia em tarefas_conclusoes, que é a fonte da
   // página Progressão. Se essa tabela ainda não existir, a conclusão da
   // tarefa continua funcionando normalmente.
-  alternarConclusao: async (id, usuarioId) => {
+  alternarConclusao: async (id, usuarioId, forcarConclusao = false) => {
     try {
       const [linhas] = await pool.query(
         "SELECT * FROM tarefas WHERE id = ? AND usuario_id = ?",
@@ -103,7 +103,11 @@ const tarefaModel = {
       const hoje = hojeSaoPaulo();
       // Para tarefas recorrentes, "concluída" vale só para a ocorrência atual
       const jaConcluida = concluidaAgora(tarefa, hoje);
-      const novo = jaConcluida ? 0 : 1;
+      if (forcarConclusao && jaConcluida) {
+        return { ...tarefa, concluida: 1 };
+      }
+
+      const novo = jaConcluida && !forcarConclusao ? 0 : 1;
       const diaDaConclusaoAnterior = tarefa.concluida_em
         ? dataSaoPaulo(tarefa.concluida_em)
         : hoje;
