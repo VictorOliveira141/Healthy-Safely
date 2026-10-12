@@ -5,10 +5,10 @@
 // ============================================================
 require("dotenv").config();
 
-const pool = require("../app/config/pool_conexoes");
+const pool = require("../config/pool_conexoes");
 const {
   verificarEEnviarNotificacoes,
-} = require("../app/services/notificacaoPushService");
+} = require("../services/notificacaoPushService");
 
 (async () => {
   try {

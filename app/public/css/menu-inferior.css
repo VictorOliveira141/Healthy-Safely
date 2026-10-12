@@ -66,9 +66,8 @@
   position: fixed;
   bottom: 55px; /* altura do menu */
   right: 1px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 52px;
+  height: 42px;
   border: none;
 
   background: var(--accent-color);
@@ -229,6 +228,10 @@
 
   .botao-acessibilidade {
     bottom: calc(max(12px, env(safe-area-inset-bottom)) + 76px);
+  }
+
+  .menu-acessibilidade {
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 126px);
   }
 
   .menu-container {
@@ -452,10 +455,4 @@
   width: 20px;
   height: 20px;
   color: var(--fundoclaro);
-}
-
-@media (max-width: 650px) {
-  .menu-acessibilidade {
-    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 138px);
-  }
 }

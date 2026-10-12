@@ -143,7 +143,6 @@ self.addEventListener("push", (event) => {
     badge: "/imagem/pwa/icon-192.png",
     tag: dados.tag || `tarefa-${dados.tarefaId || "geral"}`,
     renotify: false,
-    vibrate: [120, 60, 120],
     data: { tarefaId: dados.tarefaId || null },
     actions: [
       { action: "start", title: "Começar" },
@@ -173,12 +172,14 @@ self.addEventListener("notificationclick", (event) => {
         self.registration.scope,
       ),
       { method: "POST", credentials: "same-origin", cache: "no-store" },
-    ).then((resposta) => {
-      if (!resposta.ok || resposta.redirected) {
-        throw new Error(`Falha ao concluir tarefa: ${resposta.status}`);
-      }
-    }).catch((erro) => {
-      console.error("Não foi possível concluir a tarefa pela notificação:", erro);
-    }),
+    )
+      .then((resposta) => {
+        if (!resposta.ok || resposta.redirected) {
+          throw new Error(`Falha ao concluir tarefa: ${resposta.status}`);
+        }
+      })
+      .catch((erro) => {
+        console.error("Não foi possível concluir pela notificação:", erro);
+      }),
   );
 });
