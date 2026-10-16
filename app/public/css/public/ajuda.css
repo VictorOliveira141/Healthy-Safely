@@ -260,6 +260,18 @@
   line-height: 1.5;
 }
 
+.suporte-feedback {
+  max-width: 550px;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--accent-color);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--fundoclaro);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .campo {
   display: flex;
   flex-direction: column;

@@ -22,6 +22,10 @@
       </div>
     </header>
 
+    <% if (mensagemSuporte) { %>
+      <p class="support-feedback" role="status"><%= mensagemSuporte %></p>
+    <% } %>
+
     <section class="support-metrics">
       <a href="/admin/suporte" class="support-metric <%= !filtroStatus ? 'ativo' : '' %>">
         <span>Total</span>

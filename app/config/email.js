@@ -183,8 +183,84 @@ async function enviarEmailConfirmacaoEmail(email, token, req) {
   }
 }
 
+function escaparHtml(valor) {
+  return String(valor || "").replace(/[&<>"']/g, (caractere) => {
+    const entidades = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entidades[caractere];
+  });
+}
+
+async function enviarEmailRespostaSuporte({
+  email,
+  nome,
+  tipo,
+  mensagem,
+  resposta,
+}) {
+  if (!process.env.BREVO_API_KEY) {
+    return { ok: false, simulated: true, provider: "brevo" };
+  }
+
+  if (!email) {
+    return { ok: false, simulated: false, error: "Destinatário ausente." };
+  }
+
+  const remetente =
+    process.env.BREVO_FROM_EMAIL || "healthysafely2026@gmail.com";
+  const timeoutMs = Number(process.env.EMAIL_TIMEOUT_MS || 20000);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const respostaHtml = escaparHtml(resposta).replace(/\n/g, "<br>");
+  const mensagemHtml = escaparHtml(mensagem).replace(/\n/g, "<br>");
+
+  try {
+    const respostaHttp = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: { name: "Healthy Safely", email: remetente },
+        to: [{ email }],
+        subject: "Resposta do suporte | Healthy Safely",
+        text: `Olá, ${nome}.\n\nNossa equipe respondeu sua solicitação sobre ${tipo}.\n\nSua mensagem:\n${mensagem}\n\nResposta:\n${resposta}\n\nEquipe Healthy Safely`,
+        htmlContent: `<div style="font-family:Arial,sans-serif;color:#1f2937;line-height:1.6"><h2>Resposta do suporte</h2><p>Olá, ${escaparHtml(nome)}.</p><p>Nossa equipe respondeu sua solicitação sobre <strong>${escaparHtml(tipo)}</strong>.</p><div style="padding:14px;background:#f3f8f5;border-left:4px solid #1a8a75"><strong>Resposta</strong><p>${respostaHtml}</p></div><p style="color:#667085;font-size:13px">Sua mensagem: ${mensagemHtml}</p><p>Equipe Healthy Safely</p></div>`,
+      }),
+      signal: controller.signal,
+    });
+
+    const dados = await respostaHttp.json().catch(() => ({}));
+    if (!respostaHttp.ok) {
+      throw new Error(
+        dados.message || `Brevo retornou HTTP ${respostaHttp.status}.`,
+      );
+    }
+
+    console.log("[EMAIL] Resposta de suporte enviada.", dados.messageId);
+    return { ok: true, simulated: false, messageId: dados.messageId };
+  } catch (error) {
+    const mensagemErro =
+      error?.name === "AbortError"
+        ? `Timeout ao enviar e-mail após ${timeoutMs}ms.`
+        : error?.message || String(error);
+    console.error("[EMAIL] Erro ao enviar resposta de suporte:", mensagemErro);
+    return { ok: false, simulated: false, error: mensagemErro };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 module.exports = {
   enviarEmailResetSenha,
   gerarUrlRecuperacao,
   enviarEmailConfirmacaoEmail,
+  enviarEmailRespostaSuporte,
 };

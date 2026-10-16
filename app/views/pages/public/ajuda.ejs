@@ -560,29 +560,35 @@
         <section id="contato" class="secao" aria-labelledby="h-contato">
           <h2>Falar com suporte</h2>
 
-          <form class="form-suporte">
+          <% if (mensagemSuporte) { %>
+            <p class="suporte-feedback" role="status"><%= mensagemSuporte %></p>
+          <% } %>
+
+          <form class="form-suporte" action="/suporte" method="POST">
             <p>
               Não encontrou sua resposta? Entre em contato com a gente. Vamos te
               ajudar o mais rápido possível.
             </p>
             <section class="campo">
-              <label>Nome</label>
-              <input type="text" name="nome" placeholder="Seu nome" required />
+              <label for="suporte-nome">Nome</label>
+              <input id="suporte-nome" type="text" name="nome" maxlength="100" placeholder="Seu nome" required />
             </section>
 
             <section class="campo">
-              <label>Email</label>
+              <label for="suporte-email">Email</label>
               <input
+                id="suporte-email"
                 type="email"
                 name="email"
+                maxlength="150"
                 placeholder="Seu email"
                 required
               />
             </section>
 
             <section class="campo">
-              <label>Tipo de problema</label>
-              <select name="tipo">
+              <label for="suporte-tipo">Tipo de problema</label>
+              <select id="suporte-tipo" name="tipo" required>
                 <option value="">Selecione uma opção</option>
                 <option>Problema com login</option>
                 <option>Erro no sistema</option>
@@ -592,9 +598,11 @@
             </section>
 
             <section class="campo">
-              <label>Mensagem</label>
+              <label for="suporte-mensagem">Mensagem</label>
               <textarea
+                id="suporte-mensagem"
                 name="mensagem"
+                maxlength="3000"
                 placeholder="Descreva seu problema com o máximo de detalhes possível..."
                 required
               ></textarea>

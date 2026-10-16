@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAbrir = document.getElementById("btn-editar-perfil");
   const btnFechar = modal?.querySelectorAll("[data-modal-fechar]");
   const form = document.getElementById("form-editar-perfil");
+  const mensagemConfiguracao = document.querySelector(".config-mensagem");
+
+  if (mensagemConfiguracao) {
+    window.setTimeout(() => mensagemConfiguracao.remove(), 3200);
+  }
 
   if (!modal || !btnAbrir || !form) return;
 

@@ -1,4 +1,5 @@
 const { adminModel } = require("../models/Admin");
+const { enviarEmailRespostaSuporte } = require("../config/email");
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -120,6 +121,14 @@ const adminController = {
         suporte,
         stats,
         filtroStatus: status,
+        mensagemSuporte:
+          ({
+            "email-enviado": "Resposta salva e e-mail enviado ao usuário.",
+            "email-simulado":
+              "Resposta salva. O e-mail não foi enviado porque o Brevo está em modo simulado.",
+            "email-erro":
+              "Resposta salva, mas não foi possível enviar o e-mail ao usuário.",
+          })[req.query.aviso] || null,
       });
     } catch (erro) {
       console.error("[Admin.suporte]", erro);
@@ -129,16 +138,34 @@ const adminController = {
 
   responderSuporte: async (req, res) => {
     try {
-      const sucesso = await adminModel.responderSuporte(
-        req.params.id,
-        req.body.resposta,
-      );
+      const id = Number(req.params.id);
+      const resposta = String(req.body.resposta || "").trim();
 
-      if (!sucesso) {
+      if (!Number.isSafeInteger(id) || id < 1 || !resposta) {
         return res.status(400).send("A resposta não pode estar vazia.");
       }
 
-      return res.redirect("/admin/suporte");
+      const solicitacao = await adminModel.buscarSolicitacaoSuporte(id);
+      if (!solicitacao) {
+        return res.status(404).send("Solicitação não encontrada.");
+      }
+
+      const salva = await adminModel.responderSuporte(id, resposta);
+      if (!salva) {
+        return res.status(404).send("Não foi possível salvar a resposta.");
+      }
+
+      const envio = await enviarEmailRespostaSuporte({
+        ...solicitacao,
+        resposta,
+      });
+      const aviso = envio.ok
+        ? "email-enviado"
+        : envio.simulated
+          ? "email-simulado"
+          : "email-erro";
+
+      return res.redirect(`/admin/suporte?aviso=${aviso}`);
     } catch (erro) {
       console.error("[Admin.responderSuporte]", erro);
       return res.status(500).send("Não foi possível responder à solicitação.");

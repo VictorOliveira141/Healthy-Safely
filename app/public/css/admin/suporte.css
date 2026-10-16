@@ -49,6 +49,16 @@ body {
   font-size: var(--font-text);
 }
 
+.support-feedback {
+  margin: 0 0 18px;
+  padding: 12px 15px;
+  border-left: 4px solid var(--accent-color);
+  border-radius: 8px;
+  background: var(--surface-card);
+  color: var(--fundoclaro);
+  font-size: var(--font-small);
+}
+
 /* =========================
    SUPPORT METRICS
 ========================= */

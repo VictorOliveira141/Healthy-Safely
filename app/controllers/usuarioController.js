@@ -1,4 +1,5 @@
 const { usuarioModel } = require("../models/Usuario");
+const { adminModel } = require("../models/Admin");
 const { body, validationResult } = require("express-validator");
 const {
   enviarEmailResetSenha,
@@ -164,8 +165,12 @@ const usuarioController = {
       String(req.params.token || "").trim(),
     );
 
-    if (resultado?.sucesso && req.session?.usuario?.id === resultado.usuarioId) {
-      req.session.usuario.email = resultado.email;
+    if (resultado?.sucesso) {
+      req.session.emailAlteradoComSucesso = true;
+
+      if (req.session?.usuario?.id === resultado.usuarioId) {
+        req.session.usuario.email = resultado.email;
+      }
     }
 
     return res.render("pages/public/confirmacao-email", {
@@ -632,6 +637,46 @@ const usuarioController = {
         msgErro: {},
         sucesso: false,
       });
+    }
+  },
+
+  enviarSolicitacaoSuporte: async (req, res) => {
+    const nome = String(req.body.nome || "").trim();
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const tipo = String(req.body.tipo || "").trim();
+    const mensagem = String(req.body.mensagem || "").trim();
+    const tiposPermitidos = [
+      "Problema com login",
+      "Erro no sistema",
+      "Dúvida sobre tarefas",
+      "Outro",
+    ];
+
+    if (
+      nome.length < 2 ||
+      nome.length > 100 ||
+      email.length > 150 ||
+      !/^\S+@\S+\.\S+$/.test(email) ||
+      !tiposPermitidos.includes(tipo) ||
+      mensagem.length < 10 ||
+      mensagem.length > 3000
+    ) {
+      return res.redirect("/ajuda?secao=contato&suporte=invalido");
+    }
+
+    try {
+      await adminModel.criarSolicitacaoSuporte({
+        usuarioId: req.session?.usuario?.id || null,
+        nome,
+        email,
+        tipo,
+        mensagem,
+      });
+
+      return res.redirect("/ajuda?secao=contato&suporte=recebido");
+    } catch (error) {
+      console.error("[Suporte.enviarSolicitacao]", error);
+      return res.redirect("/ajuda?secao=contato&suporte=erro");
     }
   },
 

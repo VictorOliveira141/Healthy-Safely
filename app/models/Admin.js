@@ -135,6 +135,29 @@ const adminModel = {
     return resultado.affectedRows > 0;
   },
 
+  async criarSolicitacaoSuporte({ usuarioId, nome, email, tipo, mensagem }) {
+    const [resultado] = await pool.query(
+      `INSERT INTO suporte
+         (usuario_id, nome, email, assunto, tipo, mensagem)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [usuarioId, nome, email, tipo, tipo, mensagem],
+    );
+
+    return resultado.insertId;
+  },
+
+  async buscarSolicitacaoSuporte(id) {
+    const [linhas] = await pool.query(
+      `SELECT id, nome, email, tipo, mensagem
+       FROM suporte
+       WHERE id = ?
+       LIMIT 1`,
+      [id],
+    );
+
+    return linhas[0] || null;
+  },
+
   async estatisticasSuporte() {
     const [linhas] = await pool.query(`
       SELECT

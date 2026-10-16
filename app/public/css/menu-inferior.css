@@ -3,12 +3,11 @@
 =========================== */
 .menu-acessibilidade {
   position: fixed;
-
-  right: 1px;
-  bottom: 105px;
+  right: 1rem;
+  bottom: 115px;
   width: 220px;
-
-  background: var(--secondary-color);
+  background: var(--primary-color);
+  border: var(--border);
   border-radius: var(--border-radius);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -65,10 +64,12 @@
 .botao-acessibilidade {
   position: fixed;
   bottom: 55px; /* altura do menu */
-  right: 1px;
+  right: 1rem;
   width: 52px;
-  height: 42px;
+  height: 52px;
+  padding: 0;
   border: none;
+  border-radius: 50%;
 
   background: var(--accent-color);
   color: var(--fundoescuro);
@@ -231,7 +232,7 @@
   }
 
   .menu-acessibilidade {
-    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 126px);
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 136px);
   }
 
   .menu-container {
@@ -399,29 +400,6 @@
 .acessibilidade-header h3 {
   color: var(--fundoclaro);
   margin-left: 5px;
-}
-
-.menu-acessibilidade {
-  position: fixed;
-  right: 1px;
-  bottom: 105px;
-  width: 220px;
-  background: var(--primary-color);
-  border: var(--border);
-  border-radius: var(--border-radius);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(15px);
-  transition: 0.25s ease;
-  z-index: 1200;
-}
-
-.menu-acessibilidade.ativo {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
 }
 
 .menu-item {

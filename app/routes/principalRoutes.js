@@ -31,7 +31,10 @@ const uploadPerfil = multer({
       );
     },
     filename: (req, file, callback) => {
-      callback(null, `${crypto.randomUUID()}${extensoesFotoPerfil[file.mimetype]}`);
+      callback(
+        null,
+        `${crypto.randomUUID()}${extensoesFotoPerfil[file.mimetype]}`,
+      );
     },
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -288,7 +291,18 @@ router.get("/", (req, res) => {
   res.render("pages/public/tomarammeutela");
 });
 
-router.get("/ajuda", (req, res) => res.render("pages/public/ajuda"));
+router.get("/ajuda", (req, res) => {
+  const mensagensSuporte = {
+    recebido: "Mensagem enviada. Nossa equipe responderá pelo e-mail informado.",
+    invalido: "Confira os dados e a mensagem antes de enviar novamente.",
+    erro: "Não foi possível enviar sua solicitação. Tente novamente.",
+  };
+
+  res.render("pages/public/ajuda", {
+    mensagemSuporte: mensagensSuporte[req.query.suporte] || null,
+  });
+});
+router.post("/suporte", usuarioController.enviarSolicitacaoSuporte);
 
 /* ============================================================
   User (configurações, perfil, privacidade)
@@ -309,40 +323,62 @@ router.get("/logout", usuarioController.logout);
 router.get("/sair", usuarioController.logout);
 
 /* ---------------- Configurações ---------------- */
-router.get("/configuracoes", apenasAutenticado, (req, res) =>
+router.get("/configuracoes", apenasAutenticado, (req, res) => {
+  const mensagemEmailAlterado = req.session.emailAlteradoComSucesso;
+  delete req.session.emailAlteradoComSucesso;
+
+  const mensagensConfig = {
+    salvo: "Perfil atualizado.",
+    invalid: "Confira os dados informados e tente novamente.",
+    indisponivel: "Este nome de usuário já está em uso.",
+    "email-indisponivel": "Este e-mail já está cadastrado.",
+    "email-pendente":
+      "Enviamos um link para confirmar seu novo e-mail. O endereço atual continua ativo até a confirmação.",
+    "email-simulado":
+      "O link de confirmação não foi enviado: o serviço de e-mail está em modo simulado. Verifique os logs do servidor.",
+    "email-erro":
+      "Não foi possível enviar o link de confirmação. Tente novamente.",
+    erro: "Não foi possível salvar as alterações. Tente novamente.",
+  };
+
   res.render("pages/user/configuracoes", {
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
-    mensagemConfig:
-      ({
-        salvo: "Perfil atualizado.",
-        invalid: "Confira os dados informados e tente novamente.",
-        indisponivel: "Este nome de usuário já está em uso.",
-        "email-indisponivel": "Este e-mail já está cadastrado.",
-        "email-pendente":
-          "Enviamos um link para confirmar seu novo e-mail. O endereço atual continua ativo até a confirmação.",
-        "email-simulado":
-          "O link de confirmação não foi enviado: o serviço de e-mail está em modo simulado. Verifique os logs do servidor.",
-        "email-erro": "Não foi possível enviar o link de confirmação. Tente novamente.",
-        erro: "Não foi possível salvar as alterações. Tente novamente.",
-      })[req.query.perfil] || null,
-  }),
-);
+    mensagemConfig: mensagemEmailAlterado
+      ? "E-mail trocado com sucesso."
+      : mensagensConfig[req.query.perfil] || null,
+  });
+});
 router.post(
   "/perfil/editar",
   apenasAutenticado,
   uploadPerfil.single("foto_perfil"),
   usuarioController.atualizarPerfil,
 );
-router.get("/email/confirmar/:token", usuarioController.confirmarAlteracaoEmail);
+router.get(
+  "/email/confirmar/:token",
+  usuarioController.confirmarAlteracaoEmail,
+);
 router.get("/assinatura", apenasAutenticado, (req, res) =>
   res.render("pages/user/assinatura", {
     erro: req.query.erro === "1",
     precoPremium: PRECO_PREMIUM,
   }),
 );
-router.post("/assinatura/assinar", apenasAutenticado, assinaturaController.criarAssinatura);
-router.get("/assinatura/retorno", apenasAutenticado, assinaturaController.retorno);
-router.post("/assinatura/cancelar", apenasAutenticado, assinaturaController.cancelarAssinatura);
+router.post(
+  "/assinatura/assinar",
+  apenasAutenticado,
+  assinaturaController.criarAssinatura,
+);
+router.get(
+  "/assinatura/retorno",
+  apenasAutenticado,
+  assinaturaController.retorno,
+);
+router.post(
+  "/assinatura/cancelar",
+  apenasAutenticado,
+  assinaturaController.cancelarAssinatura,
+);
 
 /* ---------------- Privacidade ---------------- */
 router.get("/privacidade", apenasAutenticado, (req, res) =>
