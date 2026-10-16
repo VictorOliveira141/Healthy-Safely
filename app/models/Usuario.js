@@ -114,6 +114,78 @@ const usuarioModel = {
     }
   },
 
+  atualizarPerfil: async (usuarioId, { nome, nomeusuario, foto_perfil }) => {
+    if (foto_perfil) {
+      await pool.query(
+        "UPDATE usuarios SET nome = ?, nomeusuario = ?, foto_perfil = ? WHERE id = ?",
+        [nome, nomeusuario, foto_perfil, usuarioId],
+      );
+      return;
+    }
+
+    await pool.query(
+      "UPDATE usuarios SET nome = ?, nomeusuario = ? WHERE id = ?",
+      [nome, nomeusuario, usuarioId],
+    );
+  },
+
+  criarTokenAlteracaoEmail: async (usuarioId, novoEmail) => {
+    const token = crypto.randomBytes(32).toString("hex");
+    await pool.query("DELETE FROM email_change_tokens WHERE expira_em <= NOW()");
+    await pool.query("DELETE FROM email_change_tokens WHERE usuario_id = ?", [
+      usuarioId,
+    ]);
+    await pool.query(
+      `INSERT INTO email_change_tokens (usuario_id, novo_email, token, expira_em)
+       VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))`,
+      [usuarioId, novoEmail, token],
+    );
+    return token;
+  },
+
+  cancelarTokenAlteracaoEmail: async (usuarioId) => {
+    await pool.query("DELETE FROM email_change_tokens WHERE usuario_id = ?", [
+      usuarioId,
+    ]);
+  },
+
+  confirmarAlteracaoEmail: async (token) => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      const [linhas] = await conn.query(
+        `SELECT usuario_id, novo_email FROM email_change_tokens
+         WHERE token = ? AND expira_em > NOW() FOR UPDATE`,
+        [token],
+      );
+      const pendencia = linhas[0];
+      if (!pendencia) {
+        await conn.rollback();
+        return null;
+      }
+
+      await conn.query("UPDATE usuarios SET email = ? WHERE id = ?", [
+        pendencia.novo_email,
+        pendencia.usuario_id,
+      ]);
+      await conn.query("DELETE FROM email_change_tokens WHERE token = ?", [
+        token,
+      ]);
+      await conn.commit();
+      return {
+        sucesso: true,
+        usuarioId: pendencia.usuario_id,
+        email: pendencia.novo_email,
+      };
+    } catch (error) {
+      await conn.rollback();
+      console.error("Erro ao confirmar alteração de e-mail:", error);
+      return null;
+    } finally {
+      conn.release();
+    }
+  },
+
   gerarNomeUsuarioDisponivel: async (base) => {
     const baseLimpo =
       String(base || "usuario")
@@ -160,8 +232,11 @@ const usuarioModel = {
   emailExiste: async (email) => {
     try {
       const [linhas] = await pool.query(
-        "SELECT id FROM usuarios WHERE email = ?",
-        [email],
+        `SELECT id FROM usuarios WHERE email = ?
+         UNION ALL
+         SELECT usuario_id AS id FROM email_change_tokens WHERE novo_email = ?
+         LIMIT 1`,
+        [email, email],
       );
       return linhas.length > 0;
     } catch (e) {

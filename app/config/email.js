@@ -141,7 +141,50 @@ Se você não solicitou isso, ignore este e-mail.`,
   }
 }
 
+async function enviarEmailConfirmacaoEmail(email, token, req) {
+  const host = req.get("host");
+  const protocol = req.protocol || "http";
+  const baseURL = process.env.APP_URL || `${protocol}://${host}`;
+  const url = `${baseURL}/email/confirmar/${encodeURIComponent(token)}`;
+
+  if (!process.env.BREVO_API_KEY) {
+    console.log("[EMAIL] API do Brevo não configurada.");
+    console.log("[EMAIL] Link de confirmação:", url);
+    return { ok: true, simulated: true };
+  }
+
+  const remetente =
+    process.env.BREVO_FROM_EMAIL || "healthysafely2026@gmail.com";
+
+  try {
+    const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: { name: "Healthy Safely", email: remetente },
+        to: [{ email }],
+        subject: "Confirme seu novo e-mail | Healthy Safely",
+        text: `Para confirmar este endereço de e-mail, acesse o link abaixo. Ele expira em uma hora:\n\n${url}`,
+        htmlContent: `<div style="font-family:Arial,sans-serif;color:#1f2937"><h2>Confirme seu novo e-mail</h2><p>Para concluir a alteração do e-mail da sua conta, clique no link abaixo. Ele expira em uma hora.</p><p><a href="${url}">Confirmar novo e-mail</a></p><p>Se você não solicitou esta alteração, ignore esta mensagem.</p></div>`,
+      }),
+    });
+
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) {
+      throw new Error(dados.message || `Brevo retornou HTTP ${resposta.status}.`);
+    }
+    return { ok: true, simulated: false };
+  } catch (error) {
+    console.error("Erro ao enviar confirmação de e-mail:", error.message);
+    return { ok: false, simulated: false };
+  }
+}
+
 module.exports = {
   enviarEmailResetSenha,
   gerarUrlRecuperacao,
+  enviarEmailConfirmacaoEmail,
 };

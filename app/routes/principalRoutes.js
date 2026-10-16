@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+const multer = require("multer");
 
 const iaRoutes = require("./ia-routes");
 
@@ -11,6 +15,30 @@ const pushController = require("../controllers/pushController");
 const assinaturaController = require("../controllers/assinaturaController");
 const { PRECO_PREMIUM } = require("../config/planos");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
+
+const extensoesFotoPerfil = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+};
+const uploadPerfil = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, callback) => {
+      const destino = path.join(__dirname, "../public/uploads/perfis");
+      fs.mkdir(destino, { recursive: true }, (error) =>
+        callback(error, destino),
+      );
+    },
+    filename: (req, file, callback) => {
+      callback(null, `${crypto.randomUUID()}${extensoesFotoPerfil[file.mimetype]}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, callback) => {
+    callback(null, Boolean(extensoesFotoPerfil[file.mimetype]));
+  },
+});
 
 /* ============================================================
    MIDDLEWARES
@@ -284,8 +312,28 @@ router.get("/sair", usuarioController.logout);
 router.get("/configuracoes", apenasAutenticado, (req, res) =>
   res.render("pages/user/configuracoes", {
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
+    mensagemConfig:
+      ({
+        salvo: "Perfil atualizado.",
+        invalid: "Confira os dados informados e tente novamente.",
+        indisponivel: "Este nome de usuário já está em uso.",
+        "email-indisponivel": "Este e-mail já está cadastrado.",
+        "email-pendente":
+          "Enviamos um link para confirmar seu novo e-mail. O endereço atual continua ativo até a confirmação.",
+        "email-simulado":
+          "O link de confirmação não foi enviado: o serviço de e-mail está em modo simulado. Verifique os logs do servidor.",
+        "email-erro": "Não foi possível enviar o link de confirmação. Tente novamente.",
+        erro: "Não foi possível salvar as alterações. Tente novamente.",
+      })[req.query.perfil] || null,
   }),
 );
+router.post(
+  "/perfil/editar",
+  apenasAutenticado,
+  uploadPerfil.single("foto_perfil"),
+  usuarioController.atualizarPerfil,
+);
+router.get("/email/confirmar/:token", usuarioController.confirmarAlteracaoEmail);
 router.get("/assinatura", apenasAutenticado, (req, res) =>
   res.render("pages/user/assinatura", {
     erro: req.query.erro === "1",

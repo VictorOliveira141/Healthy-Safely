@@ -1,6 +1,9 @@
 const { usuarioModel } = require("../models/Usuario");
 const { body, validationResult } = require("express-validator");
-const { enviarEmailResetSenha } = require("../config/email");
+const {
+  enviarEmailResetSenha,
+  enviarEmailConfirmacaoEmail,
+} = require("../config/email");
 
 const usuarioController = {
   regrasValidacaoCliente: [
@@ -84,6 +87,91 @@ const usuarioController = {
       console.error("Erro ao verificar disponibilidade:", err);
       res.status(500).json({ erro: "Erro interno." });
     }
+  },
+
+  atualizarPerfil: async (req, res) => {
+    const usuarioId = req.session.usuario.id;
+    const nome = String(req.body.nome || "").trim();
+    const nomeusuario = String(req.body.nomeusuario || "").trim();
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
+    const emailAtual = String(req.session.usuario.email || "")
+      .trim()
+      .toLowerCase();
+
+    if (
+      nome.length < 3 ||
+      nome.length > 50 ||
+      !/^[A-Za-zÀ-ú\s]+$/.test(nome) ||
+      nomeusuario.length < 3 ||
+      nomeusuario.length > 30 ||
+      !/^[a-zA-Z0-9_-]+$/.test(nomeusuario) ||
+      (email && !/^\S+@\S+\.\S+$/.test(email))
+    ) {
+      return res.redirect("/configuracoes?perfil=invalid");
+    }
+
+    try {
+      if (!(await usuarioModel.nomeUsuarioDisponivel(nomeusuario, usuarioId))) {
+        return res.redirect("/configuracoes?perfil=indisponivel");
+      }
+
+      const fotoPerfil = req.file
+        ? `/uploads/perfis/${req.file.filename}`
+        : undefined;
+      await usuarioModel.atualizarPerfil(usuarioId, {
+        nome,
+        nomeusuario,
+        foto_perfil: fotoPerfil,
+      });
+
+      req.session.usuario.nome = nome;
+      req.session.usuario.nomeusuario = nomeusuario;
+      if (fotoPerfil) req.session.usuario.foto_perfil = fotoPerfil;
+      req.session.nome = nome;
+
+      if (!email || email === emailAtual) {
+        return res.redirect("/configuracoes?perfil=salvo");
+      }
+
+      if (await usuarioModel.emailExiste(email)) {
+        return res.redirect("/configuracoes?perfil=email-indisponivel");
+      }
+
+      const token = await usuarioModel.criarTokenAlteracaoEmail(
+        usuarioId,
+        email,
+      );
+      const envio = await enviarEmailConfirmacaoEmail(email, token, req);
+
+      if (!envio.ok) {
+        await usuarioModel.cancelarTokenAlteracaoEmail(usuarioId);
+        return res.redirect("/configuracoes?perfil=email-erro");
+      }
+
+      return res.redirect(
+        `/configuracoes?perfil=${envio.simulated ? "email-simulado" : "email-pendente"}`,
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      return res.redirect("/configuracoes?perfil=erro");
+    }
+  },
+
+  confirmarAlteracaoEmail: async (req, res) => {
+    const resultado = await usuarioModel.confirmarAlteracaoEmail(
+      String(req.params.token || "").trim(),
+    );
+
+    if (resultado?.sucesso && req.session?.usuario?.id === resultado.usuarioId) {
+      req.session.usuario.email = resultado.email;
+    }
+
+    return res.render("pages/public/confirmacao-email", {
+      sucesso: Boolean(resultado?.sucesso),
+      autenticado: Boolean(req.session?.usuario),
+    });
   },
 
   exibirCadastroCliente: (req, res) => {

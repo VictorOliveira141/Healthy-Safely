@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= sucesso ? 'E-mail confirmado' : 'Link inválido' %> | Healthy Safely</title>
+    <link rel="stylesheet" href="/css/global.css" />
+  </head>
+  <body>
+    <main class="config-main">
+      <header class="config-header">
+        <h1 class="config-titulo"><%= sucesso ? 'E-mail confirmado' : 'Link inválido ou expirado' %></h1>
+        <p class="config-subtitulo">
+          <%= sucesso
+            ? 'O endereço de e-mail da sua conta foi atualizado.'
+            : 'Solicite uma nova alteração de e-mail nas configurações da sua conta.'
+          %>
+        </p>
+        <a href="<%= autenticado ? '/configuracoes' : '/login' %>">
+          <%= autenticado ? 'Voltar às configurações' : 'Ir para o login' %>
+        </a>
+      </header>
+    </main>
+  </body>
+</html>

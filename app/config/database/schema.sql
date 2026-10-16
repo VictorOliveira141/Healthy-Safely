@@ -42,6 +42,23 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   INDEX idx_reset_expira (expira_em)
 );
 
+CREATE TABLE IF NOT EXISTS email_change_tokens (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  novo_email VARCHAR(150) NOT NULL,
+  token      CHAR(64) NOT NULL UNIQUE,
+  expira_em  DATETIME NOT NULL,
+  criado_em  DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_email_change_usuario (usuario_id),
+  UNIQUE KEY uq_email_change_email (novo_email),
+  INDEX idx_email_change_expira (expira_em),
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
 
 -- ── CREDENCIAIS WEBAUTHN / PASSKEY ─────────────────────────
 CREATE TABLE IF NOT EXISTS webauthn_credentials (

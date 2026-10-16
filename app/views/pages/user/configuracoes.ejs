@@ -64,6 +64,10 @@
     </p>
   </header>
 
+  <% if (typeof mensagemConfig !== 'undefined' && mensagemConfig) { %>
+    <p class="config-mensagem" role="status"><%= mensagemConfig %></p>
+  <% } %>
+
   <% if (usuario) { %>
 
     <!-- =====================================================
@@ -109,10 +113,6 @@
 
           <span class="config-perfil-usuario">
             @<%= usuario.nomeusuario %>
-          </span>
-
-          <span class="config-perfil-email">
-            <%= usuario.email %>
           </span>
         </section>
 
@@ -704,22 +704,23 @@
 </div>
 
 
-        <!-- E-mail -->
+        <!-- Novo e-mail -->
 
         <div class="form-grupo">
 
           <label for="email">
-            E-mail
+            Novo e-mail
           </label>
 
           <input
             type="email"
             id="email"
             name="email"
-            value="<%= usuario.email %>"
             autocomplete="email"
-            required
+            placeholder="Digite somente se quiser alterar"
           />
+
+          <small>O novo endereço só será salvo após a confirmação pelo link enviado.</small>
 
         </div>
 
