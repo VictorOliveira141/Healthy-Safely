@@ -1070,55 +1070,6 @@ html.dark .rt-fab {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Áreas de saúde ─────────────────────────────────────── */
-.rt-areas {
-  margin-top: 2rem;
-}
-.rt-areas h2 {
-  margin-bottom: 0.8rem;
-  font-size: calc(var(--font-title) * 1.1);
-  font-weight: 800;
-}
-.rt-areas__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-.rt-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 0.5rem;
-  border-radius: 18px;
-  background: var(--rt-card);
-  border: 1px solid var(--rt-line);
-  text-align: center;
-  font-weight: 700;
-  text-decoration: none;
-  color: inherit;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
-}
-.rt-area:hover {
-  transform: translateY(-3px);
-  border-color: var(--rt-accent-2);
-}
-.rt-area__icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--rt-soft);
-}
-.rt-area__icon img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-}
-
 /* ── Tablet ≥ 720px ─────────────────────────────────────── */
 @media (min-width: 720px) {
   .rt {
@@ -1157,9 +1108,6 @@ html.dark .rt-fab {
   }
   .rt-fab {
     display: none;
-  }
-  .rt-areas__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .rt-weekbox {
     align-self: stretch;
@@ -1253,8 +1201,7 @@ html.dark .rt-fab {
 /* ── Acessibilidade ─────────────────────────────────────── */
 html.contraste .rt-card,
 html.contraste .rt-progress,
-html.contraste .rt-weekbox,
-html.contraste .rt-area {
+html.contraste .rt-weekbox {
   border: 2px solid currentColor;
 }
 @media (prefers-reduced-motion: reduce) {

@@ -116,37 +116,6 @@ router.post(
   tarefaController.excluirTarefa,
 );
 
-/* ---------------- Saúde ---------------- */
-
-router.get("/sono", apenasAutenticado, async (req, res) => {
-  const { usuarioModel } = require("../models/Usuario");
-
-  const registros = await usuarioModel.listarSono(req.session.usuario.id);
-
-  const flash = req.session.flash || null;
-  delete req.session.flash;
-
-  res.render("pages/app/sono", { registros, flash });
-});
-
-router.post(
-  "/sono/registrar",
-  apenasAutenticado,
-  tarefaController.registrarSono,
-);
-
-router.get("/saude-mental", apenasAutenticado, (req, res) =>
-  res.render("pages/app/saude-mental"),
-);
-
-router.get("/atividade-fisica", apenasAutenticado, (req, res) =>
-  res.render("pages/app/atividade-fisica"),
-);
-
-router.get("/alimentacao", apenasAutenticado, (req, res) =>
-  res.render("pages/app/alimentacao"),
-);
-
 /* ============================================================
    AUTH (cadatro, login, mudar senha, confirmações)
 ============================================================ */

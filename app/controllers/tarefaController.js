@@ -376,24 +376,6 @@ const tarefaController = {
     }
   },
 
-  // Registrar sono
-  registrarSono: async (req, res) => {
-    const { horas_dormidas, qualidade } = req.body;
-    try {
-      await usuarioModel.registrarSono(
-        req.session.usuario.id,
-        Number(horas_dormidas),
-        Number(qualidade) || 3,
-      );
-      req.session.flash = {
-        tipo: "sucesso",
-        msg: "💤 Registro de sono salvo!",
-      };
-    } catch (e) {
-      req.session.flash = { tipo: "erro", msg: "Erro ao salvar registro." };
-    }
-    res.redirect("/sono");
-  },
 };
 
 module.exports = tarefaController;

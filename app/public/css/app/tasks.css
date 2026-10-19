@@ -650,59 +650,6 @@ html.dark .tk-check[aria-pressed="true"] {
   cursor: pointer;
 }
 
-/* ── Áreas de saúde ─────────────────────────────────────── */
-.tk-areas {
-  margin-top: 0.75rem;
-}
-.tk-areas h2 {
-  margin-bottom: 0.7rem;
-  font-size: calc(var(--font-title) * 0.95);
-  font-weight: 800;
-}
-.tk-areas__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.6rem;
-}
-.tk-area {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: var(--tk-r);
-  border: 1px solid var(--tk-line);
-  background: var(--tk-card);
-  color: var(--tk-ink);
-  text-decoration: none;
-  transition: transform 0.2s ease;
-}
-.tk-area:hover {
-  transform: translateY(-2px);
-}
-.tk-area__icon {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--tk-soft);
-}
-.tk-area__icon img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.tk-area__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.tk-area__text small {
-  color: var(--tk-ink-2);
-  font-size: var(--font-small);
-}
-
 /* ── Botão flutuante (mobile) ───────────────────────────── */
 .tk-fab {
   position: fixed;
@@ -761,19 +708,6 @@ html.dark .tk-fab {
     grid-template-columns: 3.6rem minmax(0, 1fr);
     gap: 0.75rem;
   }
-  .tk-areas__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 1024px) {
-  .tk-areas__grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .tk-area {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
-  }
 }
 @media (max-width: 380px) {
   .tk {
@@ -793,8 +727,7 @@ html.dark .tk-fab {
 
 /* ── Acessibilidade ─────────────────────────────────────── */
 html.contraste .tk-card,
-html.contraste .tk-week__list,
-html.contraste .tk-area {
+html.contraste .tk-week__list {
   border-color: currentColor;
 }
 @media (prefers-reduced-motion: reduce) {

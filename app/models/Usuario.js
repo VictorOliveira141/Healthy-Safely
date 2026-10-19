@@ -347,35 +347,6 @@ const usuarioModel = {
     }
   },
 
-  // Registrar sono
-  registrarSono: async (usuarioId, horasDormidas, qualidade) => {
-    try {
-      await pool.query(
-        `INSERT INTO registros_sono (usuario_id, horas_dormidas, qualidade, data)
-         VALUES (?, ?, ?, CURDATE())
-         ON DUPLICATE KEY UPDATE horas_dormidas = VALUES(horas_dormidas), qualidade = VALUES(qualidade)`,
-        [usuarioId, horasDormidas, qualidade],
-      );
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  },
-
-  // Listar registros de sono
-  listarSono: async (usuarioId) => {
-    try {
-      const [linhas] = await pool.query(
-        "SELECT * FROM registros_sono WHERE usuario_id = ? ORDER BY data DESC LIMIT 14",
-        [usuarioId],
-      );
-      return linhas;
-    } catch (e) {
-      return [];
-    }
-  },
-
   // Buscar usuário pelo id da assinatura no Mercado Pago
   buscarPorPreapprovalId: async (preapprovalId) => {
     try {
