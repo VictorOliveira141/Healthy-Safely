@@ -1,216 +1,389 @@
-.hs-floating-add {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  border: none;
-  cursor: pointer;
+/* ============================================================
+   TAREFAS | Formulário (bottom sheet no celular, painel lateral no
+   desktop) e confirmação de exclusão. Usa as variáveis de .tk-page.
+   ============================================================ */
+
+body.tk-lock {
+  overflow: hidden;
 }
 
-/* ==========================================
-   OVERLAY (fundo escurecido)
-========================================== */
-.hs-drawer-overlay {
+/* ── Overlay ────────────────────────────────────────────── */
+.tk-sheet-overlay {
   position: fixed;
   inset: 0;
+  z-index: 9999;
   display: flex;
-  justify-content: flex-end;
-  background: rgba(6, 35, 29, 0.45);
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(6, 35, 29, 0.5);
   backdrop-filter: blur(2px);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 9999;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
 }
-
-.hs-drawer-overlay.active {
+.tk-sheet-overlay.active {
   opacity: 1;
   visibility: visible;
 }
 
-
-/* ==========================================
-   DRAWER
-========================================== */
-.hs-task-drawer {
-  width: 420px;
-  max-width: 100%;
-  height: 100%;
-  background: var(--surface-card);
+/* ── Sheet ──────────────────────────────────────────────── */
+.tk-sheet {
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.35s ease;
-}
-
-.hs-drawer-overlay.active .hs-task-drawer {
-  transform: translateX(0);
-}
-
-@media (max-width: 768px) {
-  .hs-task-drawer {
-    width: 100%;
-    max-width: 100%;
-    height: 100dvh;
-    margin-top: 0;
-  }
-}
-
-
-/* ==========================================
-   HEADER
-========================================== */
-.hs-drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1.75rem 1.75rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-}
-.hs-drawer-header h2 {
-  font-size: var(--font-title);
-  font-weight: 800;
-  color: var(--fundoclaro);
-  margin-bottom: 0.3rem;
-}
-.hs-drawer-header p {
+  width: 100%;
+  max-height: 92dvh;
+  border-radius: 24px 24px 0 0;
+  background: var(--tk-card);
+  color: var(--tk-ink);
   font-size: var(--font-text);
-  color: var(--fundoclaro);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+.tk-sheet-overlay.active .tk-sheet {
+  transform: translateY(0);
+}
+.tk-sheet *,
+.tk-sheet *::before,
+.tk-sheet *::after {
+  box-sizing: border-box;
+}
+.tk-sheet h2,
+.tk-sheet p,
+.tk-sheet fieldset,
+.tk-sheet legend {
+  margin: 0;
+  padding: 0;
+}
+.tk-sheet [hidden] {
+  display: none !important;
+}
+.tk-sheet button,
+.tk-sheet input,
+.tk-sheet select,
+.tk-sheet textarea {
+  font: inherit;
+  color: inherit;
+}
+.tk-sheet a:focus-visible,
+.tk-sheet button:focus-visible,
+.tk-sheet input:focus-visible,
+.tk-sheet select:focus-visible,
+.tk-sheet textarea:focus-visible,
+.tk-sheet summary:focus-visible,
+.tk-confirm button:focus-visible {
+  outline: 3px solid var(--tk-accent-2);
+  outline-offset: 2px;
 }
 
-.hs-close-drawer {
-  border: none;
-  background: var(--surface-muted);
-  color: var(--fundoclaro);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.tk-sheet__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.1rem 0.6rem;
+}
+.tk-sheet__head h2 {
+  font-size: calc(var(--font-title) * 1.1);
+  font-weight: 800;
+}
+.tk-sheet__head p {
+  margin-top: 0.15rem;
+  color: var(--tk-ink-2);
+  font-size: var(--font-small);
+}
+
+/* ── Formulário ─────────────────────────────────────────── */
+.tk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.4rem 1.1rem 0;
+}
+.tk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.tk-field label,
+.tk-fieldset legend {
+  font-weight: 700;
+  font-size: var(--font-small);
+}
+.tk-opt {
+  color: var(--tk-ink-2);
+  font-weight: 500;
+}
+.tk-field input[type="text"],
+.tk-field input[type="time"],
+.tk-field input[type="date"],
+.tk-field select,
+.tk-field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--tk-line-strong);
+  border-radius: 14px;
+  background: var(--tk-card);
+  color: var(--tk-ink);
+}
+.tk-field textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+.tk-field [aria-invalid="true"] {
+  border-color: var(--tk-danger);
+}
+.tk-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.tk-fieldset {
+  border: 0;
+  min-width: 0;
+}
+.tk-fieldset legend {
+  margin-bottom: 0.4rem;
+}
+.tk-fieldset:disabled {
+  display: none;
+}
+.tk-hint {
+  color: var(--tk-ink-2);
+  font-size: calc(var(--font-small) * 0.95);
+}
+.tk-error {
+  color: var(--tk-danger);
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+/* escolha de repetição (radios como segmentos) */
+.tk-seg--radio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+  padding: 0.25rem;
+  border-radius: 14px;
+  background: var(--tk-card-2);
+  border: 1px solid var(--tk-line);
+}
+.tk-seg--radio label,
+.tk-daychips label {
+  position: relative;
+  display: block;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tk-seg--radio input,
+.tk-daychips input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.tk-seg--radio span {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  padding: 0 0.3rem;
+  border-radius: 10px;
+  color: var(--tk-ink-2);
+  font-size: var(--font-small);
+  text-align: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.tk-seg--radio input:checked + span {
+  background: var(--tk-accent);
+  color: var(--tk-on-accent);
+}
+.tk-seg--radio input:focus-visible + span,
+.tk-daychips input:focus-visible + span {
+  outline: 3px solid var(--tk-accent-2);
+  outline-offset: 2px;
+}
+
+/* escolha do dia (radios como chips) */
+.tk-daychips {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+.tk-daychips span {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid var(--tk-line-strong);
+  color: var(--tk-ink-2);
+  font-size: var(--font-small);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.tk-daychips input:checked + span {
+  background: var(--tk-accent);
+  border-color: var(--tk-accent);
+  color: var(--tk-on-accent);
+}
+
+/* mais opções */
+.tk-more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  color: var(--tk-accent);
+  font-weight: 800;
+  font-size: var(--font-small);
+  cursor: pointer;
+}
+.tk-more[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+/* ── Rodapé do sheet ────────────────────────────────────── */
+.tk-sheet__foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding: 0.9rem 0 calc(1rem + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, var(--tk-card) 28%);
+}
+.tk-btn {
+  flex: 1 1 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-.hs-close-drawer:hover {
-  background: var(--c-verde-50);
-  color: var(--c-verde-700);
-}
-html.dark .hs-close-drawer:hover {
-  background: rgba(52, 211, 153, 0.14);
-  color: var(--c-verde-400);
-}
-
-/* ==========================================
-   FORM
-========================================== */
-.hs-drawer-form {
-  flex: 1;
-  overflow: auto;
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-
-.hs-form-group {
-  display: flex;
-  flex-direction: column;
   gap: 0.45rem;
-}
-.hs-form-group select option {
-  background-color: var(--surface-card);
-  color: var(--fundoclaro);
-}
-
-
-.hs-form-group label {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--fundoclaro);
-}
-
-
-.hs-form-group input,
-.hs-form-group textarea,
-.hs-form-group select {
-  padding: 0.85rem 1rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border);
-  background: var(--surface-muted);
-  color: var(--fundoclaro);
-  font-size: 0.95rem;
-  font-family: var(--font-family);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-
-.hs-form-group input:focus,
-.hs-form-group textarea:focus,
-.hs-form-group select:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(26, 138, 117, 0.14);
-}
-
-
-.hs-form-group textarea {
-  resize: vertical;
-  min-height: 110px;
-}
-
-
-.hs-inline {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-
-/* ==========================================
-   FOOTER
-========================================== */
-.hs-drawer-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: auto;
-  padding-top: 1rem;
-}
-
-.hs-btn-cancel {
-  padding: 0.85rem 1.3rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border);
-  color: #dc2626;
-  background: var(--surface-card);
+  min-height: 48px;
+  padding: 0 1.1rem;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  font-weight: 800;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.hs-btn-cancel:hover {
-  background: #fef2f2;
+.tk-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
-html.dark .hs-btn-cancel:hover {
-  background: rgba(239, 68, 68, 0.1);
+.tk-btn--solid {
+  background: var(--tk-accent);
+  color: var(--tk-on-accent);
+  flex-grow: 1.6;
 }
-
-.hs-btn-save {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.4rem;
-  border: none;
-  border-radius: var(--border-radius);
-  background: var(--botao);
+.tk-btn--ghost {
+  background: transparent;
+  border-color: var(--tk-line-strong);
+  color: var(--tk-ink);
+}
+.tk-btn--danger {
+  background: var(--tk-danger);
   color: #fff;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: opacity 0.2s ease;
 }
-.hs-btn-save:hover {
-  opacity: 0.92;
+html.dark .tk-btn--danger {
+  color: #2a0a07;
+}
+
+/* ── Confirmação de exclusão ────────────────────────────── */
+.tk-confirm {
+  width: min(380px, calc(100vw - 2rem));
+  padding: 0;
+  border: 1px solid var(--tk-line);
+  border-radius: 22px;
+  background: var(--tk-card);
+  color: var(--tk-ink);
+  box-shadow: 0 24px 60px rgba(6, 35, 29, 0.35);
+}
+.tk-confirm[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
+.tk-confirm::backdrop {
+  background: rgba(6, 35, 29, 0.5);
+  backdrop-filter: blur(2px);
+}
+.tk-confirm form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1.5rem 1.25rem 1.25rem;
+  text-align: center;
+}
+.tk-confirm h2,
+.tk-confirm p {
+  margin: 0;
+}
+.tk-confirm h2 {
+  font-size: calc(var(--font-title) * 1.05);
+  font-weight: 800;
+}
+.tk-confirm p {
+  color: var(--tk-ink-2);
+  overflow-wrap: anywhere;
+}
+.tk-confirm__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--tk-danger-soft);
+  color: var(--tk-danger);
+  font-size: 1.4rem;
+}
+.tk-confirm__actions {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 0.6rem;
+}
+.tk-confirm .tk-btn {
+  font: inherit;
+  font-weight: 800;
+}
+
+/* ── Desktop: painel lateral ────────────────────────────── */
+@media (min-width: 720px) {
+  .tk-sheet-overlay {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+  .tk-sheet {
+    width: 440px;
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+    transform: translateX(100%);
+  }
+  .tk-sheet-overlay.active .tk-sheet {
+    transform: translateX(0);
+  }
+  .tk-sheet__head {
+    padding: 1.5rem 1.5rem 0.75rem;
+  }
+  .tk-form {
+    padding: 0.5rem 1.5rem 0;
+  }
+}
+@media (max-width: 380px) {
+  .tk-row {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tk-sheet,
+  .tk-sheet-overlay {
+    transition: none !important;
+  }
 }

@@ -106,19 +106,34 @@ function normalizarDiaSemana(dia) {
   return aliases[normalizado] || normalizado;
 }
 
+function dataTarefa(valor) {
+  if (valor instanceof Date) {
+    if (Number.isNaN(valor.getTime())) return null;
+    return [
+      valor.getFullYear(),
+      String(valor.getMonth() + 1).padStart(2, "0"),
+      String(valor.getDate()).padStart(2, "0"),
+    ].join("-");
+  }
+  return dataSaoPaulo(valor);
+}
+
 function tarefaPrevistaNoDia(tarefa, dia) {
   const data = dataSaoPaulo(dia);
   if (!data) return false;
   const criacao = dataSaoPaulo(tarefa.criado_em);
-  if (criacao && data < criacao) return false;
+  const datasDeInicio = [dataTarefa(tarefa.data), criacao]
+    .filter(Boolean)
+    .sort();
+  const inicio = datasDeInicio.at(-1) || null;
+  if (inicio && data < inicio) return false;
 
   const repeticao = tarefa.repeticao || "once";
   if (repeticao === "daily") return true;
   if (repeticao === "weekly") {
     return normalizarDiaSemana(tarefa.dia_semana) === diaSemanaDaData(data);
   }
-  const dataUnica = dataSaoPaulo(tarefa.data);
-  return dataUnica ? data === dataUnica : !criacao || data >= criacao;
+  return inicio ? data === inicio : false;
 }
 
 function intervaloDias(inicio, quantidade) {

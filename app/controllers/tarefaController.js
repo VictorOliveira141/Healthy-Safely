@@ -7,6 +7,7 @@ const {
   concluidaAgora,
   calcularProgressao,
   agruparHistorico,
+  tarefaPrevistaNoDia,
 } = require("../utils/progressao");
 
 const mapearTarefa = (t) => ({
@@ -32,32 +33,40 @@ const diasSemana = [
 ];
 
 const tarefasDoDia = (tarefas) => {
-  const hoje = new Date();
-  const dataHoje = [
-    hoje.getFullYear(),
-    String(hoje.getMonth() + 1).padStart(2, "0"),
-    String(hoje.getDate()).padStart(2, "0"),
+  const hoje = hojeSaoPaulo();
+  return tarefas.filter((tarefa) => tarefaPrevistaNoDia(tarefa, hoje));
+};
+
+
+// ── Página de Tarefas (/tasks) ───────────────────────────────────────
+// O MySQL devolve DATE como Date; aqui vira "AAAA-MM-DD" (mesma leitura
+// de data usada em tarefasDoDia) para o formulário e para a semana.
+const dataLocalISO = (valor) => {
+  if (!valor) return null;
+  if (typeof valor === "string") return valor.slice(0, 10);
+  if (Number.isNaN(valor.getTime())) return null;
+  return [
+    valor.getFullYear(),
+    String(valor.getMonth() + 1).padStart(2, "0"),
+    String(valor.getDate()).padStart(2, "0"),
   ].join("-");
-  const diaHoje = diasSemana[hoje.getDay()];
+};
 
-  return tarefas.filter((tarefa) => {
-    const data = tarefa.data
-      ? typeof tarefa.data === "string"
-        ? tarefa.data.slice(0, 10)
-        : [
-            tarefa.data.getFullYear(),
-            String(tarefa.data.getMonth() + 1).padStart(2, "0"),
-            String(tarefa.data.getDate()).padStart(2, "0"),
-          ].join("-")
-      : null;
+const diaSemanaDaDataISO = (iso) =>
+  iso ? diasSemana[new Date(`${iso}T12:00:00Z`).getUTCDay()] : null;
 
-    if (data && data > dataHoje) return false;
-    if (tarefa.repeticao === "daily") return true;
-    if (tarefa.repeticao === "weekly") {
-      return tarefa.dia_semana === diaHoje;
-    }
-    return !data || data === dataHoje;
-  });
+const diaHojeSaoPaulo = () => diaSemanaDaDataISO(hojeSaoPaulo());
+
+// Acrescenta os dias em que a tarefa está prevista nesta semana.
+const mapearTarefaPagina = (t, diaHoje) => {
+  const base = mapearTarefa(t);
+  const dataISO = dataLocalISO(t.data);
+  const deslocamentoHoje = diasSemana.indexOf(diaHoje);
+  const hoje = hojeSaoPaulo();
+  const dias = diasSemana.filter((_, indice) =>
+    tarefaPrevistaNoDia(t, somarDias(hoje, indice - deslocamentoHoje)),
+  );
+  return { ...base, data: dataISO, dias };
 };
 
 const tarefaController = {
@@ -146,11 +155,12 @@ const tarefaController = {
   },
 
   listarTarefas: async (req, res) => {
+    const diaHoje = diaHojeSaoPaulo();
     try {
       const tarefas = await tarefaModel.listarPorUsuario(
         req.session.usuario.id,
       );
-      const tasks = tarefas.map(mapearTarefa);
+      const tasks = tarefas.map((t) => mapearTarefaPagina(t, diaHoje));
       const flash = req.session.flash || null;
       delete req.session.flash;
       res.render("pages/app/tasks", {
@@ -159,6 +169,7 @@ const tarefaController = {
         usuario: req.session.usuario,
         taskToEdit: null,
         modoEdicao: false,
+        diaHoje,
       });
     } catch (err) {
       res.render("pages/app/tasks", {
@@ -167,6 +178,7 @@ const tarefaController = {
         usuario: req.session.usuario,
         taskToEdit: null,
         modoEdicao: false,
+        diaHoje,
       });
     }
   },
@@ -189,12 +201,14 @@ const tarefaController = {
       const flash = req.session.flash || null;
       delete req.session.flash;
 
+      const diaHoje = diaHojeSaoPaulo();
       return res.render("pages/app/tasks", {
-        tasks: tarefas.map(mapearTarefa),
+        tasks: tarefas.map((t) => mapearTarefaPagina(t, diaHoje)),
         flash,
         usuario: req.session.usuario,
-        taskToEdit: mapearTarefa(tarefa),
+        taskToEdit: mapearTarefaPagina(tarefa, diaHoje),
         modoEdicao: true,
+        diaHoje,
       });
     } catch (err) {
       console.error("Erro ao carregar tarefa para edição:", err);
@@ -261,7 +275,7 @@ const tarefaController = {
         return res.redirect("/tasks");
       }
 
-      await tarefaModel.atualizar(id, req.session.usuario.id, {
+      const resultado = await tarefaModel.atualizar(id, req.session.usuario.id, {
         titulo: titulo.trim(),
         descricao: descricao || null,
         categoria: categoria || "geral",
@@ -270,6 +284,7 @@ const tarefaController = {
         repeticao: repeticao || "once",
         diaSemana: dia_semana || null,
       });
+      if (!resultado) throw new Error("A atualização não foi persistida.");
 
       req.session.flash = {
         tipo: "sucesso",

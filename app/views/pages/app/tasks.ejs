@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Tarefas | Healthy Safely</title>
   <meta property="og:title" content="Tarefas | Healthy Safely" />
   <meta property="og:description" content="Organize suas tarefas de saúde, acompanhe seu progresso e conclua atividades no Healthy Safely." />
@@ -16,45 +16,61 @@
   <link rel="stylesheet" href="/css/app/tasksmodal.css" />
   <link rel="icon" href="/imagem/Logo repaginado 2.webp" />
 </head>
-<body data-edit-mode="<%= modoEdicao ? 'true' : 'false' %>" data-edit-task-id="<%= taskToEdit ? taskToEdit._id : '' %>">
+<body class="tk-page" data-edit-mode="<%= modoEdicao ? 'true' : 'false' %>" data-edit-task-id="<%= taskToEdit ? taskToEdit._id : '' %>">
 
 <%- include('../../partials/header.ejs') %>
 
 <%
-  // ── Dados reais vindos do controller (sem valores fictícios) ──────────
+  /* ── Dados reais vindos do controller ─────────────────────────────── */
   const taskList = typeof tasks !== 'undefined' ? tasks : [];
-  const pendentes = taskList.filter(t => !t.completed);
-  const concluidasCount = taskList.filter(t => t.completed).length;
-  const metaDiaria = 5; // meta fixa já existente no produto
-  const progressoMeta = Math.min((concluidasCount / metaDiaria) * 100, 100);
+  const hojeId = typeof diaHoje !== 'undefined' && diaHoje ? diaHoje : 'segunda';
 
-  const usuarioAtual = typeof usuario !== 'undefined' && usuario ? usuario : {};
-  const pontosUsuario = usuarioAtual.pontos || 0;
-  const nivelUsuario = usuarioAtual.nivel || 'iniciante';
-  const sequenciaDias = usuarioAtual.ofensive || 0;
+  const dias = [
+    { id: 'domingo', abrev: 'Dom', nome: 'Domingo' },
+    { id: 'segunda', abrev: 'Seg', nome: 'Segunda-feira' },
+    { id: 'terca',   abrev: 'Ter', nome: 'Terça-feira' },
+    { id: 'quarta',  abrev: 'Qua', nome: 'Quarta-feira' },
+    { id: 'quinta',  abrev: 'Qui', nome: 'Quinta-feira' },
+    { id: 'sexta',   abrev: 'Sex', nome: 'Sexta-feira' },
+    { id: 'sabado',  abrev: 'Sáb', nome: 'Sábado' },
+  ];
 
-  const nivelInfo = {
-    iniciante:     { label: 'Iniciante',     icon: 'bi-flower1' },
-    intermediario: { label: 'Intermediário', icon: 'bi-lightning-charge-fill' },
-    avancado:      { label: 'Avançado',      icon: 'bi-award-fill' },
-    elite:         { label: 'Elite',         icon: 'bi-trophy-fill' },
+  // Manhã, tarde e noite seguem o mesmo corte de horário do dashboard.
+  const periodos = [
+    { id: 'manha',       label: 'Manhã',          icon: 'bi-sun' },
+    { id: 'tarde',       label: 'Tarde',          icon: 'bi-cloud-sun' },
+    { id: 'noite',       label: 'Noite',          icon: 'bi-moon-stars' },
+    { id: 'sem-horario', label: 'Durante o dia',  icon: 'bi-pin-angle' },
+  ];
+  const periodoDaTarefa = (t) => {
+    if (!t.horario) return 'sem-horario';
+    const h = String(t.horario).slice(0, 5);
+    if (h < '12:00') return 'manha';
+    if (h < '18:00') return 'tarde';
+    return 'noite';
   };
-  const nivelAtual = nivelInfo[nivelUsuario] || nivelInfo.iniciante;
 
   const nomesCategoria = {
-    geral: 'Geral',
-    saude: 'Saúde',
-    sono: 'Sono',
-    alimentacao: 'Alimentação',
-    exercicio: 'Atividade física',
+    geral: 'Geral', saude: 'Saúde', sono: 'Sono',
+    alimentacao: 'Alimentação', exercicio: 'Atividade física',
   };
   const iconesCategoria = {
-    geral: 'bi-list-task',
-    saude: 'bi-heart-pulse',
-    sono: 'bi-moon-stars',
-    alimentacao: 'bi-egg-fried',
-    exercicio: 'bi-bicycle',
+    geral: 'bi-list-check', saude: 'bi-heart-pulse', sono: 'bi-moon-stars',
+    alimentacao: 'bi-egg-fried', exercicio: 'bi-bicycle',
   };
+  const chaveCategoria = (c) => (nomesCategoria[c] ? c : 'geral');
+  const labelsRepeticao = { daily: 'Todos os dias', weekly: 'Toda semana', once: 'Uma vez' };
+
+  // A conclusão é sempre registrada para o dia de hoje (regra existente).
+  // Nos demais dias a tarefa aparece só para consulta.
+  const concluidaNoDia = (t, diaId) => {
+    if (diaId === hojeId) return !!t.completed;
+    if (t.repeticao === 'daily') return false;
+    return !!t.completed;
+  };
+  const plural = (n, um, varios) => n + ' ' + (n === 1 ? um : varios);
+  const ordenar = (lista) => [...lista].sort((a, b) =>
+    String(a.horario || '').localeCompare(String(b.horario || '')) || a._id - b._id);
 
   const flashAtual = typeof flash !== 'undefined' ? flash : null;
 %>
@@ -66,433 +82,332 @@
   </div>
 <% } %>
 
-<main class="hs-tasks-main">
-    <!-- HERO -->
-    <section class="hs-page-head">
-        <section class="hs-page-head-content">
-            <span class="hs-page-kicker">
-                <i class="bi bi-list-check" aria-hidden="true"></i>
-                Tarefas
-            </span>
-            <h1>
-                Organize sua rotina saudável
-            </h1>
-            <p>
-                Pequenos hábitos diários geram grandes resultados. Crie tarefas,
-                acompanhe seu progresso e mantenha sua rotina em dia.
-            </p>
-        </section>
-    </section>
+<main class="tk" data-dia-hoje="<%= hojeId %>">
 
-    <!-- MOTIVAÇÃO-->
-    <section class="hs-motivation-grid">
-        <!--card 1-->
-        <article class="hs-info-card">
-            <span class="hs-info-icon hs-info-icon--pendente" aria-hidden="true">
-                <i class="bi bi-hourglass-split"></i>
-            </span>
-            <section>
-                <h2>Tarefas Restantes</h2>
-                <p>
-                    <%= pendentes.length %>
-                </p>
-            </section>
-        </article>
+  <!-- CABEÇALHO -->
+  <header class="tk-head">
+    <div class="tk-head__text">
+      <p class="tk-kicker"><i class="bi bi-list-check" aria-hidden="true"></i> Tarefas</p>
+      <h1>Minha semana</h1>
+      <p class="tk-head__sub">Escolha um dia para ver e organizar suas tarefas.</p>
+    </div>
+    <button type="button" class="tk-add" data-nova id="btnNovaTarefa">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i> Nova tarefa
+    </button>
+  </header>
 
-        <!--card 2-->
-        <article class="hs-info-card">
-            <span class="hs-info-icon hs-info-icon--meta" aria-hidden="true">
-                <i class="bi bi-bullseye"></i>
-            </span>
-            <section>
-                <h2>Meta diária</h2>
-                <p>
-                    <%= concluidasCount %> / <%= metaDiaria %>
-                </p>
-
-                <section class="hs-progress" role="img" aria-label="<%= Math.round(progressoMeta) %>% da meta diária concluída">
-                    <section
-                        class="hs-progress-bar"
-                        style="width:<%= progressoMeta %>%">
-                    </section>
-                </section>
-            </section>
-        </article>
-
-        <!--card 3-->
-        <article class="hs-info-card">
-            <span class="hs-info-icon hs-info-icon--streak" aria-hidden="true">
-                <i class="bi bi-fire"></i>
-            </span>
-            <section>
-                <h2>Sequência</h2>
-                <p>
-                    <%= sequenciaDias %> dia<%= sequenciaDias === 1 ? '' : 's' %>
-                </p>
-            </section>
-        </article>
-    </section>
-
-
-    <!-- PESQUISA,FILTROS e + NOVA TAREFA -->
-    <section class="hs-task-toolbar">
-        <!-- barra de pesquisa -->
-        <div class="hs-search-wrap">
-            <i class="bi bi-search" aria-hidden="true"></i>
-            <input
-                type="search"
-                id="searchTask"
-                placeholder="Pesquisar tarefa..."
-            >
-        </div>
-
-        <!-- filtro -->
-        <select id="filterStatus">
-            <option value="all">
-                Todas
-            </option>
-
-            <option value="today">
-                Hoje
-            </option>
-
-            <option value="nextweek">
-                Próxima semana
-            </option>
-        </select>
-
-        <!-- categoria -->
-        <select id="filterCategory">
-            <option value="">
-                Categoria
-            </option>
-
-            <option value="geral">
-                Geral
-            </option>
-
-            <option value="saude">
-                Saúde
-            </option>
-
-            <option value="sono">
-                Sono
-            </option>
-
-            <option value="alimentacao">
-                Alimentação
-            </option>
-
-            <option value="exercicio">
-                Exercício
-            </option>
-        </select>
-
-        <button id="btnNovaTarefa" class="hs-floating-add" type="button">
-         <i class="bi bi-plus-lg" aria-hidden="true"></i>
-         Nova tarefa
+  <!-- DIAS DA SEMANA -->
+  <nav class="tk-week" aria-label="Dias da semana">
+    <div class="tk-week__list" role="tablist" aria-label="Dias da semana">
+      <% dias.forEach(d => {
+        const qtd = taskList.filter(t => t.dias.includes(d.id)).length;
+      %>
+        <button type="button" role="tab"
+                class="tk-daybtn<%= d.id === hojeId ? ' is-today' : '' %>"
+                id="tab-<%= d.id %>" data-dia="<%= d.id %>"
+                aria-controls="dia-<%= d.id %>"
+                aria-selected="<%= d.id === hojeId ? 'true' : 'false' %>"
+                tabindex="<%= d.id === hojeId ? '0' : '-1' %>">
+          <span class="tk-daybtn__abbr"><%= d.abrev %></span>
+          <span class="tk-daybtn__dot<%= qtd ? ' has-tasks' : '' %>" aria-hidden="true"></span>
+          <span class="tk-sr"><%= d.nome %><%= d.id === hojeId ? ', hoje' : '' %>, <%= plural(qtd, 'tarefa', 'tarefas') %></span>
         </button>
-    </section>
+      <% }) %>
+    </div>
+  </nav>
 
-    <!-- CONTAINER TAREFAS-->
-    <section class="hs-tasks-container">
-    <section class="hs-tasks-section">
-        <header class="hs-section-header">
-            <h2>
-                Tarefas pendentes de hoje
-            </h2>
-            <span class="hs-section-count">
-                <%= pendentes.length %>
-            </span>
+  <!-- BUSCA E FILTROS -->
+  <section class="tk-tools" aria-label="Filtros">
+    <label class="tk-search">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <span class="tk-sr">Pesquisar tarefa</span>
+      <input type="search" id="searchTask" placeholder="Pesquisar tarefa..." autocomplete="off" />
+    </label>
+
+    <label class="tk-select">
+      <span class="tk-sr">Categoria</span>
+      <select id="filterCategory">
+        <option value="">Todas as categorias</option>
+        <option value="geral">Geral</option>
+        <option value="saude">Saúde</option>
+        <option value="sono">Sono</option>
+        <option value="alimentacao">Alimentação</option>
+        <option value="exercicio">Atividade física</option>
+      </select>
+    </label>
+
+    <div class="tk-seg tk-seg--filter" role="group" aria-label="Mostrar">
+      <button type="button" class="is-active" data-status="all" aria-pressed="true">Todas</button>
+      <button type="button" data-status="pending" aria-pressed="false">Pendentes</button>
+      <button type="button" data-status="completed" aria-pressed="false">Concluídas</button>
+    </div>
+  </section>
+
+  <!-- PAINÉIS (um por dia) -->
+  <div class="tk-panels">
+    <% dias.forEach(d => {
+      const doDia = ordenar(taskList.filter(t => t.dias.includes(d.id)));
+      const feitas = doDia.filter(t => concluidaNoDia(t, d.id)).length;
+      const ehHoje = d.id === hojeId;
+      const pct = doDia.length ? Math.round((feitas / doDia.length) * 100) : 0;
+    %>
+      <section class="tk-day" id="dia-<%= d.id %>" role="tabpanel" aria-labelledby="tab-<%= d.id %>"
+               data-dia="<%= d.id %>" data-hoje="<%= ehHoje ? '1' : '0' %>" <%= ehHoje ? '' : 'hidden' %>>
+
+        <header class="tk-day__head">
+          <div>
+            <h2><%= d.nome %><% if (ehHoje) { %> <span class="tk-badge">Hoje</span><% } %></h2>
+            <p class="tk-day__sum">
+              <% if (doDia.length === 0) { %>
+                Nenhuma tarefa neste dia
+              <% } else if (ehHoje) { %>
+                <%= feitas %> de <%= doDia.length %> <%= doDia.length === 1 ? 'tarefa concluída' : 'tarefas concluídas' %>
+              <% } else { %>
+                <%= plural(doDia.length, 'tarefa', 'tarefas') %>
+              <% } %>
+            </p>
+          </div>
+          <% if (ehHoje && doDia.length > 0) { %>
+            <div class="tk-ring" role="img" aria-label="<%= pct %>% das tarefas de hoje concluídas">
+              <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+                <circle class="tk-ring__track" cx="22" cy="22" r="19" pathLength="100" />
+                <circle class="tk-ring__value" cx="22" cy="22" r="19" pathLength="100" style="--p: <%= pct %>" />
+              </svg>
+              <span><%= pct %>%</span>
+            </div>
+          <% } %>
         </header>
 
-        <% if (pendentes.length === 0) { %>
-            <section class="hs-empty-state">
-                <i class="bi bi-check2-circle" aria-hidden="true"></i>
-                <h3>
-                    Nenhuma tarefa pendente
-                </h3>
-                <p>
-                    <%= taskList.length > 0 ? 'Excelente! Você concluiu todas as tarefas.' : 'Cadastre sua primeira tarefa para começar.' %>
-                </p>
-            </section>
+        <% if (doDia.length === 0) { %>
+          <!-- DIA SEM TAREFAS -->
+          <div class="tk-blank">
+            <span class="tk-blank__icon" aria-hidden="true"><i class="bi bi-flower1"></i></span>
+            <h3><%= ehHoje ? 'Seu dia está livre' : 'Nada planejado para ' + d.nome.toLowerCase() %></h3>
+            <p>Que tal criar um hábito leve? Pequenas tarefas já fazem diferença na rotina.</p>
+            <button type="button" class="tk-add tk-add--solid" data-nova data-dia="<%= d.id %>">
+              <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar tarefa
+            </button>
+          </div>
         <% } else { %>
-                <ul class="hs-user-tasks">
-                    <% pendentes.forEach(tarefa => { %>
-                        <li>
-                            <article
-                                class="hs-user-task-card"
-                                data-title="<%= tarefa.title %>"
-                                data-category="<%= tarefa.categoria %>"
-                                data-data="<%= tarefa.data || '' %>"
-                                data-horario="<%= tarefa.horario || '' %>"
-                                data-repeticao="<%= tarefa.repeticao || 'once' %>"
-                                data-dia-semana="<%= tarefa.dia_semana || '' %>"
-                            >
-                                <span class="hs-task-accent hs-accent--<%= tarefa.categoria %>" aria-hidden="true"></span>
 
-                                <section class="hs-task-main">
-                                    <div class="hs-task-top">
-                                        <div class="hs-task-left">
-                                            <a href="/tasks/concluir?id=<%= tarefa._id %>" class="hs-task-btn" role="button" aria-label="Concluir: <%= tarefa.title %>">
-                                                <i class="bi bi-check-lg" aria-hidden="true"></i>
-                                            </a>
+          <% periodos.forEach(p => {
+            const lista = doDia.filter(t => periodoDaTarefa(t) === p.id);
+            if (!lista.length) return;
+          %>
+            <section class="tk-period" data-period="<%= p.id %>">
+              <h3 class="tk-period__title">
+                <span class="tk-period__icon" aria-hidden="true"><i class="bi <%= p.icon %>"></i></span>
+                <%= p.label %>
+                <span class="tk-period__count"><%= lista.length %></span>
+              </h3>
 
-                                            <section class="hs-task-icon hs-icon--<%= tarefa.categoria %>" aria-hidden="true">
-                                                <i class="bi <%= iconesCategoria[tarefa.categoria] || 'bi-list-task' %>"></i>
-                                            </section>
+              <ul class="tk-list">
+                <% lista.forEach(t => {
+                  const cat = chaveCategoria(t.categoria);
+                  const hora = t.horario ? String(t.horario).slice(0, 5) : '';
+                  const feita = concluidaNoDia(t, d.id);
+                  const podeMarcar = ehHoje;
+                %>
+                  <li class="tk-item<%= hora ? '' : ' tk-item--flex' %>"
+                      data-status="<%= feita ? 'completed' : 'pending' %>"
+                      data-title="<%= t.title %>"
+                      data-cat="<%= cat %>"
+                      data-id="<%= t._id %>"
+                      data-descricao="<%= t.descricao || '' %>"
+                      data-data="<%= t.data || '' %>"
+                      data-horario="<%= hora %>"
+                      data-repeticao="<%= t.repeticao || 'once' %>"
+                      data-dia-semana="<%= t.dia_semana || '' %>">
 
-                                            <h3><%= tarefa.title %></h3>
-                                        </div>
+                    <% if (hora) { %>
+                      <time class="tk-time" datetime="<%= hora %>"><%= hora %></time>
+                    <% } %>
 
-                                        <div class="hs-top-actions">
-                                            <button type="button" class="hs-toggle-details" aria-expanded="false" title="Mostrar detalhes">
-                                                <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+                    <article class="tk-card<%= feita ? ' is-done' : '' %>">
+                      <% if (podeMarcar) { %>
+                        <%# Mesma rota de antes: /tasks/concluir alterna concluída/pendente %>
+                        <a href="/tasks/concluir?id=<%= t._id %>" class="tk-check" role="button"
+                           aria-pressed="<%= feita ? 'true' : 'false' %>"
+                           aria-label="<%= feita ? 'Desfazer conclusão: ' : 'Concluir: ' %><%= t.title %>">
+                          <i class="bi bi-check-lg" aria-hidden="true"></i>
+                        </a>
+                      <% } else { %>
+                        <span class="tk-check is-locked" role="img"
+                              aria-label="<%= feita ? 'Concluída' : 'Pendente' %>: <%= t.title %>. A conclusão é marcada no próprio dia."
+                              title="A conclusão é marcada no próprio dia">
+                          <i class="bi <%= feita ? 'bi-check-lg' : 'bi-clock' %>" aria-hidden="true"></i>
+                        </span>
+                      <% } %>
 
-                                    <section class="hs-task-details">
-                                        <% if (tarefa.descricao) { %>
-                                            <p class="hs-task-desc"><%= tarefa.descricao %></p>
-                                        <% } %>
+                      <div class="tk-card__body">
+                        <h4 class="tk-card__title"><%= t.title %></h4>
+                        <% if (t.descricao) { %><p class="tk-card__desc"><%= t.descricao %></p><% } %>
+                        <p class="tk-card__meta">
+                          <span class="tk-tag cat-<%= cat %>"><i class="bi <%= iconesCategoria[cat] %>" aria-hidden="true"></i> <%= nomesCategoria[cat] %></span>
+                          <% if (t.repeticao && t.repeticao !== 'once') { %>
+                            <span class="tk-rep"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> <%= labelsRepeticao[t.repeticao] %></span>
+                          <% } %>
+                          <% if (feita) { %><span class="tk-rep tk-rep--ok">Concluída</span><% } %>
+                        </p>
+                      </div>
 
-                                        <section class="hs-task-meta">
-                                            <span class="hs-task-cat">
-                                                <i class="bi bi-tag" aria-hidden="true"></i>
-                                                <%= nomesCategoria[tarefa.categoria] || 'Geral' %>
-                                            </span>
+                      <div class="tk-card__actions">
+                        <a href="/tasks/editar/<%= t._id %>" class="tk-icon-btn" data-editar aria-label="Editar: <%= t.title %>" title="Editar">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                        </a>
+                        <button type="button" class="tk-icon-btn tk-icon-btn--danger" data-excluir aria-label="Excluir: <%= t.title %>" title="Excluir">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </article>
+                  </li>
+                <% }) %>
+              </ul>
+            </section>
+          <% }) %>
 
-                                            <span>
-                                                <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                                <%= tarefa.data ? new Date(tarefa.data).toLocaleDateString('pt-BR') : '--/--/--' %>
-                                            </span>
-
-                                            <% if (tarefa.horario) { %>
-                                                <span>
-                                                    <i class="bi bi-clock" aria-hidden="true"></i>
-                                                    <%= tarefa.horario %>
-                                                </span>
-                                            <% } %>
-
-                                            <% if (tarefa.pontos) { %>
-                                                <span>
-                                                    <i class="bi bi-star-fill" aria-hidden="true"></i>
-                                                    <%= tarefa.pontos %> pts
-                                                </span>
-                                            <% } %>
-
-                                            <% if (tarefa.repeticao === 'daily') { %>
-                                                <span><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Diária</span>
-                                            <% } else if (tarefa.repeticao === 'weekly') { %>
-                                                <span><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Semanal · <%= tarefa.dia_semana || 'dia específico' %></span>
-                                            <% } else { %>
-                                                <span><i class="bi bi-calendar-check" aria-hidden="true"></i> Única</span>
-                                            <% } %>
-                                        </section>
-
-                                        <section class="hs-detail-actions">
-                                            <a href="/tasks/editar/<%= tarefa._id %>" class="hs-task-edit">
-                                                <i class="bi bi-pencil" aria-hidden="true"></i>
-                                                <span>Editar</span>
-                                            </a>
-
-                                            <form action="/tasks/excluir/<%= tarefa._id %>" method="POST" onsubmit="return confirm('Excluir esta tarefa?')">
-                                                <button type="submit" class="hs-btn-excluir">
-                                                    <i class="bi bi-trash3" aria-hidden="true"></i>
-                                                    <span>Excluir</span>
-                                                </button>
-                                            </form>
-                                        </section>
-                                    </section>
-                                </section>
-                            </article>
-                        </li>
-                    <% }) %>
-                </ul>
+          <!-- NENHUM RESULTADO NOS FILTROS -->
+          <div class="tk-noresult" hidden>
+            <i class="bi bi-funnel" aria-hidden="true"></i>
+            <p>Nenhuma tarefa com esses filtros.</p>
+            <button type="button" data-limpar>Limpar filtros</button>
+          </div>
         <% } %>
-    </section>
-    </section>
+      </section>
+    <% }) %>
+  </div>
 
-    <!-- ÁREAS DE SAÚDE -->
-    <section class="hs-tasks-section">
-        <header class="hs-section-header">
-            <h2>
-                Explore conteúdos
-            </h2>
-        </header>
+  <!-- ÁREAS DE SAÚDE -->
+  <section class="tk-areas" aria-labelledby="tk-areas-title">
+    <h2 id="tk-areas-title">Explore conteúdos</h2>
+    <nav class="tk-areas__grid" aria-label="Áreas de saúde">
+      <a href="/sono" class="tk-area">
+        <span class="tk-area__icon"><img src="/imagem/sono.webp" alt="" aria-hidden="true" /></span>
+        <span class="tk-area__text"><strong>Sono</strong><small>Aprenda hábitos para dormir melhor.</small></span>
+      </a>
+      <a href="/saude-mental" class="tk-area">
+        <span class="tk-area__icon"><img src="/imagem/saudemental.webp" alt="" aria-hidden="true" /></span>
+        <span class="tk-area__text"><strong>Saúde Mental</strong><small>Reduza estresse e ansiedade.</small></span>
+      </a>
+      <a href="/atividade-fisica" class="tk-area">
+        <span class="tk-area__icon"><img src="/imagem/atf.webp" alt="" aria-hidden="true" /></span>
+        <span class="tk-area__text"><strong>Atividade Física</strong><small>Dicas para manter a rotina.</small></span>
+      </a>
+      <a href="/alimentacao" class="tk-area">
+        <span class="tk-area__icon"><img src="/imagem/alimentacao.webp" alt="" aria-hidden="true" /></span>
+        <span class="tk-area__text"><strong>Alimentação</strong><small>Melhore sua nutrição.</small></span>
+      </a>
+    </nav>
+  </section>
+</main>
 
-        <nav class="hs-categorias" aria-label="Áreas de saúde">
-            <a href="/sono" class="hs-categoria-link">
-                <span class="hs-categoria-icone">
-                    <img src="/imagem/sono.webp" alt="" aria-hidden="true">
-                </span>
-                <span>Sono</span>
-                <p>Aprenda hábitos para dormir melhor.</p>
-            </a>
-
-            <a href="/saude-mental" class="hs-categoria-link">
-                <span class="hs-categoria-icone">
-                    <img src="/imagem/saudemental.webp" alt="" aria-hidden="true">
-                </span>
-                <span>Saúde Mental</span>
-                <p>Reduza estresse e ansiedade.</p>
-            </a>
-
-            <a href="/atividade-fisica" class="hs-categoria-link">
-                <span class="hs-categoria-icone">
-                    <img src="/imagem/atf.webp" alt="" aria-hidden="true">
-                </span>
-                <span>Atividade Física</span>
-                <p>Dicas para manter a rotina.</p>
-            </a>
-
-            <a href="/alimentacao" class="hs-categoria-link">
-                <span class="hs-categoria-icone">
-                    <img src="/imagem/alimentacao.webp" alt="" aria-hidden="true">
-                </span>
-                <span>Alimentação</span>
-                <p>Melhore sua nutrição.</p>
-            </a>
-        </nav>
-    </section>
+<!-- Botão flutuante (mobile) -->
+<button type="button" class="tk-fab" data-nova aria-label="Nova tarefa">
+  <i class="bi bi-plus-lg" aria-hidden="true"></i>
+</button>
 
 <%- include('../../partials/voltar-topo.ejs') %>
 
-<!-- OVERLAY -->
-<div class="hs-drawer-overlay" id="drawerOverlay">
-    <!-- Drawer -->
-    <aside class="hs-task-drawer" id="taskDrawer">
-        <header class="hs-drawer-header">
-            <section>
-                <h2>Nova tarefa</h2>
-                <p>
-                    Organize sua rotina de forma simples.
-                </p>
-            </section>
-            <button
-                class="hs-close-drawer"
-                id="closeDrawer"
-                type="button"
-                aria-label="Fechar"
-            >
-                <i class="bi bi-x-lg" aria-hidden="true"></i>
-            </button>
-        </header>
+<!-- FORMULÁRIO (nova tarefa / editar) -->
+<div class="tk-sheet-overlay" id="drawerOverlay" aria-hidden="true">
+  <div class="tk-sheet" id="taskDrawer" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <header class="tk-sheet__head">
+      <div>
+        <h2 id="sheetTitle">Nova tarefa</h2>
+        <p id="sheetSub">Organize sua rotina de forma simples.</p>
+      </div>
+      <button type="button" class="tk-icon-btn" id="closeDrawer" aria-label="Fechar">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+      </button>
+    </header>
 
-        <form
-            action="/tasks/criar"
-            method="POST"
-            class="hs-drawer-form"
-        >
-            <section class="hs-form-group">
-                <label>Título</label>
-                <input
-                    type="text"
-                    name="titulo"
-                    required
-                    maxlength="200"
-                    placeholder="Ex.: Caminhar 30 minutos"
-                >
-            </section>
+    <form action="/tasks/criar" method="POST" class="tk-form" id="taskForm" novalidate>
+      <div class="tk-field">
+        <label for="f-titulo">Título</label>
+        <input type="text" id="f-titulo" name="titulo" maxlength="200" placeholder="Ex.: Caminhar 30 minutos" autocomplete="off" aria-describedby="err-titulo" />
+        <p class="tk-error" id="err-titulo" role="alert" hidden></p>
+      </div>
 
-            <section class="hs-form-group">
-                <label>Descrição</label>
-                <textarea
-                    rows="4"
-                    name="descricao"
-                    placeholder="Opcional..."
-                ></textarea>
-            </section>
+      <div class="tk-field">
+        <label for="f-descricao">Descrição <span class="tk-opt">(opcional)</span></label>
+        <textarea id="f-descricao" name="descricao" rows="3" placeholder="Algum detalhe que ajude a lembrar"></textarea>
+      </div>
 
-            <section class="hs-form-group">
-                <label>Categoria</label>
-                <select name="categoria">
-                    <option value="geral">Geral</option>
-                    <option value="saude">Saúde</option>
-                    <option value="sono">Sono</option>
-                    <option value="alimentacao">Alimentação</option>
-                    <option value="exercicio">Exercício</option>
-                </select>
-            </section>
+      <div class="tk-row">
+        <div class="tk-field">
+          <label for="f-categoria">Categoria</label>
+          <select id="f-categoria" name="categoria">
+            <option value="geral">Geral</option>
+            <option value="saude">Saúde</option>
+            <option value="sono">Sono</option>
+            <option value="alimentacao">Alimentação</option>
+            <option value="exercicio">Atividade física</option>
+          </select>
+        </div>
+        <div class="tk-field">
+          <label for="f-horario">Horário <span class="tk-opt">(opcional)</span></label>
+          <input type="time" id="f-horario" name="horario" aria-describedby="err-horario" />
+          <p class="tk-error" id="err-horario" role="alert" hidden></p>
+        </div>
+      </div>
 
-            <section class="hs-inline">
-                <section class="hs-form-group">
-                    <label>Data</label>
-                    <input
-                        type="date"
-                        name="data"
-                    >
-                </section>
+      <fieldset class="tk-field tk-fieldset">
+        <legend>Repetição</legend>
+        <div class="tk-seg tk-seg--radio">
+          <label><input type="radio" name="repeticao" value="once" /><span>Uma vez</span></label>
+          <label><input type="radio" name="repeticao" value="daily" /><span>Todos os dias</span></label>
+          <label><input type="radio" name="repeticao" value="weekly" checked /><span>Toda semana</span></label>
+        </div>
+      </fieldset>
 
-                <section class="hs-form-group">
-                    <label>Horário</label>
-                    <input
-                        type="time"
-                        name="horario"
-                    >
-                </section>
-            </section>
+      <fieldset class="tk-field tk-fieldset" id="diaGroup">
+        <legend>Dia da semana</legend>
+        <div class="tk-daychips">
+          <% dias.forEach(d => { %>
+            <label><input type="radio" name="dia_semana" value="<%= d.id %>" /><span><%= d.abrev %></span></label>
+          <% }) %>
+        </div>
+        <p class="tk-error" id="err-dia_semana" role="alert" hidden></p>
+      </fieldset>
 
-            <section class="hs-form-group">
-                <label>Repetição</label>
-                <select name="repeticao" id="repeticaoTarefa">
-                    <option value="once">
-                        Apenas uma vez
-                    </option>
+      <details class="tk-more" id="moreOptions">
+        <summary>Mais opções</summary>
+        <div class="tk-field">
+          <label for="f-data">Data <span class="tk-opt">(opcional)</span></label>
+          <input type="date" id="f-data" name="data" aria-describedby="hint-data err-data" />
+          <p class="tk-hint" id="hint-data">Em tarefas de uma vez, é o dia exato. Nas repetidas, é quando elas começam.</p>
+          <p class="tk-error" id="err-data" role="alert" hidden></p>
+        </div>
+      </details>
 
-                    <option value="daily">
-                        Todos os dias
-                    </option>
-
-                    <option value="weekly">
-                        Dia específico da semana
-                    </option>
-                </select>
-            </section>
-
-            <section class="hs-form-group" id="diaSemanaGroup" style="display:none;">
-                <label>Dia da semana</label>
-                <select name="dia_semana">
-                    <option value="">Selecione</option>
-                    <option value="segunda">Segunda-feira</option>
-                    <option value="terca">Terça-feira</option>
-                    <option value="quarta">Quarta-feira</option>
-                    <option value="quinta">Quinta-feira</option>
-                    <option value="sexta">Sexta-feira</option>
-                    <option value="sabado">Sábado</option>
-                    <option value="domingo">Domingo</option>
-                </select>
-            </section>
-
-            <footer class="hs-drawer-footer">
-                <button
-                    type="button"
-                    class="hs-btn-cancel"
-                    id="cancelDrawer"
-                >
-                    Cancelar
-                </button>
-
-                <button
-                    type="submit"
-                    class="hs-btn-save"
-                    id="saveTaskButton"
-                >
-                    <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
-                    <span id="saveTaskText">Salvar tarefa</span>
-                </button>
-            </footer>
-        </form>
-    </aside>
+      <footer class="tk-sheet__foot">
+        <button type="button" class="tk-btn tk-btn--ghost" id="cancelDrawer">Cancelar</button>
+        <button type="submit" class="tk-btn tk-btn--solid" id="saveTaskButton">
+          <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
+          <span id="saveTaskText">Salvar tarefa</span>
+        </button>
+      </footer>
+    </form>
+  </div>
 </div>
 
-</main>
+<!-- CONFIRMAÇÃO DE EXCLUSÃO -->
+<dialog class="tk-confirm" id="confirmDelete" aria-labelledby="confirmTitle">
+  <form method="POST" id="deleteForm" action="">
+    <span class="tk-confirm__icon" aria-hidden="true"><i class="bi bi-trash3"></i></span>
+    <h2 id="confirmTitle">Excluir tarefa?</h2>
+    <p id="confirmText">Essa ação não pode ser desfeita.</p>
+    <div class="tk-confirm__actions">
+      <button type="button" class="tk-btn tk-btn--ghost" id="cancelDelete">Cancelar</button>
+      <button type="submit" class="tk-btn tk-btn--danger">Excluir</button>
+    </div>
+  </form>
+</dialog>
 
 <%- include('../../partials/footer.ejs') %>
 
 <script>
-  window.taskToEdit = <%- JSON.stringify(taskToEdit || null) %>;
+  window.taskToEdit = <%- JSON.stringify(taskToEdit || null).replace(/</g, '\\u003c') %>;
 </script>
 <script src="/js/tasks/drawer.js"></script>
 <script src="/js/tasks/gerenciar-tarefa.js"></script>

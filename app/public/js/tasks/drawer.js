@@ -1,64 +1,74 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const btnNovaTarefa = document.getElementById("btnNovaTarefa");
-  const drawerOverlay = document.getElementById("drawerOverlay");
-  const taskDrawer = document.getElementById("taskDrawer");
+/* ---- Formulário de tarefa (bottom sheet / painel lateral) ----
+   Só cuida de abrir e fechar. O preenchimento e a validação ficam em
+   gerenciar-tarefa.js, que usa window.hsSheet. */
 
-  const closeDrawer = document.getElementById("closeDrawer");
-  const cancelDrawer = document.getElementById("cancelDrawer");
+(function () {
+  const overlay = document.getElementById("drawerOverlay");
+  const sheet = document.getElementById("taskDrawer");
+  if (!overlay || !sheet) return;
 
-  const form = document.querySelector(".hs-drawer-form");
-  const primeiroInput = form.querySelector("input[name='titulo']");
+  const form = sheet.querySelector(".tk-form");
+  const botaoFechar = document.getElementById("closeDrawer");
+  const botaoCancelar = document.getElementById("cancelDrawer");
+  let focoAnterior = null;
 
-  /* ============================
-       Abrir
-    ============================ */
+  const aberto = () => overlay.classList.contains("active");
 
-  function abrirDrawer() {
-    drawerOverlay.classList.add("active");
-
-    document.body.style.overflow = "hidden";
-
+  function abrir() {
+    focoAnterior = document.activeElement;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("tk-lock");
+    setTimeout(() => {
+      const primeiro = form && form.querySelector("[name='titulo']");
+      if (primeiro) primeiro.focus({ preventScroll: true });
+    }, 200);
   }
 
-  /* ============================
-       Fechar
-    ============================ */
-
-  function fecharDrawer() {
-    drawerOverlay.classList.remove("active");
-
-    document.body.style.overflow = "";
-
-    form.reset();
-  }
-
-  /* ============================
-       Eventos
-    ============================ */
-
-  btnNovaTarefa.addEventListener("click", abrirDrawer);
-
-  closeDrawer.addEventListener("click", fecharDrawer);
-
-  cancelDrawer.addEventListener("click", fecharDrawer);
-
-  /* ============================
-       Clique fora
-    ============================ */
-
-  drawerOverlay.addEventListener("click", (e) => {
-    if (e.target === drawerOverlay) {
-      fecharDrawer();
+  function fechar() {
+    if (!aberto()) return;
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("tk-lock");
+    document.dispatchEvent(new CustomEvent("tk:sheet-fechado"));
+    if (focoAnterior && typeof focoAnterior.focus === "function") {
+      focoAnterior.focus({ preventScroll: true });
     }
-  });
+  }
 
-  /* ============================
-       ESC
-    ============================ */
+  botaoFechar && botaoFechar.addEventListener("click", fechar);
+  botaoCancelar && botaoCancelar.addEventListener("click", fechar);
+
+  // clique fora do painel
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) fechar();
+  });
 
   document.addEventListener("keydown", (e) => {
+    if (!aberto()) return;
     if (e.key === "Escape") {
-      fecharDrawer();
+      fechar();
+      return;
+    }
+    // mantém o foco dentro do formulário enquanto ele está aberto
+    if (e.key === "Tab") {
+      const focaveis = Array.from(
+        sheet.querySelectorAll(
+          "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary",
+        ),
+      ).filter((el) => el.offsetParent !== null);
+      if (!focaveis.length) return;
+      const primeiro = focaveis[0];
+      const ultimo = focaveis[focaveis.length - 1];
+      if (e.shiftKey && document.activeElement === primeiro) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primeiro.focus();
+      }
     }
   });
-});
+
+  window.hsSheet = { abrir, fechar, aberto };
+})();

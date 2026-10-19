@@ -98,13 +98,31 @@ test("tarefas previstas: diária, semanal, única e início", () => {
     data: null,
     criado_em: "2026-10-02",
   };
+  const diariaComInicioFuturo = {
+    id: 5,
+    repeticao: "daily",
+    data: "2026-10-10",
+    criado_em: "2026-10-01",
+  };
+  const semanalComInicioFuturo = {
+    id: 6,
+    repeticao: "weekly",
+    dia_semana: "quinta",
+    data: "2026-10-15",
+    criado_em: "2026-10-01",
+  };
   assert.equal(tarefaPrevistaNoDia(diaria, "2026-08-31"), false); // antes de existir
   assert.equal(tarefaPrevistaNoDia(diaria, "2026-09-02"), true);
+  assert.equal(tarefaPrevistaNoDia(diariaComInicioFuturo, "2026-10-09"), false);
+  assert.equal(tarefaPrevistaNoDia(diariaComInicioFuturo, "2026-10-10"), true);
   assert.equal(tarefaPrevistaNoDia(semanal, "2026-10-08"), true);
   assert.equal(tarefaPrevistaNoDia(semanal, "2026-10-09"), false);
+  assert.equal(tarefaPrevistaNoDia(semanalComInicioFuturo, "2026-10-08"), false);
+  assert.equal(tarefaPrevistaNoDia(semanalComInicioFuturo, "2026-10-15"), true);
   assert.equal(tarefaPrevistaNoDia(unica, "2026-10-06"), true);
   assert.equal(tarefaPrevistaNoDia(unica, "2026-10-07"), false);
   assert.equal(tarefaPrevistaNoDia(semData, "2026-10-02"), true);
+  assert.equal(tarefaPrevistaNoDia(semData, "2026-10-03"), false);
 });
 
 test("sequência: dias consecutivos, hoje pendente não quebra", () => {
