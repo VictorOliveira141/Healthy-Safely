@@ -132,6 +132,10 @@ router.get("/login", (req, res) => {
     erroValidacao: {},
     msgErro: {},
     sucesso: false,
+    mensagemSucesso:
+      req.query.conta === "excluida"
+        ? "Sua conta foi excluída com sucesso."
+        : null,
   });
 });
 router.post("/login", usuarioController.login);
@@ -295,6 +299,7 @@ router.get("/sair", usuarioController.logout);
 router.get("/configuracoes", apenasAutenticado, (req, res) => {
   const mensagemEmailAlterado = req.session.emailAlteradoComSucesso;
   delete req.session.emailAlteradoComSucesso;
+  req.session.tokenExclusaoConta = crypto.randomBytes(32).toString("hex");
 
   const mensagensConfig = {
     salvo: "Perfil atualizado.",
@@ -309,12 +314,36 @@ router.get("/configuracoes", apenasAutenticado, (req, res) => {
       "Não foi possível enviar o link de confirmação. Tente novamente.",
     erro: "Não foi possível salvar as alterações. Tente novamente.",
   };
+  const mensagensExclusao = {
+    assinatura:
+      "Não foi possível cancelar sua assinatura; por segurança, a conta não foi excluída.",
+    "nao-encontrada": "A conta não foi encontrada e não pôde ser excluída.",
+    erro:
+      "Não foi possível excluir a conta. Se você tinha uma assinatura, ela foi cancelada para evitar novas cobranças.",
+  };
+  const perfisComErro = [
+    "invalid",
+    "indisponivel",
+    "email-indisponivel",
+    "email-erro",
+    "erro",
+  ];
+  const tipoMensagemConfig =
+    mensagemEmailAlterado || req.query.perfil === "salvo"
+      ? "sucesso"
+      : perfisComErro.includes(req.query.perfil) || req.query.exclusao
+        ? "erro"
+        : "info";
 
   res.render("pages/user/configuracoes", {
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY || "",
     mensagemConfig: mensagemEmailAlterado
       ? "E-mail trocado com sucesso."
-      : mensagensConfig[req.query.perfil] || null,
+      : mensagensExclusao[req.query.exclusao] ||
+        mensagensConfig[req.query.perfil] ||
+        null,
+    tipoMensagemConfig,
+    tokenExclusaoConta: req.session.tokenExclusaoConta,
   });
 });
 router.post(
@@ -323,6 +352,7 @@ router.post(
   uploadPerfil.single("foto_perfil"),
   usuarioController.atualizarPerfil,
 );
+router.post("/conta/excluir", apenasAutenticado, usuarioController.excluirConta);
 router.get(
   "/email/confirmar/:token",
   usuarioController.confirmarAlteracaoEmail,

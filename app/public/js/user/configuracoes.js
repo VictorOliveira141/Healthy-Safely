@@ -4,9 +4,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnFechar = modal?.querySelectorAll("[data-modal-fechar]");
   const form = document.getElementById("form-editar-perfil");
   const mensagemConfiguracao = document.querySelector(".config-mensagem");
+  const btnExcluirConta = document.getElementById("btn-excluir-conta");
+  const modalExclusaoConta = document.getElementById("modal-exclusao-conta");
+  const formExclusaoConta = document.getElementById("form-exclusao-conta");
+  const btnCancelarExclusao = document.getElementById(
+    "cancelar-exclusao-conta",
+  );
 
   if (mensagemConfiguracao) {
     window.setTimeout(() => mensagemConfiguracao.remove(), 3200);
+  }
+
+  if (btnExcluirConta && modalExclusaoConta && formExclusaoConta) {
+    btnExcluirConta.addEventListener("click", () => {
+      if (typeof modalExclusaoConta.showModal === "function") {
+        modalExclusaoConta.showModal();
+      } else if (window.confirm("Deseja excluir sua conta permanentemente?")) {
+        formExclusaoConta.submit();
+      }
+    });
+
+    btnCancelarExclusao?.addEventListener("click", () => {
+      modalExclusaoConta.close();
+    });
+
+    formExclusaoConta.addEventListener("submit", () => {
+      const btnConfirmar = formExclusaoConta.querySelector(
+        'button[type="submit"]',
+      );
+      if (btnConfirmar) {
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = "Excluindo...";
+      }
+    });
   }
 
   if (!modal || !btnAbrir || !form) return;

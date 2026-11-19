@@ -337,14 +337,12 @@ const usuarioModel = {
     return bcrypt.compare(senhaDigitada, senhaHash);
   },
 
-  // Deletar usuário (admin)
+  // Excluir usuário e os dados relacionados pelas chaves estrangeiras
   deletar: async (id) => {
-    try {
-      await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
-      return true;
-    } catch (e) {
-      return false;
-    }
+    const [resultado] = await pool.query("DELETE FROM usuarios WHERE id = ?", [
+      id,
+    ]);
+    return resultado.affectedRows > 0;
   },
 
   // Buscar usuário pelo id da assinatura no Mercado Pago

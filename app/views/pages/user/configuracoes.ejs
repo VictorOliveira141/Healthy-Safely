@@ -65,7 +65,11 @@
   </header>
 
   <% if (typeof mensagemConfig !== 'undefined' && mensagemConfig) { %>
-    <p class="config-mensagem" role="status"><%= mensagemConfig %></p>
+    <p
+      class="config-mensagem config-mensagem--<%= tipoMensagemConfig %>"
+      role="status"
+      aria-live="polite"
+    ><%= mensagemConfig %></p>
   <% } %>
 
   <% if (usuario) { %>
@@ -540,6 +544,47 @@
 
 <%- include('../../partials/footer.ejs') %>
 
+<% if (usuario) { %>
+  <dialog
+    class="modal-exclusao-conta"
+    id="modal-exclusao-conta"
+    aria-labelledby="modal-exclusao-conta-titulo"
+    aria-describedby="modal-exclusao-conta-descricao"
+  >
+    <form method="POST" action="/conta/excluir" id="form-exclusao-conta">
+      <header class="modal-exclusao-conta-cabecalho">
+        <span class="modal-exclusao-conta-icone" aria-hidden="true">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </span>
+        <div>
+          <span class="modal-exclusao-conta-kicker">Zona de perigo</span>
+          <h2 id="modal-exclusao-conta-titulo">Excluir sua conta?</h2>
+        </div>
+      </header>
+      <p id="modal-exclusao-conta-descricao">
+        Esta ação é permanente. Seus dados pessoais e tarefas serão excluídos
+        e, se houver, sua assinatura será cancelada.
+      </p>
+      <input
+        type="hidden"
+        name="token"
+        value="<%= tokenExclusaoConta %>"
+      />
+      <div class="modal-exclusao-conta-acoes">
+        <button
+          type="button"
+          class="btn-manter-conta"
+          id="cancelar-exclusao-conta"
+        >
+          Manter minha conta
+        </button>
+        <button type="submit" class="confirmar-exclusao-conta">
+          Sim, excluir minha conta
+        </button>
+      </div>
+    </form>
+  </dialog>
+<% } %>
 
 <!-- =======================================================
      MODAL DE EDIÇÃO DO PERFIL

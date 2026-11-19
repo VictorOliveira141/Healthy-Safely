@@ -329,6 +329,15 @@ input.erro-input:focus {
   display: block;
 }
 
+.mensagem-sucesso-login {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid #15803d;
+  border-radius: 10px;
+  background: rgba(21, 128, 61, 0.08);
+  color: #15803d;
+}
+
 /* ── Campo senha (com olho) ──────────────────────────────── */
 .campo-senha {
   position: relative;

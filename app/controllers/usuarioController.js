@@ -1,3 +1,6 @@
+const crypto = require("crypto");
+const { PreApproval } = require("mercadopago");
+const mpClient = require("../config/mercadoPago");
 const { usuarioModel } = require("../models/Usuario");
 const { adminModel } = require("../models/Admin");
 const { body, validationResult } = require("express-validator");
@@ -158,6 +161,63 @@ const usuarioController = {
       console.error("Erro ao atualizar perfil:", error);
       return res.redirect("/configuracoes?perfil=erro");
     }
+  },
+
+  excluirConta: async (req, res) => {
+    const tokenEnviado = String(req.body.token || "");
+    const tokenSessao = req.session?.tokenExclusaoConta;
+
+    if (
+      !tokenSessao ||
+      tokenEnviado.length !== tokenSessao.length ||
+      !crypto.timingSafeEqual(
+        Buffer.from(tokenEnviado),
+        Buffer.from(tokenSessao),
+      )
+    ) {
+      return res.status(403).send("Confirmação inválida. Atualize a página.");
+    }
+
+    delete req.session.tokenExclusaoConta;
+    const usuario = req.session.usuario;
+
+    if (usuario.mp_preapproval_id) {
+      try {
+        const preApproval = new PreApproval(mpClient);
+        const assinatura = await preApproval.get({
+          id: usuario.mp_preapproval_id,
+        });
+
+        if (assinatura.status !== "cancelled") {
+          await preApproval.update({
+            id: usuario.mp_preapproval_id,
+            body: { status: "cancelled" },
+          });
+        }
+      } catch (error) {
+        console.error("[Conta.excluir] Falha ao cancelar assinatura:", error);
+        return res.redirect("/configuracoes?exclusao=assinatura");
+      }
+    }
+
+    try {
+      const excluida = await usuarioModel.deletar(usuario.id);
+
+      if (!excluida) {
+        return res.redirect("/configuracoes?exclusao=nao-encontrada");
+      }
+    } catch (error) {
+      console.error("[Conta.excluir] Falha ao excluir conta:", error);
+      return res.redirect("/configuracoes?exclusao=erro");
+    }
+
+    return req.session.destroy((error) => {
+      if (error) {
+        console.error("[Conta.excluir] Falha ao encerrar sessão:", error);
+      }
+      res.clearCookie("connect.sid");
+      return res.redirect("/login?conta=excluida");
+    });
   },
 
   confirmarAlteracaoEmail: async (req, res) => {

@@ -36,6 +36,9 @@
           >
             <%- include('../../partials/botao-voltar.ejs', { voltarPara: '/' }) %>
             <h1 id="titulo-login" class="form-title">Entrar na sua conta</h1>
+            <% if (typeof mensagemSucesso !== 'undefined' && mensagemSucesso) { %>
+              <p class="mensagem-sucesso-login" role="status"><%= mensagemSucesso %></p>
+            <% } %>
 
             <article class="outras-opcoes">
            <a
