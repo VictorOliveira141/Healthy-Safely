@@ -26,6 +26,9 @@ document.addEventListener("click", (e) => {
 
 const toggleDarkMode = document.getElementById("toggleDarkMode");
 const toggleContraste = document.getElementById("toggleContraste");
+const toggleAnimacoes = document.getElementById("toggleAnimacoes");
+const toggleLeitor = document.getElementById("toggleLeitor");
+const resetAcessibilidade = document.getElementById("resetAcessibilidade");
 
 // carregar estado salvo
 if (toggleDarkMode) {
@@ -127,8 +130,6 @@ if (toggleContraste) {
 // REDUZIR ANIMAÇÕES
 // =====================================
 
-const toggleAnimacoes = document.getElementById("toggleAnimacoes");
-
 if (toggleAnimacoes) {
   toggleAnimacoes.addEventListener("change", () => {
     document.documentElement.classList.toggle(
@@ -150,8 +151,6 @@ if (toggleAnimacoes) {
 // LEITOR DE TELA
 // =====================================
 
-const toggleLeitor = document.getElementById("toggleLeitor");
-
 if (toggleLeitor) {
   toggleLeitor.addEventListener("change", () => {
     if (toggleLeitor.checked) {
@@ -167,5 +166,30 @@ if (toggleLeitor) {
     } else {
       speechSynthesis.cancel();
     }
+  });
+}
+
+if (resetAcessibilidade) {
+  resetAcessibilidade.addEventListener("click", () => {
+    localStorage.setItem("hs_tema", "auto");
+    const temaSistema = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    document.documentElement.classList.toggle("dark", temaSistema);
+    if (toggleDarkMode) toggleDarkMode.checked = false;
+
+    tamanhoFonte = 2;
+    aplicarFonte();
+
+    document.documentElement.classList.remove("contraste");
+    localStorage.setItem("contraste", "false");
+    if (toggleContraste) toggleContraste.checked = false;
+
+    document.documentElement.classList.remove("sem-animacao");
+    localStorage.setItem("semAnimacao", "false");
+    if (toggleAnimacoes) toggleAnimacoes.checked = false;
+
+    if (toggleLeitor) toggleLeitor.checked = false;
+    window.speechSynthesis?.cancel();
   });
 }

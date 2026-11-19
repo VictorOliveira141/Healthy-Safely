@@ -434,3 +434,18 @@
   height: 20px;
   color: var(--fundoclaro);
 }
+
+.botao-reset-acessibilidade {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: var(--accent-color);
+  color: var(--fundoescuro);
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.botao-reset-acessibilidade:hover {
+  opacity: 0.85;
+}
