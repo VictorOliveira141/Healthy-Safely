@@ -704,7 +704,7 @@ html.dark .tk-fab {
     grid-column: 1 / -1;
     max-width: 380px;
   }
-  .tk-item {
+  .tk-item:not(.tk-item--flex) {
     grid-template-columns: 3.6rem minmax(0, 1fr);
     gap: 0.75rem;
   }
@@ -713,7 +713,7 @@ html.dark .tk-fab {
   .tk {
     padding-inline: 0.6rem;
   }
-  .tk-item {
+  .tk-item:not(.tk-item--flex) {
     grid-template-columns: 2.7rem minmax(0, 1fr);
   }
   .tk-card {
