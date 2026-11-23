@@ -4,11 +4,14 @@ const { body, validationResult } = require("express-validator");
 const {
   hojeSaoPaulo,
   somarDias,
+  inicioDaSemana,
   concluidaAgora,
+  calcularAnalisePremium,
   calcularProgressao,
   agruparHistorico,
   tarefaPrevistaNoDia,
 } = require("../utils/progressao");
+const { relatorioPremiumModel } = require("../models/RelatorioPremium");
 
 const mapearTarefa = (t) => ({
   _id: t.id,
@@ -83,7 +86,7 @@ const tarefaController = {
       .isIn(["saude", "sono", "alimentacao", "exercicio", "geral"])
       .withMessage("Categoria inválida."),
     body("data")
-      .optional({ nullable: true })
+      .optional({ values: "falsy" })
       .isISO8601()
       .withMessage("Data inválida."),
     body("horario")
@@ -350,17 +353,46 @@ const tarefaController = {
   // Página Progressão (rota /historico)
   exibirHistorico: async (req, res) => {
     const usuarioAtual = req.session.usuario;
-    const plano = usuarioAtual.plano === "premium" ? "premium" : "free";
+    let plano = "free";
     try {
       const hoje = hojeSaoPaulo();
-      const { tarefas, conclusoes, historico } =
-        await tarefaModel.dadosProgressao(usuarioAtual.id, somarDias(hoje, -29));
+      const contaAtual = await usuarioModel.buscarPorId(usuarioAtual.id);
+      const premiumAtivo =
+        contaAtual?.plano === "premium" &&
+        contaAtual?.assinatura_status === "authorized";
+      plano = premiumAtivo ? "premium" : "free";
+
+      const [progressao, registrosPremium, relatorioSemanal] =
+        await Promise.all([
+          tarefaModel.dadosProgressao(
+            usuarioAtual.id,
+            somarDias(hoje, -29),
+          ),
+          premiumAtivo
+            ? tarefaModel.dadosAnalisePremium(
+                usuarioAtual.id,
+                somarDias(hoje, -89),
+              )
+            : Promise.resolve(null),
+          premiumAtivo
+            ? relatorioPremiumModel.buscarSemanal(
+                usuarioAtual.id,
+                inicioDaSemana(hoje),
+              )
+            : Promise.resolve(null),
+        ]);
+      const { tarefas, conclusoes, historico } = progressao;
       const dados = calcularProgressao({ tarefas, conclusoes, hoje });
+      const analisePremium = premiumAtivo
+        ? calcularAnalisePremium(registrosPremium, hoje)
+        : null;
 
       res.render("pages/app/historico", {
         dados,
         historico: agruparHistorico(historico),
         plano,
+        analisePremium,
+        relatorioSemanal,
         usuarioId: usuarioAtual.id,
         indisponivel: false,
       });
@@ -370,6 +402,8 @@ const tarefaController = {
         dados: null,
         historico: [],
         plano,
+        analisePremium: null,
+        relatorioSemanal: null,
         usuarioId: usuarioAtual.id,
         indisponivel: true,
       });

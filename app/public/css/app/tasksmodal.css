@@ -278,6 +278,10 @@ body.tk-lock {
   color: var(--tk-on-accent);
   flex-grow: 1.6;
 }
+
+#saveTaskText {
+  color: var(--fundoescuro);
+}
 .tk-btn--ghost {
   background: transparent;
   border-color: var(--tk-line-strong);

@@ -136,6 +136,89 @@ function tarefaPrevistaNoDia(tarefa, dia) {
   return inicio ? data === inicio : false;
 }
 
+function calcularAnalisePremium(registros, hoje = hojeSaoPaulo()) {
+  const dataHoje = dataSaoPaulo(hoje);
+  if (!dataHoje) throw new RangeError("Data inválida para análise Premium.");
+
+  const eventos = (registros || [])
+    .map((registro) => ({
+      dia: dataSaoPaulo(registro.dia),
+      categoria: registro.categoria || "geral",
+      total: Number(registro.total) || 0,
+    }))
+    .filter((registro) => registro.dia && registro.total > 0);
+
+  const totalEntre = (inicio, fim) =>
+    eventos
+      .filter((evento) => evento.dia >= inicio && evento.dia <= fim)
+      .reduce((soma, evento) => soma + evento.total, 0);
+  const contarDiasAtivos = (inicio, fim) =>
+    new Set(
+      eventos
+        .filter((evento) => evento.dia >= inicio && evento.dia <= fim)
+        .map((evento) => evento.dia),
+    ).size;
+  const contarCategorias = (inicio, fim) => {
+    const totais = new Map();
+    for (const evento of eventos) {
+      if (evento.dia < inicio || evento.dia > fim) continue;
+      totais.set(
+        evento.categoria,
+        (totais.get(evento.categoria) || 0) + evento.total,
+      );
+    }
+    return [...totais.entries()]
+      .map(([categoria, total]) => ({ categoria, total }))
+      .sort((a, b) => b.total - a.total);
+  };
+  const variacao = (atual, anterior) =>
+    anterior === 0
+      ? atual === 0
+        ? 0
+        : null
+      : Math.round(((atual - anterior) / anterior) * 100);
+
+  const inicio30 = somarDias(dataHoje, -29);
+  const inicio30Anterior = somarDias(dataHoje, -59);
+  const fim30Anterior = somarDias(dataHoje, -30);
+  const inicioSemana = inicioDaSemana(dataHoje);
+  const inicioSemanaAnterior = somarDias(inicioSemana, -7);
+  const fimSemanaAnterior = somarDias(inicioSemana, -1);
+  const total30 = totalEntre(inicio30, dataHoje);
+  const total30Anterior = totalEntre(inicio30Anterior, fim30Anterior);
+  const totalSemana = totalEntre(inicioSemana, dataHoje);
+  const totalSemanaAnterior = totalEntre(
+    inicioSemanaAnterior,
+    fimSemanaAnterior,
+  );
+
+  const tendenciaSemanal = Array.from({ length: 13 }, (_, indice) => {
+    const inicio = somarDias(inicioSemana, (indice - 12) * 7);
+    const fim = [somarDias(inicio, 6), dataHoje].sort()[0];
+    return { inicio, total: totalEntre(inicio, fim) };
+  });
+
+  return {
+    total90: totalEntre(somarDias(dataHoje, -89), dataHoje),
+    total30,
+    total30Anterior,
+    variacao30: variacao(total30, total30Anterior),
+    semanaAtual: {
+      total: totalSemana,
+      diasAtivos: contarDiasAtivos(inicioSemana, dataHoje),
+      categorias: contarCategorias(inicioSemana, dataHoje),
+    },
+    semanaAnterior: {
+      total: totalSemanaAnterior,
+      diasAtivos: contarDiasAtivos(inicioSemanaAnterior, fimSemanaAnterior),
+      categorias: contarCategorias(inicioSemanaAnterior, fimSemanaAnterior),
+    },
+    variacaoSemanal: variacao(totalSemana, totalSemanaAnterior),
+    categorias: contarCategorias(inicio30, dataHoje),
+    tendenciaSemanal,
+  };
+}
+
 function intervaloDias(inicio, quantidade) {
   return Array.from({ length: quantidade }, (_, indice) =>
     somarDias(inicio, indice),
@@ -360,6 +443,7 @@ module.exports = {
   inicioDaSemana,
   concluidaAgora,
   tarefaPrevistaNoDia,
+  calcularAnalisePremium,
   calcularProgressao,
   agruparHistorico,
 };

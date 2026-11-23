@@ -168,6 +168,21 @@ SELECT usuario_id, id, categoria, DATE(concluida_em), concluida_em
 FROM tarefas
 WHERE concluida = 1 AND concluida_em IS NOT NULL;
 
+CREATE TABLE IF NOT EXISTS relatorios_premium_semanais (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id    INT NOT NULL,
+  semana_inicio DATE NOT NULL,
+  conteudo      TEXT DEFAULT NULL,
+  estado        ENUM('gerando', 'pronto') NOT NULL DEFAULT 'pronto',
+  criado_em     DATETIME DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uk_relatorio_premium_semana (usuario_id, semana_inicio),
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
 
 -- ─────────────────────────────────────────────────────────────
 -- WEBAUTHN / PASSKEY

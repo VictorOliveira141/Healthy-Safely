@@ -7,6 +7,40 @@
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
+  const botaoRelatorio = document.getElementById("pgGerarRelatorio");
+  const statusRelatorio = document.getElementById("pgRelatorioStatus");
+  const conteudoRelatorio = document.getElementById("pgRelatorioConteudo");
+
+  botaoRelatorio?.addEventListener("click", async () => {
+    botaoRelatorio.disabled = true;
+    statusRelatorio.hidden = false;
+    statusRelatorio.textContent = "Preparando seu relatório semanal...";
+
+    try {
+      const resposta = await fetch("/api/premium/relatorio-semanal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({}),
+      });
+      const resultado = await resposta.json();
+      if (!resposta.ok) {
+        throw new Error(resultado.erro || "Não foi possível gerar o relatório.");
+      }
+
+      conteudoRelatorio.textContent = resultado.relatorio;
+      conteudoRelatorio.hidden = false;
+      statusRelatorio.textContent = resultado.emCache
+        ? "Relatório desta semana carregado."
+        : "Relatório semanal gerado.";
+    } catch (error) {
+      statusRelatorio.textContent =
+        error.message || "Não foi possível gerar o relatório. Tente novamente.";
+    } finally {
+      botaoRelatorio.disabled = false;
+    }
+  });
+
   const dataEl = document.getElementById("pgData");
   const chartEl = document.getElementById("pgChart");
   if (!dataEl || !chartEl) return;

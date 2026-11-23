@@ -236,6 +236,19 @@ const tarefaModel = {
     return { tarefas, conclusoes, historico };
   },
 
+  dadosAnalisePremium: async (usuarioId, desde) => {
+    const [linhas] = await pool.query(
+      `SELECT DATE_FORMAT(data_referencia, '%Y-%m-%d') AS dia,
+              categoria, COUNT(*) AS total
+       FROM tarefas_conclusoes
+       WHERE usuario_id = ? AND data_referencia >= ?
+       GROUP BY data_referencia, categoria
+       ORDER BY data_referencia ASC`,
+      [usuarioId, desde],
+    );
+    return linhas;
+  },
+
   // Total de tarefas concluídas
   totalConcluidas: async (usuarioId) => {
     try {

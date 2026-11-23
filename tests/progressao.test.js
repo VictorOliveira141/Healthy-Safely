@@ -6,6 +6,7 @@ const {
   inicioDaSemana,
   concluidaAgora,
   tarefaPrevistaNoDia,
+  calcularAnalisePremium,
   calcularProgressao,
   agruparHistorico,
 } = require("../app/utils/progressao");
@@ -300,4 +301,33 @@ test("agruparHistorico: por dia, mais recente primeiro", () => {
     { dia: "2026-10-08", total: 2, titulos: ["B", "C"] },
     { dia: "2026-10-07", total: 1, titulos: ["A"] },
   ]);
+});
+
+test("análise Premium: compara semanas e períodos de 30 dias por categoria", () => {
+  const analise = calcularAnalisePremium(
+    [
+      { dia: "2026-09-01", categoria: "sono", total: 2 },
+      { dia: "2026-10-01", categoria: "exercicio", total: 1 },
+      { dia: "2026-10-05", categoria: "saude", total: 2 },
+      { dia: "2026-10-08", categoria: "saude", total: 1 },
+    ],
+    HOJE,
+  );
+
+  assert.equal(analise.total90, 6);
+  assert.equal(analise.total30, 4);
+  assert.equal(analise.total30Anterior, 2);
+  assert.equal(analise.variacao30, 100);
+  assert.deepEqual(analise.semanaAtual, {
+    total: 3,
+    diasAtivos: 2,
+    categorias: [{ categoria: "saude", total: 3 }],
+  });
+  assert.equal(analise.semanaAnterior.total, 1);
+  assert.equal(analise.variacaoSemanal, 200);
+  assert.deepEqual(analise.categorias, [
+    { categoria: "saude", total: 3 },
+    { categoria: "exercicio", total: 1 },
+  ]);
+  assert.equal(analise.tendenciaSemanal.length, 13);
 });

@@ -77,6 +77,35 @@ async function responderChat({ mensagem, usuario, tarefas, perfil }) {
   );
 }
 
+async function gerarRelatorioSemanal({ semanaAtual, semanaAnterior }) {
+  const client = getClient();
+  if (!client) {
+    throw new Error("GEMINI_API_KEY não configurada.");
+  }
+
+  const response = await client.models.generateContent({
+    model: MODEL,
+    contents: `Crie um relatório semanal curto, acolhedor e prático para o usuário do Healthy Safely usando somente estes dados agregados:
+
+Semana atual até a data de geração: ${JSON.stringify(semanaAtual)}
+Semana anterior completa: ${JSON.stringify(semanaAnterior)}
+
+Explique a comparação sem inventar causas, destaque um ponto positivo real e sugira uma ação simples para a próxima semana. Se não houver conclusões, incentive o usuário a registrar as tarefas sem julgamentos. Não faça diagnósticos médicos. Use no máximo 120 palavras.`,
+    config: {
+      systemInstruction: PERSONA,
+      temperature: 0.4,
+    },
+  });
+
+  const texto =
+    response.text || response.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!texto?.trim()) {
+    throw new Error("A IA não retornou um relatório semanal.");
+  }
+
+  return texto.trim().slice(0, 6000);
+}
+
 function tarefasFallback(respostas = {}) {
   const objetivo = String(respostas.objetivo || "").toLowerCase();
 
@@ -179,4 +208,8 @@ Cada tarefa deve ter: titulo (curto, em português, prático) e categoria (uma d
   }
 }
 
-module.exports = { responderChat, gerarTarefasPersonalizadas };
+module.exports = {
+  responderChat,
+  gerarRelatorioSemanal,
+  gerarTarefasPersonalizadas,
+};

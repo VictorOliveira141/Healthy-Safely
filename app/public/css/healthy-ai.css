@@ -215,8 +215,8 @@ article.healthy-ai-footer {
   .healthy-ai-sidebar {
     width: 100%;
     max-width: 100%;
-    bottom: 55px;
-    height: calc(100dvh - 55px);
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    height: calc(100dvh - 88px - env(safe-area-inset-bottom));
   }
 
   .healthy-ai-panel {
@@ -224,7 +224,7 @@ article.healthy-ai-footer {
   }
 
   article.healthy-ai-footer {
-    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+    padding-bottom: 22px;
   }
 }
 

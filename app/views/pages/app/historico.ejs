@@ -25,6 +25,14 @@
     const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
     const temDados = !indisponivel && dados && dados.temHistorico;
     const pctDe = (feitas, previstas) => previstas > 0 ? Math.min(100, Math.round((feitas / previstas) * 100)) : 0;
+    const pctCategoriaPremium = (total) => analisePremium?.total30 ? Math.round((total / analisePremium.total30) * 100) : 0;
+    const categoriasPremium = {
+      saude: 'Saúde',
+      sono: 'Sono',
+      alimentacao: 'Alimentação',
+      exercicio: 'Exercício',
+      geral: 'Geral',
+    };
     const metaDiariaOk = temDados && dados.metaDiaria.previstas > 0 && dados.metaDiaria.concluidas >= dados.metaDiaria.previstas;
     const metaSemanalOk = temDados && dados.metaSemanal.previstas > 0 && dados.metaSemanal.concluidas >= dados.metaSemanal.previstas;
     const mostrarPremium = temDados && dados.diasComConclusao >= 7;
@@ -63,6 +71,21 @@
         <p>Conforme você concluir suas tarefas, seus indicadores e gráficos serão preenchidos com seu progresso real.</p>
         <a href="/tasks" class="pg-cta">Ir para as tarefas</a>
       </section>
+      <% if (ehPremium) { %>
+        <section class="pg-card pg-premium" aria-labelledby="pg-premium-empty-title">
+          <h2 id="pg-premium-empty-title">Relatório semanal com IA</h2>
+          <p class="pg-muted">Gere um resumo da semana. Quando ainda não há conclusões, o relatório ajuda você a começar sem julgamentos.</p>
+          <div class="pg-premium-report">
+            <div>
+              <h4>Seu resumo personalizado</h4>
+              <p class="pg-muted">A análise compara a semana atual até hoje com a semana anterior.</p>
+            </div>
+            <button type="button" class="pg-cta" id="pgGerarRelatorio">Gerar relatório</button>
+            <p class="pg-muted" id="pgRelatorioStatus" role="status" aria-live="polite" hidden></p>
+            <pre id="pgRelatorioConteudo" aria-live="polite" <%= relatorioSemanal ? '' : 'hidden' %>><%= relatorioSemanal || '' %></pre>
+          </div>
+        </section>
+      <% } %>
 
     <% } else { %>
 
@@ -156,21 +179,21 @@
         </section>
       </div>
 
-      <!-- PREMIUM (só quando já existe histórico suficiente) -->
-      <% if (mostrarPremium) { %>
+      <!-- Premium para assinantes ativos; prévia bloqueada após histórico suficiente -->
+      <% if (mostrarPremium || ehPremium) { %>
         <section class="pg-card pg-premium" aria-labelledby="pg-premium-t">
           <header class="pg-premium__head">
             <span class="pg-premium__lock" aria-hidden="true"><i class="bi <%= ehPremium ? 'bi-stars' : 'bi-lock-fill' %>"></i></span>
             <div>
               <h2 id="pg-premium-t">Descubra sua evolução <span class="pg-pill">Premium</span></h2>
-              <p>Compare seus resultados, explore gráficos avançados e receba um relatório personalizado sobre sua constância.</p>
+              <p>Compare seus resultados por semana e por períodos de 30 dias, acompanhe tendências de 90 dias e receba um relatório personalizado.</p>
             </div>
           </header>
 
           <ul class="pg-premium__list">
             <li>
               <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
-              <span><strong>Análises avançadas</strong><small>Tendências de longo prazo, comparações entre semanas e meses e evolução por categoria.</small></span>
+              <span><strong>Análises avançadas</strong><small>Tendências de 90 dias, comparações entre semanas e períodos de 30 dias, com evolução por categoria.</small></span>
               <% if (!ehPremium) { %><i class="bi bi-lock-fill pg-premium__cadeado" aria-label="Recurso Premium"></i><% } %>
             </li>
             <li>
@@ -181,7 +204,90 @@
           </ul>
 
           <% if (ehPremium) { %>
-            <p class="pg-muted">Esses recursos estão em desenvolvimento e fazem parte do seu plano Premium.</p>
+            <% if (analisePremium) { %>
+              <div class="pg-premium-analysis">
+                <h3>Análises dos últimos 90 dias</h3>
+                <div class="pg-premium-stats">
+                  <article>
+                    <span>Conclusões em 90 dias</span>
+                    <strong><%= analisePremium.total90 %></strong>
+                  </article>
+                  <article>
+                    <span>Últimos 30 dias</span>
+                    <strong><%= analisePremium.total30 %></strong>
+                    <small>
+                      <% if (analisePremium.variacao30 === null) { %>
+                        Sem conclusões nos 30 dias anteriores para comparar
+                      <% } else if (analisePremium.variacao30 > 0) { %>
+                        +<%= analisePremium.variacao30 %>% vs. período anterior
+                      <% } else { %>
+                        <%= analisePremium.variacao30 %>% vs. período anterior
+                      <% } %>
+                    </small>
+                  </article>
+                  <article>
+                    <span>Esta semana</span>
+                    <strong><%= analisePremium.semanaAtual.total %></strong>
+                    <small><%= analisePremium.semanaAtual.diasAtivos %> dias ativos</small>
+                  </article>
+                </div>
+
+                <div class="pg-premium-details">
+                  <section>
+                    <h4>Comparação semanal</h4>
+                    <p>
+                      <strong><%= analisePremium.semanaAtual.total %></strong> conclusões em
+                      <%= analisePremium.semanaAtual.diasAtivos %> dias nesta semana, contra
+                      <strong><%= analisePremium.semanaAnterior.total %></strong> em
+                      <%= analisePremium.semanaAnterior.diasAtivos %> dias na semana anterior.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h4>Conclusões por categoria · últimos 30 dias</h4>
+                    <% if (analisePremium.categorias.length) { %>
+                      <ul class="pg-premium-categories">
+                        <% analisePremium.categorias.forEach((categoria) => { %>
+                          <li>
+                            <span><%= categoriasPremium[categoria.categoria] || 'Geral' %></span>
+                            <strong><%= categoria.total %></strong>
+                            <span class="pg-premium-category-bar" aria-hidden="true">
+                              <span style="width: <%= pctCategoriaPremium(categoria.total) %>%"></span>
+                            </span>
+                          </li>
+                        <% }) %>
+                      </ul>
+                    <% } else { %>
+                      <p class="pg-muted">Ainda não há conclusões neste período.</p>
+                    <% } %>
+                  </section>
+                </div>
+
+                <section class="pg-premium-trend">
+                  <h4>Tendência semanal · últimos 90 dias</h4>
+                  <% const maiorSemanaPremium = Math.max(1, ...analisePremium.tendenciaSemanal.map((semana) => semana.total)); %>
+                  <ol>
+                    <% analisePremium.tendenciaSemanal.forEach((semana) => { %>
+                      <li>
+                        <time datetime="<%= semana.inicio %>"><%= semana.inicio.slice(5).replace('-', '/') %></time>
+                        <span class="pg-premium-trend__bar" aria-hidden="true"><span style="width: <%= Math.round((semana.total / maiorSemanaPremium) * 100) %>%"></span></span>
+                        <strong><%= semana.total %></strong>
+                      </li>
+                    <% }) %>
+                  </ol>
+                </section>
+
+                <section class="pg-premium-report">
+                  <div>
+                    <h4>Relatório semanal com IA</h4>
+                    <p class="pg-muted">Uma análise da semana atual até hoje, comparada com a semana anterior.</p>
+                  </div>
+                  <button type="button" class="pg-cta" id="pgGerarRelatorio">Gerar relatório</button>
+                  <p class="pg-muted" id="pgRelatorioStatus" role="status" aria-live="polite" hidden></p>
+                  <pre id="pgRelatorioConteudo" aria-live="polite" <%= relatorioSemanal ? '' : 'hidden' %>><%= relatorioSemanal || '' %></pre>
+                </section>
+              </div>
+            <% } %>
           <% } else { %>
             <a href="/assinatura" class="pg-cta pg-cta--block">Conhecer o Premium</a>
           <% } %>
@@ -215,6 +321,6 @@
 
   <%- include('../../partials/footer.ejs') %>
 
-  <% if (temDados) { %><script src="/js/app/progressao.js"></script><% } %>
+  <% if (temDados || ehPremium) { %><script src="/js/app/progressao.js"></script><% } %>
 </body>
 </html>

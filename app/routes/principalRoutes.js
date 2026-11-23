@@ -13,8 +13,18 @@ const webauthnController = require("../controllers/webauthnController");
 const tarefaController = require("../controllers/tarefaController");
 const pushController = require("../controllers/pushController");
 const assinaturaController = require("../controllers/assinaturaController");
+const { tarefaModel } = require("../models/Tarefa");
+const { relatorioPremiumModel } = require("../models/RelatorioPremium");
+const { gerarRelatorioSemanal } = require("../services/iaService");
+const {
+  hojeSaoPaulo,
+  somarDias,
+  inicioDaSemana,
+  calcularAnalisePremium,
+} = require("../utils/progressao");
 const { PRECO_PREMIUM } = require("../config/planos");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
+const { usuarioModel } = require("../models/Usuario");
 
 const extensoesFotoPerfil = {
   "image/jpeg": ".jpg",
@@ -52,11 +62,48 @@ function apenasAutenticado(req, res, next) {
   next();
 }
 
+async function onboardingConcluido(req, res, next) {
+  if (!req.session?.usuario) return res.redirect("/login");
+
+  try {
+    const usuario = await usuarioModel.buscarPorId(req.session.usuario.id);
+
+    if (!usuario?.onboarding_concluido) {
+      req.session.usuario.onboarding_concluido = false;
+      return res.redirect("/onboarding");
+    }
+
+    req.session.usuario.onboarding_concluido = true;
+    next();
+  } catch (error) {
+    console.error("Erro ao verificar status do onboarding:", error);
+    res.redirect("/onboarding");
+  }
+}
+
 /* ============================================================
    MÓDULOS
 ============================================================ */
 
-router.use("/ia", iaRoutes);
+router.use("/ia", apenasAutenticado, onboardingConcluido, iaRoutes);
+
+router.use(
+  [
+    "/dashboard",
+    "/historico",
+    "/tasks",
+    "/perfil",
+    "/conta",
+    "/configuracoes",
+    "/alterar-senha",
+    "/assinatura",
+    "/privacidade",
+    "/api/push",
+    "/api/configuracoes",
+    "/webauthn",
+  ],
+  onboardingConcluido,
+);
 
 /* ============================================================
    APP (núcleo do site)
@@ -261,7 +308,7 @@ router.get("/", (req, res) => {
   if (req.session?.usuario) {
     return res.redirect("/dashboard");
   }
-  res.render("pages/public/tomarammeutela");
+  res.render("pages/public/tomarammeutela", { precoPremium: PRECO_PREMIUM });
 });
 
 router.get("/ajuda", (req, res) => {
@@ -397,6 +444,82 @@ router.get(
   apenasAutenticado,
   usuarioController.verificarDisponibilidade,
 );
+router.post("/api/premium/relatorio-semanal", async (req, res) => {
+  const usuarioSessao = req.session?.usuario;
+  if (!usuarioSessao) {
+    return res.status(401).json({ erro: "Faça login para continuar." });
+  }
+  if (!req.is("application/json")) {
+    return res.status(415).json({ erro: "Formato de solicitação inválido." });
+  }
+
+  try {
+    const usuario = await usuarioModel.buscarPorId(usuarioSessao.id);
+    if (!usuario?.onboarding_concluido) {
+      return res.status(403).json({ erro: "Conclua o onboarding primeiro." });
+    }
+    if (
+      usuario.plano !== "premium" ||
+      usuario.assinatura_status !== "authorized"
+    ) {
+      return res.status(403).json({ erro: "Recurso disponível no Premium." });
+    }
+
+    const hoje = hojeSaoPaulo();
+    const semanaInicio = inicioDaSemana(hoje);
+    const relatorioSalvo = await relatorioPremiumModel.buscarSemanal(
+      usuario.id,
+      semanaInicio,
+    );
+    if (relatorioSalvo) {
+      return res.json({ relatorio: relatorioSalvo, emCache: true });
+    }
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(503).json({
+        erro: "O relatório com IA está temporariamente indisponível.",
+      });
+    }
+
+    const reserva = await relatorioPremiumModel.reservarSemanal(
+      usuario.id,
+      semanaInicio,
+    );
+    if (reserva.estado === "pronto") {
+      return res.json({ relatorio: reserva.conteudo, emCache: true });
+    }
+    if (reserva.estado === "em_andamento") {
+      return res.status(409).json({
+        erro: "Seu relatório semanal já está sendo preparado. Tente novamente em instantes.",
+      });
+    }
+
+    try {
+      const registros = await tarefaModel.dadosAnalisePremium(
+        usuario.id,
+        somarDias(semanaInicio, -7),
+      );
+      const analise = calcularAnalisePremium(registros, hoje);
+      const relatorio = await gerarRelatorioSemanal({
+        semanaAtual: analise.semanaAtual,
+        semanaAnterior: analise.semanaAnterior,
+      });
+      await relatorioPremiumModel.concluirSemanal(
+        usuario.id,
+        semanaInicio,
+        relatorio,
+      );
+      return res.json({ relatorio, emCache: false });
+    } catch (error) {
+      await relatorioPremiumModel.liberarSemanal(usuario.id, semanaInicio);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Erro ao gerar relatório semanal Premium:", error);
+    return res.status(502).json({
+      erro: "Não foi possível gerar o relatório. Tente novamente mais tarde.",
+    });
+  }
+});
 router.post(
   "/webauthn/register/options",
   webauthnController.gerarOpcoesCadastro,
