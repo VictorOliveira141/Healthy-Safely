@@ -5,9 +5,11 @@ var bcrypt = require("bcryptjs");
 const usuarioModel = {
   buscarPorId: async (id) => {
     try {
-      const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
-        id,
-      ]);
+      const [linhas] = await pool.query(
+        `SELECT u.*, (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo
+         FROM usuarios u WHERE u.id = ?`,
+        [id],
+      );
       return linhas[0] || null;
     } catch (e) {
       return null;
@@ -17,7 +19,8 @@ const usuarioModel = {
   buscarPorLogin: async (valor) => {
     try {
       const [linhas] = await pool.query(
-        "SELECT * FROM usuarios WHERE email = ? OR nomeusuario = ?",
+        `SELECT u.*, (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo
+         FROM usuarios u WHERE u.email = ? OR u.nomeusuario = ?`,
         [valor, valor],
       );
       return linhas[0] || null;
@@ -29,7 +32,8 @@ const usuarioModel = {
   buscarPorEmail: async (email) => {
     try {
       const [linhas] = await pool.query(
-        "SELECT * FROM usuarios WHERE email = ? LIMIT 1",
+        `SELECT u.*, (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo
+         FROM usuarios u WHERE u.email = ? LIMIT 1`,
         [email],
       );
       return linhas[0] || null;
@@ -274,9 +278,11 @@ const usuarioModel = {
         [novoId],
       );
       await conn.commit();
-      const [linhas] = await conn.query("SELECT * FROM usuarios WHERE id = ?", [
-        novoId,
-      ]);
+      const [linhas] = await conn.query(
+        `SELECT u.*, (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo
+         FROM usuarios u WHERE u.id = ?`,
+        [novoId],
+      );
       return linhas[0];
     } catch (e) {
       await conn.rollback();
@@ -301,9 +307,11 @@ const usuarioModel = {
        VALUES (?, ?, ?, ?, ?)`,
       [nome, nomeusuario, email, senhaHash, foto_perfil || null],
     );
-    const [linhas] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
-      r.insertId,
-    ]);
+    const [linhas] = await pool.query(
+      `SELECT u.*, (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo
+       FROM usuarios u WHERE u.id = ?`,
+      [r.insertId],
+    );
     return linhas[0];
   },
 
@@ -378,12 +386,18 @@ const usuarioModel = {
   // Atualiza o plano/status a partir do webhook do Mercado Pago
   atualizarStatusAssinatura: async (preapprovalId, status) => {
     try {
-      const plano = status === "authorized" ? "premium" : "free";
       await pool.query(
         `UPDATE usuarios
-         SET plano = ?, assinatura_status = ?, assinatura_atualizada_em = NOW()
+         SET plano = IF(
+               ? = 'cancelled' AND
+                 (premium_ate IS NULL OR premium_ate <= UTC_TIMESTAMP()),
+               'free',
+               plano
+             ),
+             assinatura_status = ?,
+             assinatura_atualizada_em = UTC_TIMESTAMP()
          WHERE mp_preapproval_id = ?`,
-        [plano, status, preapprovalId],
+        [status, status, preapprovalId],
       );
       return true;
     } catch (e) {
@@ -397,6 +411,7 @@ const usuarioModel = {
     try {
       const [linhas] = await pool.query(
         `SELECT u.*,
+                (u.premium_ate > UTC_TIMESTAMP()) AS premium_ativo,
                 COUNT(DISTINCT t.id)                                     AS total_tarefas,
                 SUM(CASE WHEN t.concluida=1 THEN 1 ELSE 0 END)          AS tarefas_concluidas
          FROM usuarios u

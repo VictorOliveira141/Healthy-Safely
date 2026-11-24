@@ -25,6 +25,7 @@ const {
 const { PRECO_PREMIUM } = require("../config/planos");
 const { buildGoogleCallbackUrl } = require("../config/googleAuth");
 const { usuarioModel } = require("../models/Usuario");
+const { premiumAtivo } = require("../utils/premium");
 
 const extensoesFotoPerfil = {
   "image/jpeg": ".jpg",
@@ -74,6 +75,11 @@ async function onboardingConcluido(req, res, next) {
     }
 
     req.session.usuario.onboarding_concluido = true;
+    req.session.usuario.plano = premiumAtivo(usuario) ? "premium" : "free";
+    req.session.usuario.premium_ate = usuario.premium_ate;
+    req.session.usuario.premium_ativo = usuario.premium_ativo;
+    req.session.usuario.assinatura_status = usuario.assinatura_status;
+    req.session.usuario.mp_preapproval_id = usuario.mp_preapproval_id;
     next();
   } catch (error) {
     console.error("Erro ao verificar status do onboarding:", error);
@@ -404,12 +410,39 @@ router.get(
   "/email/confirmar/:token",
   usuarioController.confirmarAlteracaoEmail,
 );
-router.get("/assinatura", apenasAutenticado, (req, res) =>
-  res.render("pages/user/assinatura", {
-    erro: req.query.erro === "1",
-    precoPremium: PRECO_PREMIUM,
-  }),
-);
+router.get("/assinatura", apenasAutenticado, async (req, res) => {
+  try {
+    const usuario = await usuarioModel.buscarPorId(req.session.usuario.id);
+    if (!usuario) return res.status(404).send("Conta não encontrada.");
+
+    const usuarioView = { ...usuario };
+    delete usuarioView.senha;
+    req.session.usuario.plano = premiumAtivo(usuario) ? "premium" : "free";
+    req.session.usuario.premium_ate = usuario.premium_ate;
+    req.session.usuario.premium_ativo = usuario.premium_ativo;
+    req.session.usuario.assinatura_status = usuario.assinatura_status;
+    req.session.usuario.mp_preapproval_id = usuario.mp_preapproval_id;
+
+    const mensagensPagamento = {
+      aprovado: "Pagamento aprovado. Seu Premium está ativo por 30 dias.",
+      pendente:
+        "Pagamento pendente. O Premium será liberado após a confirmação.",
+      recusado: "Pagamento não aprovado. Nenhum Premium foi liberado.",
+      verificando:
+        "Ainda não foi possível confirmar o pagamento. Aguarde a notificação ou tente atualizar a página.",
+    };
+
+    return res.render("pages/user/assinatura", {
+      usuario: usuarioView,
+      erro: req.query.erro === "1",
+      mensagemPagamento: mensagensPagamento[req.query.pagamento] || null,
+      precoPremium: PRECO_PREMIUM,
+    });
+  } catch {
+    console.error("Não foi possível carregar os dados da assinatura.");
+    return res.status(503).send("Não foi possível carregar sua assinatura.");
+  }
+});
 router.post(
   "/assinatura/assinar",
   apenasAutenticado,
@@ -458,10 +491,7 @@ router.post("/api/premium/relatorio-semanal", async (req, res) => {
     if (!usuario?.onboarding_concluido) {
       return res.status(403).json({ erro: "Conclua o onboarding primeiro." });
     }
-    if (
-      usuario.plano !== "premium" ||
-      usuario.assinatura_status !== "authorized"
-    ) {
+    if (!premiumAtivo(usuario)) {
       return res.status(403).json({ erro: "Recurso disponível no Premium." });
     }
 

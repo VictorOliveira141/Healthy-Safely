@@ -12,6 +12,7 @@ const {
   tarefaPrevistaNoDia,
 } = require("../utils/progressao");
 const { relatorioPremiumModel } = require("../models/RelatorioPremium");
+const { premiumAtivo } = require("../utils/premium");
 
 const mapearTarefa = (t) => ({
   _id: t.id,
@@ -357,10 +358,8 @@ const tarefaController = {
     try {
       const hoje = hojeSaoPaulo();
       const contaAtual = await usuarioModel.buscarPorId(usuarioAtual.id);
-      const premiumAtivo =
-        contaAtual?.plano === "premium" &&
-        contaAtual?.assinatura_status === "authorized";
-      plano = premiumAtivo ? "premium" : "free";
+      const possuiPremiumAtivo = premiumAtivo(contaAtual);
+      plano = possuiPremiumAtivo ? "premium" : "free";
 
       const [progressao, registrosPremium, relatorioSemanal] =
         await Promise.all([
@@ -368,13 +367,13 @@ const tarefaController = {
             usuarioAtual.id,
             somarDias(hoje, -29),
           ),
-          premiumAtivo
+          possuiPremiumAtivo
             ? tarefaModel.dadosAnalisePremium(
                 usuarioAtual.id,
                 somarDias(hoje, -89),
               )
             : Promise.resolve(null),
-          premiumAtivo
+          possuiPremiumAtivo
             ? relatorioPremiumModel.buscarSemanal(
                 usuarioAtual.id,
                 inicioDaSemana(hoje),
@@ -383,7 +382,7 @@ const tarefaController = {
         ]);
       const { tarefas, conclusoes, historico } = progressao;
       const dados = calcularProgressao({ tarefas, conclusoes, hoje });
-      const analisePremium = premiumAtivo
+      const analisePremium = possuiPremiumAtivo
         ? calcularAnalisePremium(registrosPremium, hoje)
         : null;
 

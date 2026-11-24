@@ -3,7 +3,7 @@
 -- HEALTHY SAFELY - SCHEMA DO BANCO
 -- ============================================================
 -- Para criar o banco:
--- mysql -u root -p < app/database/schema.sql
+-- mysql -u root -p NOME_DO_BANCO < app/config/database/schema.sql
 --
 -- Este arquivo representa o ESTADO ATUAL/FNAL do banco.
 -- Não contém mais estruturas de profissionais, amizades etc.
@@ -25,9 +25,56 @@ CREATE TABLE IF NOT EXISTS usuarios (
   mp_preapproval_id        VARCHAR(64) DEFAULT NULL,
   assinatura_status        VARCHAR(32) DEFAULT NULL,
   assinatura_atualizada_em DATETIME DEFAULT NULL,
+  premium_ate              DATETIME DEFAULT NULL,
 
   INDEX idx_usuarios_mp_preapproval (mp_preapproval_id)
 );
+
+CREATE TABLE IF NOT EXISTS mp_pedidos (
+  id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id            INT NOT NULL,
+  referencia_externa    CHAR(36) NOT NULL,
+  preferencia_id        VARCHAR(64) DEFAULT NULL,
+  pagamento_aprovado_id VARCHAR(64) DEFAULT NULL,
+  valor                 DECIMAL(10,2) NOT NULL,
+  moeda                 CHAR(3) NOT NULL,
+  estado                VARCHAR(32) NOT NULL DEFAULT 'pending',
+  acesso_concedido_em   DATETIME DEFAULT NULL,
+  premium_ate            DATETIME DEFAULT NULL,
+  criado_em             DATETIME DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em         DATETIME DEFAULT CURRENT_TIMESTAMP
+                        ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_mp_pedido_referencia (referencia_externa),
+  UNIQUE KEY uq_mp_pedido_preferencia (preferencia_id),
+  UNIQUE KEY uq_mp_pedido_pagamento_aprovado (pagamento_aprovado_id),
+  INDEX idx_mp_pedidos_usuario (usuario_id, criado_em),
+
+  FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS mp_pagamentos (
+  id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id             BIGINT NOT NULL,
+  mercadopago_id        VARCHAR(64) NOT NULL,
+  status                VARCHAR(32) NOT NULL,
+  valor                 DECIMAL(10,2) NOT NULL,
+  moeda                 CHAR(3) NOT NULL,
+  modo_teste            TINYINT(1) NOT NULL,
+  aprovado_em           DATETIME DEFAULT NULL,
+  criado_em             DATETIME DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em         DATETIME DEFAULT CURRENT_TIMESTAMP
+                        ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_mp_pagamento_id (mercadopago_id),
+  INDEX idx_mp_pagamentos_pedido (pedido_id),
+
+  FOREIGN KEY (pedido_id)
+    REFERENCES mp_pedidos(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 
 -- ── TOKENS DE RECUPERAÇÃO DE SENHA ─────────────────────────

@@ -35,7 +35,8 @@
 
   <body>
     <%- include('../../partials/header.ejs') %>
-    <% const isPremium = usuario.plano === 'premium'; %>
+    <% const isPremium = usuario.plano === 'premium' && Boolean(usuario.premium_ativo); %>
+    <% const possuiAssinaturaLegada = Boolean(usuario.mp_preapproval_id && usuario.assinatura_status !== 'cancelled'); %>
 
     <main class="assinatura-page">
 
@@ -62,6 +63,9 @@
         <p class="assinatura-erro" role="alert">
           Não foi possível concluir a operação. Tente novamente em instantes.
         </p>
+      <% } %>
+      <% if (mensagemPagamento) { %>
+        <p class="assinatura-erro" role="status"><%= mensagemPagamento %></p>
       <% } %>
 
       <!-- ======= PLANO ATUAL ======= -->
@@ -92,17 +96,9 @@
 
             <h2>Você é Premium</h2>
             <p>
-              Sua assinatura está ativa e renova automaticamente todo mês.
-              Pode cancelar quando quiser, sem burocracia.
+              Seu acesso foi liberado após a confirmação do pagamento e ficará
+              ativo por 30 dias. Para continuar, faça uma nova contratação.
             </p>
-          </div>
-
-          <div class="premium-spotlight-cta">
-            <form method="POST" action="/assinatura/cancelar">
-              <button type="submit" class="premium-botao premium-botao-cancelar">
-                Cancelar assinatura
-              </button>
-            </form>
           </div>
         </section>
 
@@ -146,9 +142,9 @@
           <div class="premium-spotlight-cta">
             <div class="premium-preco">
               <strong>R$ <%= precoPremium.toFixed(2).replace('.', ',') %></strong>
-              <span>/mês</span>
+              <span>/ 30 dias</span>
             </div>
-            <p class="premium-recorrente">Cancele quando quiser.</p>
+            <p class="premium-recorrente">Pagamento único. Renovação manual.</p>
 
             <form method="POST" action="/assinatura/assinar">
               <button type="submit" class="premium-botao">
@@ -158,6 +154,26 @@
           </div>
         </section>
 
+      <% } %>
+
+      <% if (possuiAssinaturaLegada) { %>
+        <section class="premium-spotlight" aria-label="Assinatura recorrente anterior">
+          <div class="premium-spotlight-info">
+            <h2>Assinatura recorrente anterior</h2>
+            <p>
+              Uma assinatura recorrente legada ainda está vinculada à sua conta.
+              As novas contratações são pagamentos únicos; cancele a renovação
+              anterior se ela não for mais desejada.
+            </p>
+          </div>
+          <div class="premium-spotlight-cta">
+            <form method="POST" action="/assinatura/cancelar">
+              <button type="submit" class="premium-botao premium-botao-cancelar">
+                Cancelar renovação legada
+              </button>
+            </form>
+          </div>
+        </section>
       <% } %>
 
       <!-- ======= BENEFÍCIOS ======= -->

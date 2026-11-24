@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const { PreApproval } = require("mercadopago");
-const mpClient = require("../config/mercadoPago");
+const { createMercadoPagoClient } = require("../config/mercadoPago");
 const { usuarioModel } = require("../models/Usuario");
 const { adminModel } = require("../models/Admin");
 const { body, validationResult } = require("express-validator");
@@ -183,7 +183,7 @@ const usuarioController = {
 
     if (usuario.mp_preapproval_id) {
       try {
-        const preApproval = new PreApproval(mpClient);
+        const preApproval = new PreApproval(createMercadoPagoClient());
         const assinatura = await preApproval.get({
           id: usuario.mp_preapproval_id,
         });
@@ -194,8 +194,8 @@ const usuarioController = {
             body: { status: "cancelled" },
           });
         }
-      } catch (error) {
-        console.error("[Conta.excluir] Falha ao cancelar assinatura:", error);
+      } catch {
+        console.error("[Conta.excluir] Falha ao cancelar assinatura legada.");
         return res.redirect("/configuracoes?exclusao=assinatura");
       }
     }
