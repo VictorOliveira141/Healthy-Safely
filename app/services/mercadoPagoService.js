@@ -67,8 +67,10 @@ function obterDivergenciasPagamento(pedido, pagamento) {
   if (pagamento?.currency_id !== pedido?.moeda) {
     divergencias.push("moeda");
   }
-  if (pagamento?.live_mode !== false) {
-    divergencias.push("ambiente_nao_sandbox");
+  if (pagamento?.live_mode === true) {
+    divergencias.push("live_mode_true");
+  } else if (pagamento?.live_mode !== false) {
+    divergencias.push("live_mode_ausente_ou_invalido");
   }
   if (typeof pagamento?.status !== "string") {
     divergencias.push("status_ausente");

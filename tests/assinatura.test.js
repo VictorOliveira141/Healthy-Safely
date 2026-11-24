@@ -118,6 +118,17 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
     pagamentoCorrespondeAoPedido(pedido, { ...pagamento, live_mode: true }),
     false,
   );
+  assert.deepEqual(
+    obterDivergenciasPagamento(pedido, { ...pagamento, live_mode: true }),
+    ["live_mode_true"],
+  );
+  assert.deepEqual(
+    obterDivergenciasPagamento(pedido, {
+      ...pagamento,
+      live_mode: undefined,
+    }),
+    ["live_mode_ausente_ou_invalido"],
+  );
   assert.equal(
     pagamentoCorrespondeAoPedido(pedido, {
       ...pagamento,
