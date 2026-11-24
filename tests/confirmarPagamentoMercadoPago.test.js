@@ -15,12 +15,24 @@ const pedidoBase = {
 
 const pagamentoBase = {
   id: 987654321,
+  collector_id: 555,
   external_reference: "referencia-uuid",
   transaction_amount: 11.99,
   currency_id: "BRL",
   live_mode: false,
   status: "approved",
 };
+
+const preferenciaBase = {
+  id: "preference-123",
+  collector_id: 555,
+  client_id: "777",
+  external_reference: "referencia-uuid",
+  sandbox_init_point:
+    "https://sandbox.mercadopago.com.br/checkout/v1/redirect/test",
+};
+
+const identidadeTeste = { sellerId: "555", appId: "777" };
 
 function criarRepositorio(pagamento = pagamentoBase, pedido = pedidoBase) {
   const gravados = new Map();
@@ -30,7 +42,9 @@ function criarRepositorio(pagamento = pagamentoBase, pedido = pedidoBase) {
   const repo = {
     estado,
     pagamento,
+    preferencia: { ...preferenciaBase },
     consultarPagamento: async () => repo.pagamento,
+    consultarPreferencia: async () => repo.preferencia,
     buscarPedidoPorReferencia: async (referencia) =>
       referencia === pedidoAtual.referencia_externa ? pedidoAtual : null,
     registrarPagamento: async (alvo, pagamentoAtual) => {
@@ -53,7 +67,9 @@ function confirmar(repo, pagamentoId = "987654321", usuarioId = 42) {
   return confirmarPagamentoMercadoPago({
     pagamentoId,
     usuarioId,
+    testIdentity: identidadeTeste,
     consultarPagamento: repo.consultarPagamento,
+    consultarPreferencia: repo.consultarPreferencia,
     buscarPedidoPorReferencia: repo.buscarPedidoPorReferencia,
     registrarPagamento: repo.registrarPagamento,
   });
@@ -126,6 +142,35 @@ test("rejeita confirmação quando o pagamento não está em Sandbox", async () 
 
   assert.equal(resultado.tipo, "invalido");
   assert.equal(resultado.motivo, "live_mode_true");
+  assert.equal(repo.estado.concessoesPremium, 0);
+});
+
+test("rejeita pagamento de outro vendedor de teste", async () => {
+  const repo = criarRepositorio({ ...pagamentoBase, collector_id: 999 });
+  const resultado = await confirmar(repo);
+
+  assert.equal(resultado.tipo, "invalido");
+  assert.equal(resultado.motivo, "vendedor_teste");
+  assert.equal(repo.estado.concessoesPremium, 0);
+});
+
+test("rejeita preferência de outra aplicação, mesmo com referência coincidente", async () => {
+  const repo = criarRepositorio();
+  repo.preferencia = { ...preferenciaBase, client_id: "888" };
+  const resultado = await confirmar(repo);
+
+  assert.equal(resultado.tipo, "invalido");
+  assert.equal(resultado.motivo, "aplicacao_teste");
+  assert.equal(repo.estado.concessoesPremium, 0);
+});
+
+test("rejeita preferência cujo ID não corresponde ao pedido", async () => {
+  const repo = criarRepositorio();
+  repo.preferencia = { ...preferenciaBase, id: "preference-456" };
+  const resultado = await confirmar(repo);
+
+  assert.equal(resultado.tipo, "invalido");
+  assert.equal(resultado.motivo, "preferencia_id");
   assert.equal(repo.estado.concessoesPremium, 0);
 });
 

@@ -39,7 +39,61 @@ function verificarAssinaturaWebhook(req, segredo) {
   );
 }
 
-function obterDivergenciasPagamento(pedido, pagamento) {
+function obterDivergenciasPreferencia(
+  preferencia,
+  {
+    expectedPreferenceId,
+    expectedExternalReference,
+    expectedSellerId,
+    expectedAppId,
+  },
+) {
+  const divergencias = [];
+  const preferenceId = String(preferencia?.id || "");
+
+  if (!preferenceId) divergencias.push("preferencia_id_ausente");
+  if (
+    expectedPreferenceId &&
+    preferenceId !== String(expectedPreferenceId)
+  ) {
+    divergencias.push("preferencia_id");
+  }
+  if (
+    typeof expectedExternalReference !== "string" ||
+    preferencia?.external_reference !== expectedExternalReference
+  ) {
+    divergencias.push("referencia_externa");
+  }
+  if (
+    !expectedSellerId ||
+    String(preferencia?.collector_id || "") !== String(expectedSellerId)
+  ) {
+    divergencias.push("vendedor_teste");
+  }
+  if (
+    !expectedAppId ||
+    String(preferencia?.client_id || "") !== String(expectedAppId)
+  ) {
+    divergencias.push("aplicacao_teste");
+  }
+
+  let sandboxUrl;
+  try {
+    sandboxUrl = new URL(preferencia?.sandbox_init_point || "");
+  } catch {
+    sandboxUrl = null;
+  }
+  if (
+    sandboxUrl?.protocol !== "https:" ||
+    sandboxUrl?.hostname !== "sandbox.mercadopago.com.br"
+  ) {
+    divergencias.push("checkout_nao_sandbox");
+  }
+
+  return divergencias;
+}
+
+function obterDivergenciasPagamento(pedido, pagamento, expectedSellerId) {
   const divergencias = [];
   const referenciaPedido = String(pedido?.referencia_externa || "");
   const referenciaPagamento = String(pagamento?.external_reference || "");
@@ -66,6 +120,12 @@ function obterDivergenciasPagamento(pedido, pagamento) {
   }
   if (pagamento?.currency_id !== pedido?.moeda) {
     divergencias.push("moeda");
+  }
+  if (
+    expectedSellerId &&
+    String(pagamento?.collector_id || "") !== String(expectedSellerId)
+  ) {
+    divergencias.push("vendedor_teste");
   }
   if (pagamento?.live_mode === true) {
     divergencias.push("live_mode_true");
@@ -104,6 +164,7 @@ module.exports = {
   pagamentoAprovado,
   pagamentoCorrespondeAoPedido,
   obterDivergenciasPagamento,
+  obterDivergenciasPreferencia,
   pedidoPertenceAoUsuario,
   verificarAssinaturaWebhook,
 };

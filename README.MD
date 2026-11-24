@@ -22,6 +22,8 @@ dias após confirmação; a renovação é manual. Configure no ambiente:
 
 - `MERCADOPAGO_ENV=test`: obrigatório; outros valores impedem chamadas ao SDK.
 - `MERCADOPAGO_ACCESS_TOKEN`: Access Token copiado da seção TESTE do painel.
+- `MERCADOPAGO_TEST_SELLER_ID`: ID da conta de vendedor de teste da aplicação.
+- `MERCADOPAGO_TEST_APP_ID`: ID da aplicação que gerou as credenciais de teste.
 - `MERCADOPAGO_PUBLIC_KEY`: chave pública do ambiente de teste (não é usada pelo
   redirecionamento server-side do Checkout Pro).
 - `MERCADOPAGO_WEBHOOK_SECRET`: segredo de assinatura do webhook (obrigatório).
@@ -30,6 +32,9 @@ dias após confirmação; a renovação é manual. Configure no ambiente:
 O SDK envia `X-Test-Token` em todas as chamadas e o checkout redireciona somente
 para `sandbox_init_point`; o código não infere o ambiente pelo formato do token
 nem usa o antigo `MP_ACCESS_TOKEN`. O Access Token nunca é enviado ao frontend.
+A preferência e o pagamento também são conferidos contra o vendedor e a
+aplicação de teste configurados. Os IDs acima devem corresponder a
+`collector_id` e `client_id` retornados pelo Mercado Pago; não são credenciais.
 
 Antes de iniciar, aplique a migração aditiva
 `app/config/database/mercadopago-checkout.sql` no banco existente. Ela preserva

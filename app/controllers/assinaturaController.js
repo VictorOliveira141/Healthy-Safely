@@ -3,12 +3,14 @@ const { Payment, Preference, PreApproval } = require("mercadopago");
 const {
   assertTestEnvironment,
   createMercadoPagoClient,
+  getTestMercadoPagoIdentity,
   getWebhookSecret,
 } = require("../config/mercadoPago");
 const { PRECO_PREMIUM } = require("../config/planos");
 const { usuarioModel } = require("../models/Usuario");
 const { pagamentoMercadoPagoModel } = require("../models/PagamentoMercadoPago");
 const {
+  obterDivergenciasPreferencia,
   verificarAssinaturaWebhook,
 } = require("../services/mercadoPagoService");
 const {
@@ -29,11 +31,16 @@ function urlAplicacao(caminho) {
 }
 
 async function obterPagamentoConfirmado(pagamentoId, usuarioId = null) {
+  const testIdentity = getTestMercadoPagoIdentity();
   const cliente = createMercadoPagoClient();
+  const preferencias = new Preference(cliente);
   const resultado = await confirmarPagamentoMercadoPago({
     pagamentoId,
     usuarioId,
+    testIdentity,
     consultarPagamento: (id) => new Payment(cliente).get({ id }),
+    consultarPreferencia: (preferenceId) =>
+      preferencias.get({ preferenceId }),
     buscarPedidoPorReferencia:
       pagamentoMercadoPagoModel.buscarPedidoPorReferencia,
     registrarPagamento: pagamentoMercadoPagoModel.registrarPagamento,
@@ -71,6 +78,7 @@ const assinaturaController = {
       if (!getWebhookSecret()) {
         return res.redirect("/assinatura?erro=1");
       }
+      const testIdentity = getTestMercadoPagoIdentity();
       const cliente = createMercadoPagoClient();
 
       const usuarioId = req.session.usuario.id;
@@ -104,13 +112,20 @@ const assinaturaController = {
         },
       });
 
-      if (
-        !preferencia?.id ||
-        preferencia.external_reference !== referenciaExterna ||
-        !preferencia.sandbox_init_point
-      ) {
+      const divergenciasPreferencia = obterDivergenciasPreferencia(
+        preferencia,
+        {
+          expectedExternalReference: referenciaExterna,
+          expectedSellerId: testIdentity.sellerId,
+          expectedAppId: testIdentity.appId,
+        },
+      );
+      if (divergenciasPreferencia.length > 0) {
         await pagamentoMercadoPagoModel.marcarPedidoFalhou(
           referenciaExterna,
+        );
+        console.error(
+          `[Mercado Pago] Preferência rejeitada: ${divergenciasPreferencia.join(",")}.`,
         );
         return res.redirect("/assinatura?erro=1");
       }
@@ -139,6 +154,7 @@ const assinaturaController = {
       }
       console.error(
         "Não foi possível criar o checkout Sandbox do Mercado Pago.",
+        error?.code || "erro sem código",
       );
       return res.redirect("/assinatura?erro=1");
     }

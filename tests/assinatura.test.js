@@ -5,11 +5,13 @@ const {
   assertTestEnvironment,
   createMercadoPagoClient,
   getAccessToken,
+  getTestMercadoPagoIdentity,
 } = require("../app/config/mercadoPago");
 const {
   pagamentoAprovado,
   pagamentoCorrespondeAoPedido,
   obterDivergenciasPagamento,
+  obterDivergenciasPreferencia,
   pedidoPertenceAoUsuario,
   verificarAssinaturaWebhook,
 } = require("../app/services/mercadoPagoService");
@@ -17,6 +19,8 @@ const {
 const nomesVariaveis = [
   "MERCADOPAGO_ENV",
   "MERCADOPAGO_ACCESS_TOKEN",
+  "MERCADOPAGO_TEST_SELLER_ID",
+  "MERCADOPAGO_TEST_APP_ID",
   "MERCADOPAGO_WEBHOOK_SECRET",
   "MP_ACCESS_TOKEN",
   "MP_WEBHOOK_SECRET",
@@ -51,6 +55,21 @@ test("não usa token legado nem inicia sem credenciais", () => {
   process.env.MERCADOPAGO_ENV = "test";
 
   assert.throws(() => getAccessToken(), { code: "MP_TEST_CONFIGURATION" });
+});
+
+test("exige a identidade esperada do vendedor e da aplicação de teste", () => {
+  process.env.MERCADOPAGO_ENV = "test";
+  process.env.MERCADOPAGO_TEST_SELLER_ID = "123456789";
+  process.env.MERCADOPAGO_TEST_APP_ID = "987654321";
+  assert.deepEqual(getTestMercadoPagoIdentity(), {
+    sellerId: "123456789",
+    appId: "987654321",
+  });
+
+  process.env.MERCADOPAGO_TEST_SELLER_ID = "vendedor-invalido";
+  assert.throws(() => getTestMercadoPagoIdentity(), {
+    code: "MP_TEST_IDENTITY_CONFIGURATION",
+  });
 });
 
 test("valida HMAC do webhook e rejeita alteração de id, cabeçalho ou segredo", () => {
@@ -110,6 +129,33 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
   assert.equal(pedidoPertenceAoUsuario({ usuario_id: 42 }, 7), false);
   assert.equal(pagamentoCorrespondeAoPedido(pedido, pagamento), true);
   assert.deepEqual(obterDivergenciasPagamento(pedido, pagamento), []);
+  const preferencia = {
+    id: "preference-123",
+    external_reference: "referencia-uuid",
+    collector_id: 555,
+    client_id: "777",
+    sandbox_init_point:
+      "https://sandbox.mercadopago.com.br/checkout/v1/redirect/test",
+  };
+  assert.deepEqual(
+    obterDivergenciasPreferencia(preferencia, {
+      expectedExternalReference: "referencia-uuid",
+      expectedSellerId: "555",
+      expectedAppId: "777",
+    }),
+    [],
+  );
+  assert.deepEqual(
+    obterDivergenciasPreferencia(
+      { ...preferencia, client_id: "888" },
+      {
+        expectedExternalReference: "referencia-uuid",
+        expectedSellerId: "555",
+        expectedAppId: "777",
+      },
+    ),
+    ["aplicacao_teste"],
+  );
   assert.equal(pagamentoAprovado("approved"), true);
   assert.equal(pagamentoAprovado("pending"), false);
   assert.equal(pagamentoAprovado("in_process"), false);

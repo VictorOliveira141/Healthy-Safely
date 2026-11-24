@@ -1,18 +1,28 @@
 const {
   obterDivergenciasPagamento,
+  obterDivergenciasPreferencia,
   pedidoPertenceAoUsuario,
 } = require("./mercadoPagoService");
 
 async function confirmarPagamentoMercadoPago({
   pagamentoId,
   usuarioId = null,
+  testIdentity,
   consultarPagamento,
+  consultarPreferencia,
   buscarPedidoPorReferencia,
   registrarPagamento,
 }) {
   const id = String(pagamentoId || "");
   if (!/^\d+$/.test(id)) {
     return { tipo: "invalido", motivo: "payment_id_invalido" };
+  }
+  if (
+    !/^\d+$/.test(String(testIdentity?.sellerId || "")) ||
+    !/^\d+$/.test(String(testIdentity?.appId || "")) ||
+    typeof consultarPreferencia !== "function"
+  ) {
+    return { tipo: "invalido", motivo: "identidade_teste_nao_configurada" };
   }
 
   let pagamento;
@@ -43,7 +53,42 @@ async function confirmarPagamentoMercadoPago({
     return { tipo: "nao_autorizado", motivo: "pedido_de_outro_usuario" };
   }
 
-  const divergencias = obterDivergenciasPagamento(pedido, pagamento);
+  if (!pedido.preferencia_id) {
+    return { tipo: "invalido", motivo: "preferencia_nao_registrada" };
+  }
+
+  let preferencia;
+  try {
+    preferencia = await consultarPreferencia(pedido.preferencia_id);
+  } catch (error) {
+    if (Number(error?.status || error?.statusCode) === 404) {
+      return { tipo: "nao_encontrado", motivo: "preferencia_nao_encontrada" };
+    }
+    throw error;
+  }
+
+  if (!preferencia) {
+    return { tipo: "nao_encontrado", motivo: "preferencia_nao_encontrada" };
+  }
+
+  const divergenciasPreferencia = obterDivergenciasPreferencia(preferencia, {
+    expectedPreferenceId: pedido.preferencia_id,
+    expectedExternalReference: pedido.referencia_externa,
+    expectedSellerId: testIdentity.sellerId,
+    expectedAppId: testIdentity.appId,
+  });
+  if (divergenciasPreferencia.length > 0) {
+    return {
+      tipo: "invalido",
+      motivo: divergenciasPreferencia.join(","),
+    };
+  }
+
+  const divergencias = obterDivergenciasPagamento(
+    pedido,
+    pagamento,
+    testIdentity.sellerId,
+  );
   if (divergencias.length > 0) {
     return { tipo: "invalido", motivo: divergencias.join(",") };
   }
