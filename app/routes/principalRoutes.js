@@ -437,6 +437,9 @@ router.get("/assinatura", apenasAutenticado, async (req, res) => {
       erro: req.query.erro === "1",
       mensagemPagamento: mensagensPagamento[req.query.pagamento] || null,
       precoPremium: PRECO_PREMIUM,
+      podeReverificarPagamento:
+        ["pendente", "verificando"].includes(req.query.pagamento) &&
+        /^\d+$/.test(req.session.mercadoPagoPagamentoPendente || ""),
     });
   } catch {
     console.error("Não foi possível carregar os dados da assinatura.");
@@ -452,6 +455,11 @@ router.get(
   "/assinatura/retorno",
   apenasAutenticado,
   assinaturaController.retorno,
+);
+router.post(
+  "/assinatura/verificar-pagamento",
+  apenasAutenticado,
+  assinaturaController.verificarPagamento,
 );
 router.post(
   "/assinatura/cancelar",

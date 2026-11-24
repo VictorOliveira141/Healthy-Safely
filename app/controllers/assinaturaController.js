@@ -9,10 +9,11 @@ const { PRECO_PREMIUM } = require("../config/planos");
 const { usuarioModel } = require("../models/Usuario");
 const { pagamentoMercadoPagoModel } = require("../models/PagamentoMercadoPago");
 const {
-  obterDivergenciasPagamento,
-  pedidoPertenceAoUsuario,
   verificarAssinaturaWebhook,
 } = require("../services/mercadoPagoService");
+const {
+  confirmarPagamentoMercadoPago,
+} = require("../services/confirmarPagamentoMercadoPago");
 
 function urlAplicacao(caminho) {
   const configurada = (process.env.APP_URL || "").trim();
@@ -28,56 +29,32 @@ function urlAplicacao(caminho) {
 }
 
 async function obterPagamentoConfirmado(pagamentoId, usuarioId = null) {
-  if (!/^\d+$/.test(String(pagamentoId || ""))) {
-    console.warn("[Mercado Pago] Confirmação ignorada: payment_id inválido.");
-    return null;
-  }
-
   const cliente = createMercadoPagoClient();
-  const pagamento = await new Payment(cliente).get({
-    id: String(pagamentoId),
+  const resultado = await confirmarPagamentoMercadoPago({
+    pagamentoId,
+    usuarioId,
+    consultarPagamento: (id) => new Payment(cliente).get({ id }),
+    buscarPedidoPorReferencia:
+      pagamentoMercadoPagoModel.buscarPedidoPorReferencia,
+    registrarPagamento: pagamentoMercadoPagoModel.registrarPagamento,
   });
-  const referencia = pagamento?.external_reference;
-  if (!referencia) {
+
+  if (resultado.tipo !== "processado") {
     console.warn(
-      "[Mercado Pago] Confirmação ignorada: resposta sem external_reference.",
+      `[Mercado Pago] Confirmação não processada: ${resultado.motivo}.`,
     );
-    return null;
   }
 
-  const pedido =
-    await pagamentoMercadoPagoModel.buscarPedidoPorReferencia(referencia);
-  if (!pedido) {
-    console.warn(
-      "[Mercado Pago] Confirmação ignorada: pedido não encontrado pela referência.",
-    );
-    return null;
-  }
-  if (usuarioId !== null && !pedidoPertenceAoUsuario(pedido, usuarioId)) {
-    console.warn(
-      "[Mercado Pago] Confirmação ignorada: pedido não pertence à sessão.",
-    );
-    return null;
-  }
+  return resultado.tipo === "processado" ? resultado.pagamento : null;
+}
 
-  const divergencias = obterDivergenciasPagamento(pedido, pagamento);
-  if (divergencias.length > 0) {
-    console.warn(
-      `[Mercado Pago] Confirmação ignorada; divergências: ${divergencias.join(", ")}.`,
-    );
-    return null;
+function statusDoPagamento(pagamento) {
+  if (pagamento?.status === "approved") return "aprovado";
+  if (pagamento?.status === "pending" || pagamento?.status === "in_process") {
+    return "pendente";
   }
-
-  const registrado = await pagamentoMercadoPagoModel.registrarPagamento(
-    pedido,
-    pagamento,
-  );
-  if (!registrado) {
-    console.warn(
-      "[Mercado Pago] Confirmação ignorada: pagamento associado a outro pedido.",
-    );
-  }
-  return registrado ? pagamento : null;
+  if (pagamento?.status) return "recusado";
+  return "verificando";
 }
 
 async function atualizarUsuarioDaSessao(req) {
@@ -169,11 +146,13 @@ const assinaturaController = {
 
   retorno: async (req, res) => {
     let resultado;
+    const pagamentoId = req.query.payment_id || req.query.collection_id;
+    if (/^\d+$/.test(String(pagamentoId || ""))) {
+      req.session.mercadoPagoPagamentoPendente = String(pagamentoId);
+    }
+
     try {
-      resultado = await obterPagamentoConfirmado(
-        req.query.payment_id,
-        req.session.usuario.id,
-      );
+      resultado = await obterPagamentoConfirmado(pagamentoId, req.session.usuario.id);
       await atualizarUsuarioDaSessao(req);
     } catch (error) {
       console.error(
@@ -182,15 +161,32 @@ const assinaturaController = {
       );
     }
 
-    const status =
-      resultado?.status === "approved"
-        ? "aprovado"
-        : resultado?.status === "pending" ||
-            resultado?.status === "in_process"
-          ? "pendente"
-          : resultado?.status
-            ? "recusado"
-            : "verificando";
+    const status = statusDoPagamento(resultado);
+    if (status === "aprovado" || status === "recusado") {
+      delete req.session.mercadoPagoPagamentoPendente;
+    }
+    return res.redirect(`/assinatura?pagamento=${status}`);
+  },
+
+  verificarPagamento: async (req, res) => {
+    let resultado;
+    try {
+      resultado = await obterPagamentoConfirmado(
+        req.session.mercadoPagoPagamentoPendente,
+        req.session.usuario.id,
+      );
+      await atualizarUsuarioDaSessao(req);
+    } catch (error) {
+      console.error(
+        "Não foi possível consultar novamente o pagamento.",
+        error?.code || error?.status || error?.statusCode || "erro sem código",
+      );
+    }
+
+    const status = statusDoPagamento(resultado);
+    if (status === "aprovado" || status === "recusado") {
+      delete req.session.mercadoPagoPagamentoPendente;
+    }
     return res.redirect(`/assinatura?pagamento=${status}`);
   },
 

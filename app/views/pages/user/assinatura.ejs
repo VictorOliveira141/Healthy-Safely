@@ -67,6 +67,13 @@
       <% if (mensagemPagamento) { %>
         <p class="assinatura-erro" role="status"><%= mensagemPagamento %></p>
       <% } %>
+      <% if (podeReverificarPagamento) { %>
+        <form method="POST" action="/assinatura/verificar-pagamento">
+          <button type="submit" class="premium-botao">
+            Verificar pagamento novamente
+          </button>
+        </form>
+      <% } %>
 
       <!-- ======= PLANO ATUAL ======= -->
       <section class="plano-atual" aria-label="Seu plano atual">

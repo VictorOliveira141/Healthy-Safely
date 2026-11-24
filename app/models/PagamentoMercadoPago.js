@@ -100,6 +100,21 @@ const pagamentoMercadoPagoModel = {
         ],
       );
 
+      const [pagamentoRegistrado] = await conn.query(
+        `SELECT pedido_id FROM mp_pagamentos
+         WHERE mercadopago_id = ?
+         LIMIT 1
+         FOR UPDATE`,
+        [pagamento.id],
+      );
+      if (
+        !pagamentoRegistrado[0] ||
+        Number(pagamentoRegistrado[0].pedido_id) !== Number(pedidoAtual.id)
+      ) {
+        await conn.rollback();
+        return false;
+      }
+
       if (
         pagamentoAprovado(pagamento.status) &&
         !pedidoAtual.acesso_concedido_em
