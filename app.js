@@ -1,4 +1,7 @@
 require("dotenv").config();
+const {
+  logMercadoPagoTokenDiagnostic,
+} = require("./app/config/mercadoPagoTokenDiagnostic");
 
 /* ============================================================
    Requisições
@@ -132,6 +135,7 @@ app.use((req, res) => {
 
 // ── Iniciar servidor ──────────────────────────────────────
 app.listen(porta, () => {
+  logMercadoPagoTokenDiagnostic();
   console.log(` Healthy Safely rodando em http://localhost:${porta}`);
   console.log(`   Ambiente: ${process.env.NODE_ENV || "desenvolvimento"}\n`);
 });
