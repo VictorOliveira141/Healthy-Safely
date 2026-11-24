@@ -39,20 +39,49 @@ function verificarAssinaturaWebhook(req, segredo) {
   );
 }
 
+function obterDivergenciasPagamento(pedido, pagamento) {
+  const divergencias = [];
+  const referenciaPedido = String(pedido?.referencia_externa || "");
+  const referenciaPagamento = String(pagamento?.external_reference || "");
+  const valorPedido = Number(pedido?.valor);
+  const valorPagamento = Number(pagamento?.transaction_amount);
+
+  if (
+    typeof pedido?.preferencia_id !== "string" ||
+    pedido.preferencia_id.length === 0
+  ) {
+    divergencias.push("preferencia_nao_registrada");
+  }
+  if (!referenciaPedido || !referenciaPagamento) {
+    divergencias.push("referencia_externa_ausente");
+  } else if (referenciaPagamento !== referenciaPedido) {
+    divergencias.push("referencia_externa");
+  }
+  if (
+    !Number.isFinite(valorPedido) ||
+    !Number.isFinite(valorPagamento) ||
+    Math.round(valorPagamento * 100) !== Math.round(valorPedido * 100)
+  ) {
+    divergencias.push("valor");
+  }
+  if (pagamento?.currency_id !== pedido?.moeda) {
+    divergencias.push("moeda");
+  }
+  if (pagamento?.live_mode !== false) {
+    divergencias.push("ambiente_nao_sandbox");
+  }
+  if (typeof pagamento?.status !== "string") {
+    divergencias.push("status_ausente");
+  }
+  if (!/^\d+$/.test(String(pagamento?.id || ""))) {
+    divergencias.push("id_pagamento_invalido");
+  }
+
+  return divergencias;
+}
+
 function pagamentoCorrespondeAoPedido(pedido, pagamento) {
-  return (
-    typeof pedido?.preferencia_id === "string" &&
-    pedido.preferencia_id.length > 0 &&
-    String(pagamento?.external_reference || "") ===
-      String(pedido?.referencia_externa || "") &&
-    Math.round(Number(pagamento?.transaction_amount) * 100) ===
-      Math.round(Number(pedido?.valor) * 100) &&
-    pagamento?.currency_id === pedido?.moeda &&
-    pagamento?.live_mode === false &&
-    typeof pagamento?.status === "string" &&
-    typeof pagamento?.id !== "undefined" &&
-    /^\d+$/.test(String(pagamento.id))
-  );
+  return obterDivergenciasPagamento(pedido, pagamento).length === 0;
 }
 
 function pagamentoAprovado(status) {
@@ -72,6 +101,7 @@ function pedidoPertenceAoUsuario(pedido, usuarioId) {
 module.exports = {
   pagamentoAprovado,
   pagamentoCorrespondeAoPedido,
+  obterDivergenciasPagamento,
   pedidoPertenceAoUsuario,
   verificarAssinaturaWebhook,
 };

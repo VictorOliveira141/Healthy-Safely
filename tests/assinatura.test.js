@@ -9,6 +9,7 @@ const {
 const {
   pagamentoAprovado,
   pagamentoCorrespondeAoPedido,
+  obterDivergenciasPagamento,
   pedidoPertenceAoUsuario,
   verificarAssinaturaWebhook,
 } = require("../app/services/mercadoPagoService");
@@ -108,6 +109,7 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
   assert.equal(pedidoPertenceAoUsuario({ usuario_id: 42 }, "42"), true);
   assert.equal(pedidoPertenceAoUsuario({ usuario_id: 42 }, 7), false);
   assert.equal(pagamentoCorrespondeAoPedido(pedido, pagamento), true);
+  assert.deepEqual(obterDivergenciasPagamento(pedido, pagamento), []);
   assert.equal(pagamentoAprovado("approved"), true);
   assert.equal(pagamentoAprovado("pending"), false);
   assert.equal(pagamentoAprovado("in_process"), false);
@@ -143,5 +145,12 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
       pagamento,
     ),
     false,
+  );
+  assert.deepEqual(
+    obterDivergenciasPagamento(
+      { ...pedido, preferencia_id: null },
+      pagamento,
+    ),
+    ["preferencia_nao_registrada"],
   );
 });
