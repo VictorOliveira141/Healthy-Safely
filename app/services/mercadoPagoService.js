@@ -41,10 +41,10 @@ function verificarAssinaturaWebhook(req, segredo) {
 
 function pagamentoCorrespondeAoPedido(pedido, pagamento) {
   return (
+    typeof pedido?.preferencia_id === "string" &&
+    pedido.preferencia_id.length > 0 &&
     String(pagamento?.external_reference || "") ===
       String(pedido?.referencia_externa || "") &&
-    String(pagamento?.preference_id || "") ===
-      String(pedido?.preferencia_id || "") &&
     Math.round(Number(pagamento?.transaction_amount) * 100) ===
       Math.round(Number(pedido?.valor) * 100) &&
     pagamento?.currency_id === pedido?.moeda &&

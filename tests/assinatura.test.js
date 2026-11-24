@@ -99,7 +99,6 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
   const pagamento = {
     id: 12345,
     external_reference: "referencia-uuid",
-    preference_id: "preference-123",
     transaction_amount: 11.99,
     currency_id: "BRL",
     live_mode: false,
@@ -134,8 +133,15 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
   assert.equal(
     pagamentoCorrespondeAoPedido(pedido, {
       ...pagamento,
-      preference_id: "outra-preferencia",
+      external_reference: "outra-referencia",
     }),
+    false,
+  );
+  assert.equal(
+    pagamentoCorrespondeAoPedido(
+      { ...pedido, preferencia_id: null },
+      pagamento,
+    ),
     false,
   );
 });
