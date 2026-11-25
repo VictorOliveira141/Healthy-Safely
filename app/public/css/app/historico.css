@@ -147,8 +147,14 @@ html.dark .pg {
     transform 0.2s ease,
     filter 0.2s ease;
 }
+.pg button.pg-cta {
+  color: var(--fundoescuro);
+}
 html.dark .pg-cta {
   background: #34d399;
+  color: #04261c;
+}
+html.dark .pg button.pg-cta {
   color: #04261c;
 }
 .pg-cta:hover {
