@@ -39,6 +39,26 @@ function verificarAssinaturaWebhook(req, segredo) {
   );
 }
 
+// Contas de teste com token APP_USR usam o init_point normal (o comprador de
+// teste faz login nele); tokens TEST- usam o sandbox_init_point.
+const HOSTS_CHECKOUT = ["www.mercadopago.com.br", "sandbox.mercadopago.com.br"];
+function urlCheckout(preferencia) {
+  for (const candidata of [
+    preferencia?.init_point,
+    preferencia?.sandbox_init_point,
+  ]) {
+    try {
+      const url = new URL(candidata || "");
+      if (url.protocol === "https:" && HOSTS_CHECKOUT.includes(url.hostname)) {
+        return url.toString();
+      }
+    } catch {
+      // tenta a próxima
+    }
+  }
+  return null;
+}
+
 function obterDivergenciasPreferencia(
   preferencia,
   {
@@ -77,17 +97,8 @@ function obterDivergenciasPreferencia(
     divergencias.push("aplicacao_teste");
   }
 
-  let sandboxUrl;
-  try {
-    sandboxUrl = new URL(preferencia?.sandbox_init_point || "");
-  } catch {
-    sandboxUrl = null;
-  }
-  if (
-    sandboxUrl?.protocol !== "https:" ||
-    sandboxUrl?.hostname !== "sandbox.mercadopago.com.br"
-  ) {
-    divergencias.push("checkout_nao_sandbox");
+  if (!urlCheckout(preferencia)) {
+    divergencias.push("checkout_url_invalida");
   }
 
   return divergencias;
@@ -127,11 +138,6 @@ function obterDivergenciasPagamento(pedido, pagamento, expectedSellerId) {
   ) {
     divergencias.push("vendedor_teste");
   }
-  if (pagamento?.live_mode === true) {
-    divergencias.push("live_mode_true");
-  } else if (pagamento?.live_mode !== false) {
-    divergencias.push("live_mode_ausente_ou_invalido");
-  }
   if (typeof pagamento?.status !== "string") {
     divergencias.push("status_ausente");
   }
@@ -166,5 +172,6 @@ module.exports = {
   obterDivergenciasPagamento,
   obterDivergenciasPreferencia,
   pedidoPertenceAoUsuario,
+  urlCheckout,
   verificarAssinaturaWebhook,
 };

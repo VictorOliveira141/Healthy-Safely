@@ -1,3 +1,4 @@
+<% const ehPremium = typeof locals.ehPremium !== "undefined" ? Boolean(locals.ehPremium) : false; %>
 <link rel="stylesheet" href="/css/menu-inferior.css?v=4">
 
 <!-- Botão de acessibilidade -->
@@ -117,6 +118,9 @@
         <a href="/assinatura">
           <img src="../imagem/menu-inferior/assinatura.webp" alt="" width="35px" height="auto">
           <span>Assinatura</span>
+          <% if (ehPremium) { %>
+            <span class="selo-premium" aria-label="Plano Premium ativo">✦ Premium</span>
+          <% } %>
         </a>
 
         <a href="/ajuda">

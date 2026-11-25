@@ -540,3 +540,11 @@
     right: -4px;
   }
 }
+
+/* ── Foto de perfil com anel Premium ─────────────────────── */
+.header-actions .foto-perfil-premium img {
+  border: 2px solid #d4af37;
+  box-shadow:
+    0 0 0 2px rgba(255, 231, 160, 0.35),
+    0 0 14px rgba(212, 175, 55, 0.45);
+}

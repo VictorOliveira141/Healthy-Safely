@@ -67,6 +67,37 @@
       <% if (mensagemPagamento) { %>
         <p class="assinatura-erro" role="status"><%= mensagemPagamento %></p>
       <% } %>
+      <% if (typeof premiumRecemAtivado !== 'undefined' && premiumRecemAtivado) { %>
+        <div class="premium-celebracao" id="premiumCelebracao" role="dialog" aria-modal="true" aria-labelledby="premiumCelebracaoTitulo">
+          <div class="premium-celebracao-card">
+            <div class="premium-celebracao-icone" aria-hidden="true">✦</div>
+            <h2 id="premiumCelebracaoTitulo">Pagamento aprovado!</h2>
+            <p>Agora você é <strong>Premium</strong> 🎉</p>
+            <p class="premium-celebracao-detalhe">
+              Seu acesso vai até
+              <strong><%= new Date(usuario.premium_ate).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) %></strong>.
+              Os recursos Premium já estão liberados na sua Progressão.
+            </p>
+            <div class="premium-celebracao-acoes">
+              <a href="/historico" class="premium-botao">Ver meus recursos Premium</a>
+              <button type="button" class="premium-celebracao-fechar" id="premiumCelebracaoFechar">Fechar</button>
+            </div>
+          </div>
+        </div>
+        <script>
+          (function () {
+            var modal = document.getElementById("premiumCelebracao");
+            var fechar = function () {
+              modal.remove();
+              history.replaceState(null, "", "/assinatura");
+            };
+            document.getElementById("premiumCelebracaoFechar").addEventListener("click", fechar);
+            modal.addEventListener("click", function (e) { if (e.target === modal) fechar(); });
+            document.addEventListener("keydown", function (e) { if (e.key === "Escape" && document.body.contains(modal)) fechar(); });
+            document.getElementById("premiumCelebracaoFechar").focus();
+          })();
+        </script>
+      <% } %>
       <% if (podeReverificarPagamento) { %>
         <form method="POST" action="/assinatura/verificar-pagamento">
           <button type="submit" class="premium-botao">

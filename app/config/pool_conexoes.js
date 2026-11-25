@@ -9,7 +9,9 @@ const pool = mysql.createPool({
   charset:            "utf8mb4",
   port:               process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit:    10,
+  // O banco hospedado permite só 5 conexões por usuário, divididas entre o
+  // servidor local e o Render. Mantenha poucas (padrão 2).
+  connectionLimit:    Number(process.env.DB_CONNECTION_LIMIT) || 2,
   queueLimit:         0,
 });
 

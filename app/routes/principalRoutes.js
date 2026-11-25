@@ -80,6 +80,7 @@ async function onboardingConcluido(req, res, next) {
     req.session.usuario.premium_ativo = usuario.premium_ativo;
     req.session.usuario.assinatura_status = usuario.assinatura_status;
     req.session.usuario.mp_preapproval_id = usuario.mp_preapproval_id;
+    res.locals.ehPremium = premiumAtivo(usuario);
     next();
   } catch (error) {
     console.error("Erro ao verificar status do onboarding:", error);
@@ -101,6 +102,10 @@ router.get("/api/push/cron", pushController.executarCron);
 // onboarding aplicada ao prefixo /webauthn.
 router.post("/webauthn/login/options", webauthnController.gerarOpcoesLogin);
 router.post("/webauthn/login/verify", webauthnController.verificarLogin);
+
+// Retorno do Checkout Pro: público e antes da proteção do prefixo
+// /assinatura, pois o comprador pode voltar sem a sessão (outro domínio).
+router.get("/assinatura/retorno", assinaturaController.retorno);
 
 router.use(
   [
@@ -193,7 +198,11 @@ router.get("/login", (req, res) => {
       ? "Sua senha foi alterada. Entre novamente usando a nova senha."
       : req.query.conta === "excluida"
         ? "Sua conta foi excluída com sucesso."
-        : null;
+        : req.query.pagamento === "aprovado"
+          ? "Pagamento aprovado! Seu Premium já está ativo. Entre para aproveitar."
+          : req.query.pagamento === "pendente"
+            ? "Pagamento em análise. O Premium será liberado assim que for confirmado."
+            : null;
 
   res.render("pages/auth/login", {
     erro: null,
@@ -424,6 +433,18 @@ router.get(
   usuarioController.confirmarAlteracaoEmail,
 );
 router.get("/assinatura", apenasAutenticado, async (req, res) => {
+  let reconciliado = false;
+  try {
+    reconciliado = await assinaturaController.reconciliarPagamentosPendentes(
+      req.session.usuario.id,
+    );
+  } catch (error) {
+    console.error(
+      "Não foi possível reconciliar pagamentos pendentes.",
+      error?.code || error?.status || error?.message || "erro sem código",
+    );
+  }
+
   try {
     const usuario = await usuarioModel.buscarPorId(req.session.usuario.id);
     if (!usuario) return res.status(404).send("Conta não encontrada.");
@@ -435,6 +456,7 @@ router.get("/assinatura", apenasAutenticado, async (req, res) => {
     req.session.usuario.premium_ativo = usuario.premium_ativo;
     req.session.usuario.assinatura_status = usuario.assinatura_status;
     req.session.usuario.mp_preapproval_id = usuario.mp_preapproval_id;
+    res.locals.ehPremium = premiumAtivo(usuario);
 
     const mensagensPagamento = {
       aprovado: "Pagamento aprovado. Seu Premium está ativo por 30 dias.",
@@ -448,7 +470,14 @@ router.get("/assinatura", apenasAutenticado, async (req, res) => {
     return res.render("pages/user/assinatura", {
       usuario: usuarioView,
       erro: req.query.erro === "1",
-      mensagemPagamento: mensagensPagamento[req.query.pagamento] || null,
+      mensagemPagamento:
+        (req.query.pagamento === "aprovado" || reconciliado) &&
+        premiumAtivo(usuario)
+          ? null
+          : mensagensPagamento[req.query.pagamento] || null,
+      premiumRecemAtivado:
+        (req.query.pagamento === "aprovado" || reconciliado) &&
+        premiumAtivo(usuario),
       precoPremium: PRECO_PREMIUM,
       podeReverificarPagamento:
         ["pendente", "verificando"].includes(req.query.pagamento) &&
@@ -463,11 +492,6 @@ router.post(
   "/assinatura/assinar",
   apenasAutenticado,
   assinaturaController.criarAssinatura,
-);
-router.get(
-  "/assinatura/retorno",
-  apenasAutenticado,
-  assinaturaController.retorno,
 );
 router.post(
   "/assinatura/verificar-pagamento",

@@ -136,15 +136,6 @@ for (const [alteracao, motivo] of [
   });
 }
 
-test("rejeita confirmação quando o pagamento não está em Sandbox", async () => {
-  const repo = criarRepositorio({ ...pagamentoBase, live_mode: true });
-  const resultado = await confirmar(repo);
-
-  assert.equal(resultado.tipo, "invalido");
-  assert.equal(resultado.motivo, "live_mode_true");
-  assert.equal(repo.estado.concessoesPremium, 0);
-});
-
 test("rejeita pagamento de outro vendedor de teste", async () => {
   const repo = criarRepositorio({ ...pagamentoBase, collector_id: 999 });
   const resultado = await confirmar(repo);

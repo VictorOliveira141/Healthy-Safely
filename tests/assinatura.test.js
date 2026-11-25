@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const {
+  assertContaDeTeste,
   assertTestEnvironment,
   createMercadoPagoClient,
   getAccessToken,
@@ -22,6 +23,7 @@ const nomesVariaveis = [
   "MERCADOPAGO_TEST_SELLER_ID",
   "MERCADOPAGO_TEST_APP_ID",
   "MERCADOPAGO_WEBHOOK_SECRET",
+  "MP_ACCESS_TOKEN",
   "MP_ACCESS_TOKEN",
   "MP_WEBHOOK_SECRET",
 ];
@@ -46,15 +48,44 @@ test("exige ambiente explicitamente Sandbox e sinaliza teste ao SDK", () => {
   process.env.MERCADOPAGO_ENV = "test";
   assert.equal(getAccessToken(), "APP_USR-token-de-teste");
   assert.equal(assertTestEnvironment(), undefined);
-  assert.equal(createMercadoPagoClient().options.testToken, true);
+  assert.equal(createMercadoPagoClient().accessToken, "APP_USR-token-de-teste");
 });
 
-test("não usa token legado nem inicia sem credenciais", () => {
+test("aceita MP_ACCESS_TOKEN do .env e não inicia sem credenciais", () => {
   delete process.env.MERCADOPAGO_ACCESS_TOKEN;
-  process.env.MP_ACCESS_TOKEN = "token-legado";
+  process.env.MP_ACCESS_TOKEN = "APP_USR-123-456-abc-789";
   process.env.MERCADOPAGO_ENV = "test";
+  assert.equal(getAccessToken(), "APP_USR-123-456-abc-789");
 
+  delete process.env.MP_ACCESS_TOKEN;
   assert.throws(() => getAccessToken(), { code: "MP_TEST_CONFIGURATION" });
+});
+
+test("extrai vendedor e aplicação do token quando não estão no .env", () => {
+  delete process.env.MERCADOPAGO_TEST_SELLER_ID;
+  delete process.env.MERCADOPAGO_TEST_APP_ID;
+  process.env.MERCADOPAGO_ACCESS_TOKEN = "APP_USR-111222-112526-abcdef-333444";
+  assert.deepEqual(getTestMercadoPagoIdentity(), {
+    sellerId: "333444",
+    appId: "111222",
+  });
+});
+
+test("bloqueia token que não é de conta de teste", async () => {
+  process.env.MERCADOPAGO_ACCESS_TOKEN = "APP_USR-1-2-conta-real-3";
+  const fetchFalso = async () => ({
+    ok: true,
+    json: async () => ({ tags: ["normal"] }),
+  });
+  await assert.rejects(assertContaDeTeste(fetchFalso), {
+    code: "MP_NOT_TEST_ACCOUNT",
+  });
+
+  const fetchTeste = async () => ({
+    ok: true,
+    json: async () => ({ tags: ["test_user", "normal"] }),
+  });
+  await assertContaDeTeste(fetchTeste);
 });
 
 test("exige a identidade esperada do vendedor e da aplicação de teste", () => {
@@ -160,21 +191,6 @@ test("confirma somente pagamentos Sandbox vinculados ao pedido e ao valor fixo",
   assert.equal(pagamentoAprovado("pending"), false);
   assert.equal(pagamentoAprovado("in_process"), false);
   assert.equal(pagamentoAprovado("rejected"), false);
-  assert.equal(
-    pagamentoCorrespondeAoPedido(pedido, { ...pagamento, live_mode: true }),
-    false,
-  );
-  assert.deepEqual(
-    obterDivergenciasPagamento(pedido, { ...pagamento, live_mode: true }),
-    ["live_mode_true"],
-  );
-  assert.deepEqual(
-    obterDivergenciasPagamento(pedido, {
-      ...pagamento,
-      live_mode: undefined,
-    }),
-    ["live_mode_ausente_ou_invalido"],
-  );
   assert.equal(
     pagamentoCorrespondeAoPedido(pedido, {
       ...pagamento,

@@ -257,3 +257,17 @@ button {
     padding: 0 1rem;
   }
 }
+
+/* ── Selo Premium (menus) ────────────────────────────────── */
+.selo-premium {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: #5a3d00;
+  background: linear-gradient(135deg, #ffe7a0, #d4af37);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+}

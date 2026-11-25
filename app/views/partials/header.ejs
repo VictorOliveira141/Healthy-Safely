@@ -1,3 +1,4 @@
+<% const ehPremium = typeof locals.ehPremium !== "undefined" ? Boolean(locals.ehPremium) : false; %>
 <link rel="stylesheet" href="/css/header.css" />
 <link rel="stylesheet" href="/css/healthy-ai.css" />
 <link
@@ -44,7 +45,7 @@
           <i data-lucide="sparkles" class="icone-destaque" aria-hidden="true"></i>
           </button>
 
-          <figure class="foto-perfil">
+          <figure class="foto-perfil<%= ehPremium ? ' foto-perfil-premium' : '' %>">
             <button type="button" class="profile-toggle" aria-expanded="false" aria-controls="profileDropdown">
               <img
                 src="<%= usuario.foto_perfil ? usuario.foto_perfil : '/imagem/user.webp' %>"
@@ -56,7 +57,12 @@
 
           <div class="user-menu-dropdown" id="profileDropdown" aria-label="Menu do usuário">
             <a href="/configuracoes">Configurações</a>
-            <a href="/assinatura">Assinatura</a>
+            <a href="/assinatura" class="dropdown-assinatura">
+              Assinatura
+              <% if (ehPremium) { %>
+                <span class="selo-premium" aria-label="Plano Premium ativo">✦ Premium</span>
+              <% } %>
+            </a>
             <a href="/ajuda">Ajuda</a>
             <a href="/sair" class="logout-link">Sair</a>
           </div>
@@ -87,11 +93,11 @@
 
       <a
         href="/assinatura"
-        class="header-plano header-plano-<%= usuario.plano === 'premium' ? 'premium' : 'free' %>"
-        aria-label="Plano atual: <%= usuario.plano === 'premium' ? 'Premium' : 'Free' %>"
+        class="header-plano header-plano-<%= ehPremium ? 'premium' : 'free' %>"
+        aria-label="Plano atual: <%= ehPremium ? 'Premium' : 'Free' %>"
       >
 
-        <% if (usuario.plano === 'premium') { %>
+        <% if (ehPremium) { %>
 
           <span class="plano-brilho" aria-hidden="true">✦</span>
           <span>PREMIUM</span>

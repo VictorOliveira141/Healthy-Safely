@@ -44,6 +44,24 @@ const pagamentoMercadoPagoModel = {
     return linhas[0] || null;
   },
 
+  // Pedidos recentes do usuário que ainda não liberaram Premium. Usado para
+  // reconciliar pagamentos aprovados cujo retorno ao site se perdeu.
+  listarPedidosPendentes: async (usuarioId) => {
+    const [linhas] = await pool.query(
+      `SELECT referencia_externa
+       FROM mp_pedidos
+       WHERE usuario_id = ?
+         AND acesso_concedido_em IS NULL
+         AND preferencia_id IS NOT NULL
+         AND estado <> 'failed'
+         AND criado_em > UTC_TIMESTAMP() - INTERVAL 7 DAY
+       ORDER BY id DESC
+       LIMIT 10`,
+      [usuarioId],
+    );
+    return linhas.map((linha) => linha.referencia_externa);
+  },
+
   registrarPagamento: async (pedido, pagamento) => {
     const conn = await pool.getConnection();
     try {

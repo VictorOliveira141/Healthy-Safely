@@ -1,8 +1,10 @@
 const crypto = require("crypto");
 const { Payment, Preference, PreApproval } = require("mercadopago");
 const {
+  assertContaDeTeste,
   assertTestEnvironment,
   createMercadoPagoClient,
+  getAccessToken,
   getTestMercadoPagoIdentity,
   getWebhookSecret,
 } = require("../config/mercadoPago");
@@ -11,6 +13,7 @@ const { usuarioModel } = require("../models/Usuario");
 const { pagamentoMercadoPagoModel } = require("../models/PagamentoMercadoPago");
 const {
   obterDivergenciasPreferencia,
+  urlCheckout,
   verificarAssinaturaWebhook,
 } = require("../services/mercadoPagoService");
 const {
@@ -31,6 +34,7 @@ function urlAplicacao(caminho) {
 }
 
 async function obterPagamentoConfirmado(pagamentoId, usuarioId = null) {
+  await assertContaDeTeste();
   const testIdentity = getTestMercadoPagoIdentity();
   const cliente = createMercadoPagoClient();
   const preferencias = new Preference(cliente);
@@ -55,6 +59,38 @@ async function obterPagamentoConfirmado(pagamentoId, usuarioId = null) {
   return resultado.tipo === "processado" ? resultado.pagamento : null;
 }
 
+// Procura no Mercado Pago pagamentos aprovados de pedidos pendentes do
+// usuário e libera o Premium. Cobre o caso em que o comprador pagou mas não
+// voltou ao site (ou voltou sem sessão) e o webhook não está configurado.
+async function reconciliarPagamentosPendentes(usuarioId) {
+  const referencias =
+    await pagamentoMercadoPagoModel.listarPedidosPendentes(usuarioId);
+  if (referencias.length === 0) return false;
+
+  await assertContaDeTeste();
+  const pagamentos = new Payment(createMercadoPagoClient());
+  let algumAprovado = false;
+
+  for (const referencia of referencias) {
+    const busca = await pagamentos.search({
+      options: {
+        external_reference: referencia,
+        sort: "date_created",
+        criteria: "desc",
+      },
+    });
+    const aprovado = (busca?.results || []).find(
+      (pagamento) => pagamento.status === "approved",
+    );
+    if (!aprovado) continue;
+
+    const confirmado = await obterPagamentoConfirmado(aprovado.id, usuarioId);
+    if (confirmado?.status === "approved") algumAprovado = true;
+  }
+
+  return algumAprovado;
+}
+
 function statusDoPagamento(pagamento) {
   if (pagamento?.status === "approved") return "aprovado";
   if (pagamento?.status === "pending" || pagamento?.status === "in_process") {
@@ -75,9 +111,7 @@ const assinaturaController = {
   criarAssinatura: async (req, res) => {
     let referenciaExterna;
     try {
-      if (!getWebhookSecret()) {
-        return res.redirect("/assinatura?erro=1");
-      }
+      await assertContaDeTeste();
       const testIdentity = getTestMercadoPagoIdentity();
       const cliente = createMercadoPagoClient();
 
@@ -102,7 +136,11 @@ const assinaturaController = {
             },
           ],
           external_reference: referenciaExterna,
-          notification_url: urlAplicacao("/webhooks/mercadopago"),
+          // Sem segredo configurado, o webhook não consegue validar a
+          // assinatura; a confirmação acontece então pelo /assinatura/retorno.
+          ...(getWebhookSecret()
+            ? { notification_url: urlAplicacao("/webhooks/mercadopago") }
+            : {}),
           back_urls: {
             success: urlAplicacao("/assinatura/retorno"),
             pending: urlAplicacao("/assinatura/retorno"),
@@ -141,8 +179,11 @@ const assinaturaController = {
         return res.redirect("/assinatura?erro=1");
       }
 
-      return res.redirect(preferencia.sandbox_init_point);
-    } catch {
+      const destino = getAccessToken().startsWith("TEST-")
+        ? preferencia.sandbox_init_point
+        : urlCheckout(preferencia);
+      return res.redirect(destino);
+    } catch (error) {
       if (referenciaExterna) {
         try {
           await pagamentoMercadoPagoModel.marcarPedidoFalhou(
@@ -153,23 +194,28 @@ const assinaturaController = {
         }
       }
       console.error(
-        "Não foi possível criar o checkout Sandbox do Mercado Pago.",
-        error?.code || "erro sem código",
+        "Não foi possível criar o checkout de teste do Mercado Pago.",
+        error?.code || error?.status || "erro sem código",
+        error?.message || "",
       );
       return res.redirect("/assinatura?erro=1");
     }
   },
 
+  // Não exige sessão: o pagamento é conferido na API do Mercado Pago e o
+  // Premium vai para a conta dona do pedido. Assim, perder o cookie no
+  // redirecionamento (ex.: outro domínio) não impede a liberação.
   retorno: async (req, res) => {
     let resultado;
+    const usuarioId = req.session?.usuario?.id ?? null;
     const pagamentoId = req.query.payment_id || req.query.collection_id;
-    if (/^\d+$/.test(String(pagamentoId || ""))) {
+    if (usuarioId && /^\d+$/.test(String(pagamentoId || ""))) {
       req.session.mercadoPagoPagamentoPendente = String(pagamentoId);
     }
 
     try {
-      resultado = await obterPagamentoConfirmado(pagamentoId, req.session.usuario.id);
-      await atualizarUsuarioDaSessao(req);
+      resultado = await obterPagamentoConfirmado(pagamentoId, usuarioId);
+      if (usuarioId) await atualizarUsuarioDaSessao(req);
     } catch (error) {
       console.error(
         "Não foi possível consultar o pagamento no retorno.",
@@ -178,6 +224,9 @@ const assinaturaController = {
     }
 
     const status = statusDoPagamento(resultado);
+    if (!usuarioId) {
+      return res.redirect(`/login?pagamento=${status}`);
+    }
     if (status === "aprovado" || status === "recusado") {
       delete req.session.mercadoPagoPagamentoPendente;
     }
@@ -268,5 +317,8 @@ const assinaturaController = {
     }
   },
 };
+
+assinaturaController.reconciliarPagamentosPendentes =
+  reconciliarPagamentosPendentes;
 
 module.exports = assinaturaController;

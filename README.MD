@@ -20,21 +20,19 @@ node app
 O Checkout Pro cria uma cobrança única de R$ 11,99 e libera o Premium por 30
 dias após confirmação; a renovação é manual. Configure no ambiente:
 
-- `MERCADOPAGO_ENV=test`: obrigatório; outros valores impedem chamadas ao SDK.
-- `MERCADOPAGO_ACCESS_TOKEN`: Access Token copiado da seção TESTE do painel.
-- `MERCADOPAGO_TEST_SELLER_ID`: ID da conta de vendedor de teste da aplicação.
-- `MERCADOPAGO_TEST_APP_ID`: ID da aplicação que gerou as credenciais de teste.
-- `MERCADOPAGO_PUBLIC_KEY`: chave pública do ambiente de teste (não é usada pelo
-  redirecionamento server-side do Checkout Pro).
-- `MERCADOPAGO_WEBHOOK_SECRET`: segredo de assinatura do webhook (obrigatório).
-- `APP_URL`: URL HTTPS pública do Healthy Safely, acessível pelo Mercado Pago.
+- `MP_ACCESS_TOKEN` (ou `MERCADOPAGO_ACCESS_TOKEN`): Access Token de uma
+  **conta de vendedor de teste**. O app consulta `/users/me` e recusa qualquer
+  token sem a tag `test_user`, então não há como cobrar dinheiro real.
+- `APP_URL`: URL HTTPS pública do Healthy Safely (para o retorno do checkout).
+- `MERCADOPAGO_ENV` (opcional, padrão `test`): qualquer outro valor desliga.
+- `MERCADOPAGO_TEST_SELLER_ID` / `MERCADOPAGO_TEST_APP_ID` (opcionais): se
+  ausentes, são extraídos do próprio token.
+- `MP_WEBHOOK_SECRET` (opcional): com ele, o webhook é registrado; sem ele, o
+  pagamento é confirmado quando o comprador volta para `/assinatura/retorno`.
 
-O SDK envia `X-Test-Token` em todas as chamadas e o checkout redireciona somente
-para `sandbox_init_point`; o código não infere o ambiente pelo formato do token
-nem usa o antigo `MP_ACCESS_TOKEN`. O Access Token nunca é enviado ao frontend.
-A preferência e o pagamento também são conferidos contra o vendedor e a
-aplicação de teste configurados. Os IDs acima devem corresponder a
-`collector_id` e `client_id` retornados pelo Mercado Pago; não são credenciais.
+Para pagar, abra o checkout logado com a **conta compradora de teste** e use
+um cartão de teste (ex.: Mastercard 5031 4332 1540 6351, CVV 123, validade
+11/30, titular `APRO`, CPF 12345678909).
 
 Antes de iniciar, aplique a migração aditiva
 `app/config/database/mercadopago-checkout.sql` no banco existente. Ela preserva

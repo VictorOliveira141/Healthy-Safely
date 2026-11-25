@@ -572,3 +572,110 @@ html.contraste .beneficio-card {
     grid-template-columns: 1fr;
   }
 }
+
+/* ======= CELEBRAÇÃO: PREMIUM ATIVADO ======= */
+.premium-celebracao {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(1, 46, 34, 0.55);
+  backdrop-filter: blur(3px);
+  animation: celebracao-fade 0.25s ease-out;
+}
+
+.premium-celebracao-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 24px 24px;
+  border-radius: 20px;
+  text-align: center;
+  background: #fff;
+  color: #0c4f43;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.35), 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: celebracao-pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.premium-celebracao-icone {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  color: #5a3d00;
+  background: linear-gradient(135deg, #ffe7a0, #d4af37);
+  box-shadow: 0 0 24px rgba(212, 175, 55, 0.6);
+}
+
+.premium-celebracao-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+}
+
+.premium-celebracao-card p {
+  margin: 0 0 8px;
+}
+
+.premium-celebracao-detalhe {
+  font-size: 0.92rem;
+  color: #4b5f59;
+}
+
+.premium-celebracao-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.premium-celebracao-acoes .premium-botao {
+  text-decoration: none;
+  text-align: center;
+}
+
+.premium-celebracao-fechar {
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #0c4f43;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@keyframes celebracao-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes celebracao-pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-celebracao,
+  .premium-celebracao-card {
+    animation: none;
+  }
+}
+
+html.dark .premium-celebracao-card {
+  background: #0f1f1b;
+  color: #e2e8f0;
+}
+
+html.dark .premium-celebracao-detalhe {
+  color: #a8b8b2;
+}
+
+html.dark .premium-celebracao-fechar {
+  color: #e2e8f0;
+}

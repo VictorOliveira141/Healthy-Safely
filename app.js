@@ -11,6 +11,7 @@ const session = require("express-session");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const { usuarioModel } = require("./app/models/Usuario");
+const { premiumAtivoNaSessao } = require("./app/utils/premium");
 const { buildGoogleCallbackUrl } = require("./app/config/googleAuth");
 const app = express();
 const porta = process.env.PORT || 3000;
@@ -105,6 +106,7 @@ app.use(passport.session());
 // ── Torna o usuário disponível em todas as views EJS ──────
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null;
+  res.locals.ehPremium = premiumAtivoNaSessao(req.session.usuario);
   next();
 });
 
