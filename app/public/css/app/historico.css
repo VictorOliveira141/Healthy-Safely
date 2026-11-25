@@ -140,7 +140,7 @@ html.dark .pg {
   padding: 0 1.4rem;
   border-radius: 14px;
   background: #0c4f43;
-  color: #fff;
+  color: var(--fundoescuro);
   font-weight: 700;
   text-decoration: none;
   transition:
