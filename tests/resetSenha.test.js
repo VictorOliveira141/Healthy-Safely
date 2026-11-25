@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const nodemailer = require('nodemailer');
 const { enviarEmailResetSenha } = require('../app/config/email');
 const { usuarioModel } = require('../app/models/Usuario');
+const usuarioController = require('../app/controllers/usuarioController');
 
 test('usuarioModel deve expor helpers de reset de senha', () => {
   assert.equal(typeof usuarioModel.gerarTokenRecuperacao, 'function');
@@ -50,5 +51,82 @@ test('enviarEmailResetSenha deve abortar com timeout em vez de travar a requisi�
         process.env[key] = value;
       }
     });
+  }
+});
+
+test('redefinir senha encerra a sessão e encaminha para novo login', async () => {
+  const originalBuscarToken = usuarioModel.buscarPorTokenRecuperacao;
+  const originalAlterarSenha = usuarioModel.alterarSenhaComToken;
+  let sessaoEncerrada = false;
+  let cookieLimpo = false;
+  let destino;
+
+  usuarioModel.buscarPorTokenRecuperacao = async () => ({
+    email: 'teste@example.com',
+  });
+  usuarioModel.alterarSenhaComToken = async () => true;
+
+  try {
+    await usuarioController.processarRedefinicaoSenha(
+      {
+        params: { token: 'token-valido' },
+        body: { novaSenha: 'SenhaNova1!', confirmarSenha: 'SenhaNova1!' },
+        session: {
+          destroy(callback) {
+            sessaoEncerrada = true;
+            callback(null);
+          },
+        },
+      },
+      {
+        clearCookie(nome) {
+          assert.equal(nome, 'connect.sid');
+          cookieLimpo = true;
+        },
+        redirect(url) {
+          destino = url;
+        },
+      },
+    );
+
+    assert.equal(sessaoEncerrada, true);
+    assert.equal(cookieLimpo, true);
+    assert.equal(destino, '/login?senha=alterada');
+  } finally {
+    usuarioModel.buscarPorTokenRecuperacao = originalBuscarToken;
+    usuarioModel.alterarSenhaComToken = originalAlterarSenha;
+  }
+});
+
+test('senha não atualizada não encerra a sessão', async () => {
+  const originalBuscarToken = usuarioModel.buscarPorTokenRecuperacao;
+  const originalAlterarSenha = usuarioModel.alterarSenhaComToken;
+  let sessaoEncerrada = false;
+
+  usuarioModel.buscarPorTokenRecuperacao = async () => ({
+    email: 'teste@example.com',
+  });
+  usuarioModel.alterarSenhaComToken = async () => false;
+
+  try {
+    await usuarioController.processarRedefinicaoSenha(
+      {
+        params: { token: 'token-valido' },
+        body: { novaSenha: 'SenhaNova1!', confirmarSenha: 'SenhaNova1!' },
+        session: {
+          destroy() {
+            sessaoEncerrada = true;
+          },
+        },
+      },
+      {
+        render() {},
+      },
+    );
+
+    assert.equal(sessaoEncerrada, false);
+  } finally {
+    usuarioModel.buscarPorTokenRecuperacao = originalBuscarToken;
+    usuarioModel.alterarSenhaComToken = originalAlterarSenha;
   }
 });

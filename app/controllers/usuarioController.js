@@ -480,11 +480,15 @@ const usuarioController = {
         });
       }
 
-      return res.render("pages/auth/redefinir-senha", {
-        token,
-        invalido: false,
-        erro: null,
-        sucesso: true,
+      return req.session.destroy((error) => {
+        if (error) {
+          console.error(
+            "Erro ao encerrar sessão após redefinição de senha:",
+            error,
+          );
+        }
+        res.clearCookie("connect.sid");
+        return res.redirect("/login?senha=alterada");
       });
     } catch (error) {
       console.error("Erro ao processar redefinição de senha:", error);

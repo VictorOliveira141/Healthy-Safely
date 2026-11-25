@@ -112,13 +112,6 @@ async function removerBiometria() {
 
 async function cadastrarBiometria() {
   try {
-    if (window.innerWidth > 768) {
-      alert(
-        "O cadastro da biometria deve ser realizado pelo celular.",
-      );
-      return;
-    }
-
     if (!window.PublicKeyCredential) {
       alert(
         "Seu dispositivo ou navegador não oferece suporte à biometria.",

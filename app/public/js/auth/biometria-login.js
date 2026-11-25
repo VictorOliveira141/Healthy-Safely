@@ -2,14 +2,6 @@ const btnBiometria = document.getElementById("btn-biometria");
 
 if (btnBiometria && window.PublicKeyCredential) {
   btnBiometria.addEventListener("click", async () => {
-    // Impede o uso da biometria em computadores
-    if (window.innerWidth > 768) {
-      alert(
-        "A autenticação por biometria está disponível apenas em dispositivos móveis.",
-      );
-      return;
-    }
-
     try {
       btnBiometria.disabled = true;
       btnBiometria.innerHTML =

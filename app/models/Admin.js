@@ -216,7 +216,7 @@ const adminModel = {
 
     const [resultado] = await pool.query(
       `UPDATE suporte
-       SET resposta = ?, status = 'respondido', respondido_em = NOW(), atualizado_em = NOW()
+       SET resposta = ?, status = 'respondido', respondido_em = NOW()
        WHERE id = ?`,
       [texto, id],
     );

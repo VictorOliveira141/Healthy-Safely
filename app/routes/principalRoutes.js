@@ -93,6 +93,15 @@ async function onboardingConcluido(req, res, next) {
 
 router.use("/ia", apenasAutenticado, onboardingConcluido, iaRoutes);
 
+// Registrar antes dos middlewares de sessão: este endpoint de cron autentica
+// exclusivamente pelo header X-Cron-Secret no controller.
+router.get("/api/push/cron", pushController.executarCron);
+
+// O login biométrico é público; estas rotas devem preceder a proteção de
+// onboarding aplicada ao prefixo /webauthn.
+router.post("/webauthn/login/options", webauthnController.gerarOpcoesLogin);
+router.post("/webauthn/login/verify", webauthnController.verificarLogin);
+
 router.use(
   [
     "/dashboard",
@@ -179,16 +188,20 @@ router.get("/login", (req, res) => {
     return res.redirect("/dashboard");
   }
 
+  const mensagemSucesso =
+    req.query.senha === "alterada"
+      ? "Sua senha foi alterada. Entre novamente usando a nova senha."
+      : req.query.conta === "excluida"
+        ? "Sua conta foi excluída com sucesso."
+        : null;
+
   res.render("pages/auth/login", {
     erro: null,
     valores: { email: "" },
     erroValidacao: {},
     msgErro: {},
     sucesso: false,
-    mensagemSucesso:
-      req.query.conta === "excluida"
-        ? "Sua conta foi excluída com sucesso."
-        : null,
+    mensagemSucesso,
   });
 });
 router.post("/login", usuarioController.login);
@@ -565,10 +578,6 @@ router.post(
 
 router.post("/webauthn/register/verify", webauthnController.verificarCadastro);
 
-router.post("/webauthn/login/options", webauthnController.gerarOpcoesLogin);
-
-router.post("/webauthn/login/verify", webauthnController.verificarLogin);
-
 router.get("/webauthn/status", webauthnController.verificarStatus);
 
 router.delete("/webauthn/remove", webauthnController.removerBiometria);
@@ -587,10 +596,6 @@ router.post(
   apenasAutenticado,
   pushController.desinscrever,
 );
-
-// Rota chamada pelo cron externo (cron-job.org). Protegida por
-// header X-Cron-Secret — NÃO usa sessão/autenticação de usuário.
-router.get("/api/push/cron", pushController.executarCron);
 
 /* ---------------- Mercado Pago ---------------- */
 // Rota chamada pelo Mercado Pago. Protegida pela assinatura HMAC do
