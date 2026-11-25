@@ -59,8 +59,6 @@ const dataLocalISO = (valor) => {
 const diaSemanaDaDataISO = (iso) =>
   iso ? diasSemana[new Date(`${iso}T12:00:00Z`).getUTCDay()] : null;
 
-const diaHojeSaoPaulo = () => diaSemanaDaDataISO(hojeSaoPaulo());
-
 // Acrescenta os dias em que a tarefa está prevista nesta semana.
 const mapearTarefaPagina = (t, diaHoje) => {
   const base = mapearTarefa(t);
@@ -91,8 +89,13 @@ const tarefaController = {
       .isISO8601()
       .withMessage("Data inválida."),
     body("horario")
-      .optional({ nullable: true })
-      .matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .custom(
+        (value) =>
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          /^([01]\d|2[0-3]):[0-5]\d$/.test(value),
+      )
       .withMessage("Horário inválido."),
     body("repeticao")
       .optional({ nullable: true })
@@ -159,7 +162,8 @@ const tarefaController = {
   },
 
   listarTarefas: async (req, res) => {
-    const diaHoje = diaHojeSaoPaulo();
+    const dataHoje = hojeSaoPaulo();
+    const diaHoje = diaSemanaDaDataISO(dataHoje);
     try {
       const tarefas = await tarefaModel.listarPorUsuario(
         req.session.usuario.id,
@@ -174,6 +178,7 @@ const tarefaController = {
         taskToEdit: null,
         modoEdicao: false,
         diaHoje,
+        dataHoje,
       });
     } catch (err) {
       res.render("pages/app/tasks", {
@@ -183,6 +188,7 @@ const tarefaController = {
         taskToEdit: null,
         modoEdicao: false,
         diaHoje,
+        dataHoje,
       });
     }
   },
@@ -205,7 +211,8 @@ const tarefaController = {
       const flash = req.session.flash || null;
       delete req.session.flash;
 
-      const diaHoje = diaHojeSaoPaulo();
+      const dataHoje = hojeSaoPaulo();
+      const diaHoje = diaSemanaDaDataISO(dataHoje);
       return res.render("pages/app/tasks", {
         tasks: tarefas.map((t) => mapearTarefaPagina(t, diaHoje)),
         flash,
@@ -213,6 +220,7 @@ const tarefaController = {
         taskToEdit: mapearTarefaPagina(tarefa, diaHoje),
         modoEdicao: true,
         diaHoje,
+        dataHoje,
       });
     } catch (err) {
       console.error("Erro ao carregar tarefa para edição:", err);
@@ -235,7 +243,7 @@ const tarefaController = {
         titulo: titulo.trim(),
         descricao: descricao || null,
         categoria: categoria || "geral",
-        data: data || null,
+        data: data || hojeSaoPaulo(),
         horario: horario || null,
         repeticao: repeticao || "once",
         diaSemana: dia_semana || null,

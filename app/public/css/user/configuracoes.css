@@ -341,6 +341,34 @@ ITENS
   flex-shrink: 0;
 }
 
+.status-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(184, 134, 11, 0.35);
+  border-radius: 999px;
+  color: #8a6508;
+  background: rgba(212, 175, 55, 0.16);
+  font-size: var(--font-small);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-premium i {
+  color: #b8860b;
+}
+
+html.dark .status-premium {
+  border-color: rgba(246, 211, 101, 0.35);
+  color: #f6d365;
+  background: rgba(212, 175, 55, 0.14);
+}
+
+html.dark .status-premium i {
+  color: #f6d365;
+}
+
 .config-select {
   padding: 0.35rem 0.65rem;
   border: 1px solid var(--border);

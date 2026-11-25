@@ -363,15 +363,15 @@
    PREMIUM
 ===================================== */
 .header-plano-premium {
-  color: #ffe7a0;
+  color: #f6d365;
   background: linear-gradient(
     135deg,
-    rgba(212, 175, 55, 0.18),
-    rgba(255, 215, 100, 0.08)
+    rgba(212, 175, 55, 0.3),
+    rgba(255, 215, 100, 0.16)
   );
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.8);
   box-shadow:
-    0 0 12px rgba(212, 175, 55, 0.18),
+    0 0 14px rgba(212, 175, 55, 0.28),
     0 4px 16px rgba(0, 0, 0, 0.12);
 }
 

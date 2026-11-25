@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!raiz) return;
 
   const diaHoje = raiz.dataset.diaHoje;
+  const dataHoje = raiz.dataset.dataHoje;
   const abas = Array.from(raiz.querySelectorAll(".tk-daybtn"));
   const paineis = Array.from(raiz.querySelectorAll(".tk-day"));
   const dias = abas.map((a) => a.dataset.dia);
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ── sessionStorage protegido (pode estar bloqueado) ───────── */
   const guardar = (valor) => {
     try {
-      sessionStorage.setItem(CHAVE_DIA, valor);
+      sessionStorage.setItem(CHAVE_DIA, `${dataHoje}|${valor}`);
     } catch (e) {
       /* sem persistência: segue funcionando */
     }
@@ -330,8 +331,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ── Estado inicial ────────────────────────────────────────── */
   const params = new URLSearchParams(window.location.search);
-  const guardado = lerGuardado();
-  selecionarDia(guardado && dias.includes(guardado) ? guardado : diaHoje);
+  const [dataGuardada, diaGuardado] = (lerGuardado() || "").split("|");
+  selecionarDia(
+    dataGuardada === dataHoje && dias.includes(diaGuardado)
+      ? diaGuardado
+      : diaHoje,
+  );
   definirStatus("all");
 
   // Edição vinda do servidor (/tasks/editar/:id): abre o formulário preenchido

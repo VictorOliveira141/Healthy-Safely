@@ -122,10 +122,7 @@ function tarefaPrevistaNoDia(tarefa, dia) {
   const data = dataSaoPaulo(dia);
   if (!data) return false;
   const criacao = dataSaoPaulo(tarefa.criado_em);
-  const datasDeInicio = [dataTarefa(tarefa.data), criacao]
-    .filter(Boolean)
-    .sort();
-  const inicio = datasDeInicio.at(-1) || null;
+  const inicio = dataTarefa(tarefa.data) || criacao;
   if (inicio && data < inicio) return false;
 
   const repeticao = tarefa.repeticao || "once";

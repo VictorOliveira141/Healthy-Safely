@@ -126,6 +126,24 @@ test("tarefas previstas: diária, semanal, única e início", () => {
   assert.equal(tarefaPrevistaNoDia(semData, "2026-10-03"), false);
 });
 
+test("a data planejada prevalece sobre a data de criação com fuso deslocado", () => {
+  const tarefaUnica = {
+    repeticao: "once",
+    data: "2026-10-08",
+    criado_em: "2026-10-09",
+  };
+  const tarefaSemData = {
+    repeticao: "once",
+    data: null,
+    criado_em: "2026-10-09",
+  };
+
+  assert.equal(tarefaPrevistaNoDia(tarefaUnica, "2026-10-08"), true);
+  assert.equal(tarefaPrevistaNoDia(tarefaUnica, "2026-10-09"), false);
+  assert.equal(tarefaPrevistaNoDia(tarefaSemData, "2026-10-08"), false);
+  assert.equal(tarefaPrevistaNoDia(tarefaSemData, "2026-10-09"), true);
+});
+
 test("sequência: dias consecutivos, hoje pendente não quebra", () => {
   const r = calcularProgressao({
     tarefas: [diaria],
