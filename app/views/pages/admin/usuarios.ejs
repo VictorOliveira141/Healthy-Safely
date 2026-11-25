@@ -71,7 +71,6 @@
             <% } %>
 
             <% usuarios.forEach((usuario) => {
-              const inicial = usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "?";
               const criacao = usuario.criado_em
                 ? new Date(usuario.criado_em).toLocaleDateString("pt-BR")
                 : "—";
@@ -81,11 +80,12 @@
               <tr>
                 <td>
                   <a class="user-cell" href="/admin/usuario/<%= usuario.id %>">
-                    <% if (usuario.foto_perfil) { %>
-                      <img class="avatar" src="<%= usuario.foto_perfil %>" alt="" />
-                    <% } else { %>
-                      <span class="avatar avatar-inicial"><%= inicial %></span>
-                    <% } %>
+                    <img
+                      class="avatar"
+                      src="<%= usuario.foto_perfil || '/imagem/user.webp' %>"
+                      alt=""
+                      onerror="this.onerror=null;this.src='/imagem/user.webp';"
+                    />
                     <span>
                       <strong><%= usuario.nome %></strong>
                       <small>@<%= usuario.nomeusuario || "sem usuário" %></small>

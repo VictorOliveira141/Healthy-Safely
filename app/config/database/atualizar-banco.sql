@@ -290,6 +290,10 @@ ALTER TABLE suporte
     DEFAULT CURRENT_TIMESTAMP
     ON UPDATE CURRENT_TIMESTAMP;
 
+ALTER TABLE suporte
+  CONVERT TO CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
 
 -- ─────────────────────────────────────────────────────────────
 -- VERIFICAÇÃO

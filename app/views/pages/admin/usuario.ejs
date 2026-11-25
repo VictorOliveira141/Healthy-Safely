@@ -21,13 +21,12 @@
 
     <header class="user-heading">
       <div class="identity">
-        <% if (usuario.foto_perfil) { %>
-          <img class="profile-avatar" src="<%= usuario.foto_perfil %>" alt="" />
-        <% } else { %>
-          <span class="profile-avatar profile-inicial">
-            <%= usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "?" %>
-          </span>
-        <% } %>
+        <img
+          class="profile-avatar"
+          src="<%= usuario.foto_perfil || '/imagem/user.webp' %>"
+          alt=""
+          onerror="this.onerror=null;this.src='/imagem/user.webp';"
+        />
 
         <div>
           <span class="eyebrow">Usuário #<%= usuario.id %></span>

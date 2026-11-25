@@ -392,7 +392,8 @@ input.erro-input:focus {
 .btn-primary:active {
   transform: scale(0.99);
 }
-.redefinir-senha .actions > .btn-primary {
+.redefinir-senha .actions > .btn-primary,
+.recuperar-senha .actions > .btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -408,10 +409,12 @@ input.erro-input:focus {
   text-decoration: none;
   box-shadow: 0 5px 14px rgba(12, 79, 67, 0.14);
 }
-.redefinir-senha .actions > .btn-primary:hover {
+.redefinir-senha .actions > .btn-primary:hover,
+.recuperar-senha .actions > .btn-primary:hover {
   box-shadow: 0 8px 18px rgba(12, 79, 67, 0.2);
 }
-.redefinir-senha .actions > .btn-primary:focus-visible {
+.redefinir-senha .actions > .btn-primary:focus-visible,
+.recuperar-senha .actions > .btn-primary:focus-visible {
   outline: 3px solid rgba(26, 138, 117, 0.35);
   outline-offset: 3px;
 }

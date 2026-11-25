@@ -91,23 +91,11 @@
       <article class="config-perfil">
 
         <figure class="config-perfil-foto">
-          <% if (usuario.foto_perfil) { %>
-
-            <img
-              src="<%= usuario.foto_perfil %>"
-              alt="Foto de perfil de <%= usuario.nome %>"
-            />
-
-          <% } else { %>
-
-            <span aria-hidden="true">
-              <%= usuario.nome
-                ? usuario.nome.charAt(0).toUpperCase()
-                : 'U'
-              %>
-            </span>
-
-          <% } %>
+          <img
+            src="<%= usuario.foto_perfil || '/imagem/user.webp' %>"
+            alt="Foto de perfil de <%= usuario.nome %>"
+            onerror="this.onerror=null;this.src='/imagem/user.webp';"
+          />
         </figure>
 
         <section class="config-perfil-info">
@@ -655,27 +643,12 @@
             class="form-perfil-foto-preview"
           >
 
-            <% if (usuario.foto_perfil) { %>
-
-              <img
-                id="preview-foto-perfil"
-                src="<%= usuario.foto_perfil %>"
-                alt="Pré-visualização da foto de perfil"
-              />
-
-            <% } else { %>
-
-              <span
-                id="preview-inicial-perfil"
-                aria-hidden="true"
-              >
-                <%= usuario.nome
-                  ? usuario.nome.charAt(0).toUpperCase()
-                  : 'U'
-                %>
-              </span>
-
-            <% } %>
+            <img
+              id="preview-foto-perfil"
+              src="<%= usuario.foto_perfil || '/imagem/user.webp' %>"
+              alt="Pré-visualização da foto de perfil"
+              onerror="this.onerror=null;this.src='/imagem/user.webp';"
+            />
 
             <span class="form-perfil-foto-overlay">
               <i
@@ -765,7 +738,7 @@
             placeholder="Digite somente se quiser alterar"
           />
 
-          <small>O novo endereço só será salvo após a confirmação pelo link enviado.</small>
+          <small style="color: var(--fundoclaro);">O novo endereço só será salvo após a confirmação pelo link enviado.</small>
 
         </div>
 

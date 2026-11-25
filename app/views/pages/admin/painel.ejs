@@ -75,17 +75,17 @@
         <% } else { %>
           <div class="user-list">
             <% usuariosRecentes.forEach((usuario) => {
-              const inicial = usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "?";
               const data = usuario.criado_em
                 ? new Date(usuario.criado_em).toLocaleDateString("pt-BR")
                 : "—";
             %>
               <a class="user-row" href="/admin/usuario/<%= usuario.id %>">
-                <% if (usuario.foto_perfil) { %>
-                  <img class="avatar" src="<%= usuario.foto_perfil %>" alt="" />
-                <% } else { %>
-                  <span class="avatar avatar-inicial"><%= inicial %></span>
-                <% } %>
+                <img
+                  class="avatar"
+                  src="<%= usuario.foto_perfil || '/imagem/user.webp' %>"
+                  alt=""
+                  onerror="this.onerror=null;this.src='/imagem/user.webp';"
+                />
 
                 <span class="user-row-info">
                   <strong><%= usuario.nome %></strong>

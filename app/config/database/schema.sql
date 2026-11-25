@@ -306,4 +306,4 @@ CREATE TABLE IF NOT EXISTS suporte (
   INDEX idx_suporte_usuario (usuario_id),
   INDEX idx_suporte_status (status),
   INDEX idx_suporte_criado_em (criado_em)
-);
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
